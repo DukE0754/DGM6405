@@ -1,0 +1,56 @@
+using UnityEngine;
+using UnityEngine.UI;
+
+public class ButtonSounds : MonoBehaviour
+    {
+        [SerializeField] private AudioClip ClickSound;
+        [SerializeField] private AudioClip HoverSound;
+
+        // Start is called before the first frame update
+        private void Start()
+        {
+            var button = GetComponent<Button>(); // inefficient
+            if (button) button.onClick.AddListener(PlayClickSound);
+
+            var toggle = GetComponent<Toggle>(); // inefficient
+            if (toggle) toggle.onValueChanged.AddListener(PlayClickSound);
+
+            var slider = GetComponent<Slider>(); // inefficient
+            if (slider) slider.onValueChanged.AddListener(PlayClickSound);
+        }
+
+        
+        private void PlayClickSound(bool state)
+        {
+            var toggle = GetComponent<Toggle>(); // inefficient
+            if (!toggle) return;
+            if (!state && toggle.group && toggle.group.AnyTogglesOn()) return;
+            
+            AudioMgr.Instance.PlaySound(ClickSound);
+        }
+        
+        private void PlayClickSound(float _)
+        {
+            AudioMgr.Instance.PlaySound(ClickSound, _);
+        }
+
+        private void PlayClickSound()
+        {
+            AudioMgr.Instance.PlaySound(ClickSound);
+        }
+
+        /// <summary>
+        /// Should be called from OnPointerEnter or OnSelected
+        /// </summary>
+        public void PlayHoverSound()
+        {
+            if (HoverSound != null)
+            {
+                AudioMgr.Instance.PlaySound(HoverSound);
+            }
+            else
+            {
+                AudioMgr.Instance.PlaySound(AudioMgr.SoundTypes.ButtonHover);
+            }
+        }
+    }
