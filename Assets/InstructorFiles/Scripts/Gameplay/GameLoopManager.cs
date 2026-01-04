@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using System.ComponentModel;
 using JetBrains.Annotations;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// This manages the main game loop,
@@ -14,16 +15,17 @@ public class GameLoopManager : MonoBehaviour
     /// <summary>
     /// Count up (time spent) or count down (time limit)
     /// </summary>
-    [SerializeField] private bool IsCountdownTimer;
+    [FormerlySerializedAs("IsCountdownTimer")] [SerializeField] private bool _isCountdownTimer;
 
     /// <summary>
     /// Max timer, could be set by difficulty or other outside sources
     /// </summary>
+    [FormerlySerializedAs("MaxTimer")]
     [Description("If using countdown timer")]
-    [SerializeField] private float MaxTimer = 120f;
+    [SerializeField] private float _maxTimer = 120f;
 
     /// <summary>
-    /// Timer for use with the <see cref="IsCountdownTimer"/>
+    /// Timer for use with the <see cref="_isCountdownTimer"/>
     /// </summary>
     [UsedImplicitly] // Accessible in case UI wants to show value
     public float GameTimer { get; private set; }
@@ -38,9 +40,9 @@ public class GameLoopManager : MonoBehaviour
         
         GameMgr.Instance.StartGame();
 
-        if (IsCountdownTimer)
+        if (_isCountdownTimer)
         {
-            GameTimer = MaxTimer;
+            GameTimer = _maxTimer;
         }
     }
 
@@ -48,7 +50,7 @@ public class GameLoopManager : MonoBehaviour
     {
         if (GameMgr.Instance.IsGameRunning)
         {
-            if (!IsCountdownTimer)
+            if (!_isCountdownTimer)
             {
                 GameTimer += Time.timeScale * Time.deltaTime; // Count up for now, may change later.
                 throw new NotImplementedException("Nothing currently ends the game loop!");

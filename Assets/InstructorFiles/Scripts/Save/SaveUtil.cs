@@ -16,17 +16,8 @@ public static class SaveUtil
         // todo use async but careful of double operations
         File.WriteAllText(SaveDataPath, savedJson);
         OnSaveCompleted?.Invoke();
+        OnSaveCompleted = null;
     }
-    
-    // todo use with write async
-    /*private static void SaveComplete(SaveResult result, string message)
-    {
-        if (result == SaveResult.Error)
-        {
-            Debug.LogError(message);
-        }
-        OnSaveCompleted?.Invoke();
-    }*/
     
     public static void Load()
     {
@@ -41,21 +32,8 @@ public static class SaveUtil
         }
         
         OnLoadCompleted?.Invoke();
+        OnLoadCompleted = null;
     }
-    
-    // todo use with read async
-    /*private static void LoadComplete(SavedValues data, SaveResult result, string message)
-    {
-        if (result == SaveResult.Success)
-        {
-            SavedValues = data;
-        }
-        if (result == SaveResult.Error || result == SaveResult.EmptyData)
-        {
-            SavedValues = new SavedValues();
-        }
-        OnLoadCompleted?.Invoke();
-    }*/
 
     /// <summary>
     /// Delete the save data

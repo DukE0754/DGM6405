@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Base class for singleton pattern
@@ -8,7 +9,7 @@ using UnityEngine;
 /// <typeparam name="TSingletonClass"></typeparam>
 public abstract class Singleton<TSingletonClass> : MonoBehaviour where TSingletonClass : MonoBehaviour
 {
-    [SerializeField] private bool WillNotDestroyOnLoad;
+    [SerializeField] private bool _willNotDestroyOnLoad;
     public static TSingletonClass Instance { get; private set; }
 
     public virtual void Awake()
@@ -21,7 +22,7 @@ public abstract class Singleton<TSingletonClass> : MonoBehaviour where TSingleto
 
         Instance = this as TSingletonClass;
         
-        if (WillNotDestroyOnLoad)
+        if (_willNotDestroyOnLoad)
         {
             DontDestroyOnLoad(gameObject);
         }

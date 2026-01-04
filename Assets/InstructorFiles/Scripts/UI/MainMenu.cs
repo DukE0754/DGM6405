@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -7,7 +8,7 @@ using UnityEngine.UI;
 /// </summary>
 public class MainMenu : MenuBase
 {
-    [SerializeField] private Button StartButton;
+    [SerializeField] private Button _startButton;
     
     public override GameMenus MenuType()
     {
@@ -16,7 +17,7 @@ public class MainMenu : MenuBase
 
     private void OnEnable()
     {
-        StartButton.Select();
+        _startButton.Select();
     }
 
     public void ButtonStart()

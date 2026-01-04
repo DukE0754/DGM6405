@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// Basic camera manager.
@@ -11,7 +12,7 @@ public class CameraMgr : Singleton<CameraMgr>
         base.Awake();
     }*/
     
-    [Header("Obj Refs")]
-    public Camera MainCamera;
+    [FormerlySerializedAs("MainCamera")] [Header("Obj Refs")]
+    public Camera _mainCamera;
 
 }

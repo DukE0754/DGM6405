@@ -115,7 +115,7 @@ public class MenuBase : MonoBehaviour
     private IEnumerator FadeRoutine(
         float endAlpha,
         float duration,
-        Action OnComplete)
+        Action onComplete)
     {
         var startAlpha = _canvasGroup.alpha;
         var elapsed = 0f;
@@ -124,7 +124,7 @@ public class MenuBase : MonoBehaviour
         if (duration <= 0f)
         {
             _canvasGroup.alpha = endAlpha;
-            OnComplete?.Invoke();
+            onComplete?.Invoke();
             yield break;
         }
 
@@ -137,6 +137,6 @@ public class MenuBase : MonoBehaviour
         }
 
         _canvasGroup.alpha = endAlpha;
-        OnComplete?.Invoke();
+        onComplete?.Invoke();
     }
 }

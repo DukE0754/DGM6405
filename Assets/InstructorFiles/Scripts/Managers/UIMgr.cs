@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// The UI manager for showing various menus and state
@@ -8,21 +9,21 @@ using UnityEngine;
 public class UIMgr : Singleton<UIMgr> 
 {
     [Header("Timing and sorting")]
-    [SerializeField] private float FadeInDuration = 0.5f;
-    [SerializeField] private float FadeOutDuration = 0.5f;
-    [SerializeField] private int SortGap = 10;
+    [SerializeField] private float _fadeInDuration = 0.5f; 
+    [SerializeField] private float _fadeOutDuration = 0.5f; 
+    [SerializeField] private int _sortGap = 10;
     
     [Header("Menus")]
-    [SerializeField] private MenuBase ScreenFaderPrefab;
-    [SerializeField] private MenuBase SplashMenuPrefab;
-    [SerializeField] private MenuBase MainMenuPrefab;
-    [SerializeField] private MenuBase SettingsMenuPrefab;
-    [SerializeField] private MenuBase InGameUIPrefab;
-    [SerializeField] private MenuBase GameOverMenuPrefab;
+    [SerializeField] private MenuBase _screenFaderPrefab;
+    [SerializeField] private MenuBase _splashMenuPrefab;
+    [SerializeField] private MenuBase _mainMenuPrefab;
+    [SerializeField] private MenuBase _settingsMenuPrefab;
+    [SerializeField] private MenuBase _inGameUIPrefab;
+    [SerializeField] private MenuBase _gameOverMenuPrefab;
 
-    private Dictionary<GameMenus, MenuBase> _menuInstances = new();
-    private Stack<MenuBase> _activeMenus = new();
-    private Dictionary<GameMenus, MenuBase> _disabledMenus = new();
+    private readonly Dictionary<GameMenus, MenuBase> _menuInstances = new();
+    private readonly Stack<MenuBase> _activeMenus = new();
+    private readonly Dictionary<GameMenus, MenuBase> _disabledMenus = new();
     
     /// <summary>
     /// Clear the stack and close all menus
@@ -32,7 +33,7 @@ public class UIMgr : Singleton<UIMgr>
         while (_activeMenus.Count > 0)
         {
             var menu = _activeMenus.Pop();
-            menu.PerformFullFadeOut(FadeOutDuration);
+            menu.PerformFullFadeOut(_fadeOutDuration);
             _disabledMenus.Add(menu.MenuType(), menu);
         }
     }
@@ -47,13 +48,13 @@ public class UIMgr : Singleton<UIMgr>
     public MenuBase ShowMenu(GameMenus menuToOpen, Action onMenuOpenComplete = null, bool fadeIn = true)
     {
         var menu = PushMenu(menuToOpen);
-        if (menu == null)
+        if (!menu)
         {
             return null;
         }
         if (fadeIn)
         {
-            menu.PerformFullFadeIn(FadeInDuration, onMenuOpenComplete);
+            menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
         }
         else 
         {
@@ -62,6 +63,10 @@ public class UIMgr : Singleton<UIMgr>
         return menu;
     }
 
+    /// <summary>
+    /// Use polymorphism to call a function specific to <see cref="SplashMenu"/>
+    /// </summary>
+    /// <param name="onComplete"></param>
     public void ShowSplash(Action onComplete)
     {
         var menu = ShowMenu(GameMenus.Splash);
@@ -82,7 +87,7 @@ public class UIMgr : Singleton<UIMgr>
         var menu = ShowMenu(GameMenus.Fader, fadeIn: false);
         if (menu is ScreenFadeOverlay screenFadeOverlay)
         {
-            screenFadeOverlay.PerformHalfFadeIn(FadeInDuration, onComplete);
+            screenFadeOverlay.PerformHalfFadeIn(_fadeInDuration, onComplete);
         }
 
         return menu;
@@ -122,7 +127,7 @@ public class UIMgr : Singleton<UIMgr>
         
         if (_activeMenus.TryPeek(out var currentTop))
         {
-            sortOverride = currentTop.SortOrder + SortGap;
+            sortOverride = currentTop.SortOrder + _sortGap;
         }
         else
         {
@@ -131,7 +136,7 @@ public class UIMgr : Singleton<UIMgr>
 
         uiObj.SortOrder = sortOverride;
         
-        uiObj.PerformFullFadeIn(FadeInDuration);
+        uiObj.PerformFullFadeIn(_fadeInDuration);
         _activeMenus.Push(uiObj);
         
         return uiObj;
@@ -151,7 +156,7 @@ public class UIMgr : Singleton<UIMgr>
         
         if (fadeOut)
         {
-            menu.PerformFullFadeOut(FadeOutDuration, onMenuFullyHidden);
+            menu.PerformFullFadeOut(_fadeOutDuration, onMenuFullyHidden);
         }
         else
         {
@@ -206,22 +211,22 @@ public class UIMgr : Singleton<UIMgr>
         switch (menuType)
         {
             case GameMenus.Fader:
-                menu = ScreenFaderPrefab;
+                menu = _screenFaderPrefab;
                 break;
             case GameMenus.Splash:
-                menu = SplashMenuPrefab;
+                menu = _splashMenuPrefab;
                 break;
             case GameMenus.MainMenu:
-                menu = MainMenuPrefab;
+                menu = _mainMenuPrefab;
                 break;
             case GameMenus.SettingsMenu:
-                menu = SettingsMenuPrefab;
+                menu = _settingsMenuPrefab;
                 break;
             case GameMenus.InGameUI:
-                menu = InGameUIPrefab;
+                menu = _inGameUIPrefab;
                 break;
             case GameMenus.GameOverMenu:
-                menu = GameOverMenuPrefab;
+                menu = _gameOverMenuPrefab;
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null);

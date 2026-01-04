@@ -1,6 +1,7 @@
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.Audio;
+using UnityEngine.Serialization;
 
 /// <summary>
 /// A general audio manager for playing music and sounds
@@ -9,17 +10,16 @@ using UnityEngine.Audio;
 public class AudioMgr : Singleton<AudioMgr>
 {
     /// <summary>
-    /// Reused music clips enum, these should match <see cref="AudioMgr.ReusableMusicClips"/>
+    /// Reused music clips enum, these should match <see cref="AudioMgr._reusableMusicClips"/>
     /// </summary>
     public enum MusicTypes
     {
-        Login = 0,
-        MainMenu = 1,
-        Gameplay = 2
+        MainMenu = 0,
+        Gameplay = 1
     }
     
     /// <summary>
-    ///  Reused sound clips enum, these should match <see cref="AudioMgr.ReusableSoundClips"/>
+    ///  Reused sound clips enum, these should match <see cref="AudioMgr._reusableSoundClips"/>
     /// </summary>
     public enum SoundTypes
     {
@@ -32,34 +32,34 @@ public class AudioMgr : Singleton<AudioMgr>
     /// Main audio mixer
     /// </summary>
     [Header("Mixer")]
-    [SerializeField] private AudioMixer Mixer;
+    [SerializeField] private AudioMixer _mixer;
     
     /// <summary>
     /// Audio sources for splitting sound channels
     /// </summary>
     [Header("Sources")]
-    [SerializeField] private AudioSource MusicSource;
-    [SerializeField] private AudioSource SfxSource;
+    [SerializeField] private AudioSource _musicSource;
+    [SerializeField] private AudioSource _sfxSource;
     
     /// <summary>
     /// Actual audio clips to align with <see cref="AudioMgr.MusicTypes"/>
     /// </summary>
     [Header("Reusable Clips")] [SerializeField]
-    private AudioClip[] ReusableMusicClips;
+    private AudioClip[] _reusableMusicClips;
     /// <summary>
     /// Actual audio clips to align with <see cref="AudioMgr.SoundTypes"/>
     /// </summary>
-    [SerializeField] private AudioClip[] ReusableSoundClips;
+    [SerializeField] private AudioClip[] _reusableSoundClips;
 
     /// <summary>
     /// The player for music clips
     /// </summary>
-    private AudioSource MusicPlayer => MusicSource;
+    private AudioSource MusicPlayer => _musicSource;
 
     /// <summary>
     /// The player sfx clips
     /// </summary>
-    private AudioSource SfxPlayer => SfxSource;
+    private AudioSource SfxPlayer => _sfxSource;
     
     /// <summary>
     /// Volumes to get and set from the save data
@@ -94,7 +94,6 @@ public class AudioMgr : Singleton<AudioMgr>
     /// </summary>
     private void Start()
     {
-        DontDestroyOnLoad(this);
         SaveUtil.OnLoadCompleted += OnDataLoadComplete;
         SaveUtil.Load();
     }
@@ -115,9 +114,9 @@ public class AudioMgr : Singleton<AudioMgr>
     /// </summary>
     private void UpdateVolumeFromSaveData()
     {
-        Mixer.SetFloat("MasterVol", GlobalVolume);
-        Mixer.SetFloat("MusicVol", MusicVolume);
-        Mixer.SetFloat("SfxVol", SfxVolume);
+        _mixer.SetFloat("MasterVol", GlobalVolume);
+        _mixer.SetFloat("MusicVol", MusicVolume);
+        _mixer.SetFloat("SfxVol", SfxVolume);
     }
     
     /// <summary>
@@ -129,13 +128,13 @@ public class AudioMgr : Singleton<AudioMgr>
     public void PlayMusic(MusicTypes music, float volumeMod)
     {
         var index = (int) music;
-        if (ReusableMusicClips.Length < index)
+        if (_reusableMusicClips.Length < index)
         {
             Debug.LogWarning($"Music type {music.ToString()} not found in music clips");
             return;
         }
     
-        PlayMusic(ReusableMusicClips[(int) music], volumeMod);
+        PlayMusic(_reusableMusicClips[(int) music], volumeMod);
     }
     
     /// <summary>
@@ -203,13 +202,13 @@ public class AudioMgr : Singleton<AudioMgr>
     public void PlaySound(SoundTypes sound, float volumeMod = 1f)
     {
         var index = (int) sound;
-        if (ReusableSoundClips.Length < index)
+        if (_reusableSoundClips.Length < index)
         {
             Debug.LogWarning($"Sound type {sound.ToString()} not found in sound clips");
             return;
         }
     
-        PlaySound(ReusableSoundClips[(int) sound], volumeMod);
+        PlaySound(_reusableSoundClips[(int) sound], volumeMod);
     }
     
     /// <summary>

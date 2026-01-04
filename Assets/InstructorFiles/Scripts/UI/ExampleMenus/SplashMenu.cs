@@ -2,15 +2,28 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Basic menu example that show
+/// Basic menu example that shows an animation and waits for it to complete.
+/// Tells the original caller <see cref="BootloaderMgr"/> that it completes.
 /// </summary>
 public class SplashMenu : MenuBase
 {
-    [SerializeField] private Animator Animator;
+    [SerializeField] private Animator _animator;
+
+    private Action _onAnimationComplete;
+
+    public override GameMenus MenuType()
+    {
+        return GameMenus.Splash;
+    }
     
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="onAnimationComplete"></param>
     public void OnShow(Action onAnimationComplete)
     {
-        Animator.Play(0);
+        _onAnimationComplete = onAnimationComplete;
+        _animator.Play(0);
     }
 
     /// <summary>
@@ -18,6 +31,7 @@ public class SplashMenu : MenuBase
     /// </summary>
     public void AnimationComplete()
     {
-        SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu);
+        _onAnimationComplete?.Invoke();
+        _onAnimationComplete = null;
     }
 }

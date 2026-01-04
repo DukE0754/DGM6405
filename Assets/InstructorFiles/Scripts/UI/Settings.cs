@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -8,11 +9,11 @@ using UnityEngine.UI;
 /// </summary>
 public class Settings : MenuBase
 {
-    [SerializeField] private Button BackButton;
+    [FormerlySerializedAs("BackButton")] [SerializeField] private Button _backButton;
 
     private void OnEnable()
     {
-        BackButton.Select();
+        _backButton.Select();
     }
 
     public override GameMenus MenuType()

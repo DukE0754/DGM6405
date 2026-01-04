@@ -2,55 +2,70 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class ButtonSounds : MonoBehaviour
+{
+    [Header("Only one needs to be assigned")]
+    [SerializeField] private Button _button;
+    [SerializeField] private Toggle _toggle;
+    [SerializeField] private Slider _slider;
+    
+    [Header("Optional sound overrides, otherwise uses AudioMgr.SoundTypes")]
+    [SerializeField] private AudioClip _clickSound;
+    [SerializeField] private AudioClip _hoverSound;
+
+    /// <summary>
+    /// Called once
+    /// </summary>
+    private void Start()
     {
-        [SerializeField] private AudioClip ClickSound;
-        [SerializeField] private AudioClip HoverSound;
+        if (_button) _button.onClick.AddListener(PlayClickSound);
 
-        // Start is called before the first frame update
-        private void Start()
-        {
-            var button = GetComponent<Button>(); // inefficient
-            if (button) button.onClick.AddListener(PlayClickSound);
+        if (_toggle) _toggle.onValueChanged.AddListener(PlayClickSound);
 
-            var toggle = GetComponent<Toggle>(); // inefficient
-            if (toggle) toggle.onValueChanged.AddListener(PlayClickSound);
-
-            var slider = GetComponent<Slider>(); // inefficient
-            if (slider) slider.onValueChanged.AddListener(PlayClickSound);
-        }
-
-        
-        private void PlayClickSound(bool state)
-        {
-            var toggle = GetComponent<Toggle>(); // inefficient
-            if (!toggle) return;
-            if (!state && toggle.group && toggle.group.AnyTogglesOn()) return;
-            
-            AudioMgr.Instance.PlaySound(ClickSound);
-        }
-        
-        private void PlayClickSound(float _)
-        {
-            AudioMgr.Instance.PlaySound(ClickSound, _);
-        }
-
-        private void PlayClickSound()
-        {
-            AudioMgr.Instance.PlaySound(ClickSound);
-        }
-
-        /// <summary>
-        /// Should be called from OnPointerEnter or OnSelected
-        /// </summary>
-        public void PlayHoverSound()
-        {
-            if (HoverSound != null)
-            {
-                AudioMgr.Instance.PlaySound(HoverSound);
-            }
-            else
-            {
-                AudioMgr.Instance.PlaySound(AudioMgr.SoundTypes.ButtonHover);
-            }
-        }
+        if (_slider) _slider.onValueChanged.AddListener(PlayClickSound);
     }
+
+    /// <summary>
+    /// Override for Toggles
+    /// </summary>
+    /// <param name="state"></param>
+    private void PlayClickSound(bool state)
+    {
+        // Ensures only one toggle in a group plays a sound
+        if (!_toggle) return;
+        if (!state && _toggle.group && _toggle.group.AnyTogglesOn()) return;
+
+        PlayClickSound(_clickSound);
+    }
+
+    /// <summary>
+    /// Override for Sliders
+    /// </summary>
+    /// <param name="_"></param>
+    private void PlayClickSound(float _)
+    {
+        PlayClickSound(_clickSound);
+    }
+
+    /// <summary>
+    /// Override for Buttons
+    /// </summary>
+    private void PlayClickSound()
+    {
+        if (_clickSound != null)
+            AudioMgr.Instance.PlaySound(_clickSound);
+        else
+            AudioMgr.Instance.PlaySound(AudioMgr.SoundTypes.ButtonSelect);
+    }
+
+
+    /// <summary>
+    ///     Should be called from OnPointerEnter or OnSelected
+    /// </summary>
+    public void PlayHoverSound()
+    {
+        if (_hoverSound != null)
+            AudioMgr.Instance.PlaySound(_hoverSound);
+        else
+            AudioMgr.Instance.PlaySound(AudioMgr.SoundTypes.ButtonHover);
+    }
+}
