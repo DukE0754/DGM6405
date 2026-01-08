@@ -12,8 +12,12 @@ namespace StarterAssets
 		public Vector2 look;
 		public bool jump;
 		public bool sprint;
+		public bool block;
+		public bool melee;
+		public bool shoot;
+		public bool dodge;
 
-		[Header("Movement Settings")]
+        [Header("Movement Settings")]
 		public bool analogMovement;
 
 		[Header("Mouse Cursor Settings")]
@@ -43,10 +47,29 @@ namespace StarterAssets
 		{
 			SprintInput(value.isPressed);
 		}
+
+        public void OnBlock(InputValue value)
+        {
+            BlockInput(value.isPressed);
+        }
+
+        public void OnMelee(InputValue value)
+        {
+            MeleeInput(value.isPressed);
+        }
+        public void OnShoot(InputValue value)
+        {
+            ShootInput(value.isPressed);
+        }
+
+        public void OnDodge(InputValue value)
+        {
+            DodgeInput(value.isPressed);
+        }
 #endif
 
 
-		public void MoveInput(Vector2 newMoveDirection)
+        public void MoveInput(Vector2 newMoveDirection)
 		{
 			move = newMoveDirection;
 		} 
@@ -65,8 +88,26 @@ namespace StarterAssets
 		{
 			sprint = newSprintState;
 		}
-		
-		private void OnApplicationFocus(bool hasFocus)
+
+        public void BlockInput(bool newBlockState)
+        {
+            block = newBlockState;
+        }
+
+        public void MeleeInput(bool newMeleeState)
+        {
+            melee = newMeleeState;
+        }
+        public void ShootInput(bool newShootState)
+        {
+            shoot = newShootState;
+        }
+
+        public void DodgeInput(bool newDodgeState)
+        {
+            dodge = newDodgeState;
+        }
+        private void OnApplicationFocus(bool hasFocus)
 		{
 			SetCursorState(cursorLocked);
 		}

@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -163,6 +164,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Weapons();
         }
 
         private void LateUpdate()
@@ -383,7 +385,7 @@ namespace StarterAssets
             {
                 if (FootstepAudioClips.Length > 0)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
+                    var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
@@ -394,6 +396,37 @@ namespace StarterAssets
             if (animationEvent.animatorClipInfo.weight > 0.5f)
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
+            }
+        }
+
+        private void Weapons()
+        {
+            //Check if not jumping or falling
+            //Check for input block, shoot, melee
+            //Set the weapon & do the animation
+            //Only one attack at a time
+            if (_input.block)
+            {
+                _animator.SetBool(_animIDBlock, true);
+            } else
+            {
+                _animator.SetBool(_animIDBlock, false);
+            }
+            if (_input.melee)
+            {
+                _animator.SetBool(_animIDMelee, true);
+                _input.melee = false;
+            } else
+            {
+                _animator.SetBool(_animIDMelee, false);
+            }
+            if (_input.shoot)
+            {
+                _animator.SetBool(_animIDShoot, true);
+                _input.shoot = false;
+            } else
+            {
+                _animator.SetBool(_animIDShoot, false);
             }
         }
     }
