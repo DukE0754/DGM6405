@@ -97,6 +97,10 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDBlock;
+        private int _animIDMelee;
+        private int _animIDShoot;
+        private int _animIDDodge;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -173,6 +177,10 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDBlock = Animator.StringToHash("Block");
+            _animIDMelee = Animator.StringToHash("Melee");
+            _animIDShoot = Animator.StringToHash("Shoot");
+            _animIDDodge = Animator.StringToHash("Dodge");
         }
 
         private void GroundedCheck()

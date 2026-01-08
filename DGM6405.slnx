@@ -1,0 +1,6 @@
+﻿<Solution>
+  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="URPWizard.csproj" />
+  <Project Path="Unity.StarterAssets.csproj" />
+  <Project Path="Unity.StarterAssets.Editor.csproj" />
+</Solution>
