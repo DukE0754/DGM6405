@@ -399,6 +399,16 @@ namespace StarterAssets
             }
         }
 
+        [SerializeField] private GameObject[] _animWeapons;
+
+        private void SetHands(int id)
+        {
+            for (int i = 0; i < _animWeapons.Length; i++)
+            {
+                _animWeapons[i].SetActive(i == id);
+            }
+        }
+
         private void Weapons()
         {
             //Check if not jumping or falling
@@ -408,6 +418,9 @@ namespace StarterAssets
             if (_input.block)
             {
                 _animator.SetBool(_animIDBlock, true);
+                
+                SetHands(0);
+
             } else
             {
                 _animator.SetBool(_animIDBlock, false);
@@ -415,7 +428,9 @@ namespace StarterAssets
             if (_input.melee)
             {
                 _animator.SetBool(_animIDMelee, true);
-                _input.melee = false;
+                
+                //_input.melee = false;
+                SetHands(1);
             } else
             {
                 _animator.SetBool(_animIDMelee, false);
@@ -423,11 +438,16 @@ namespace StarterAssets
             if (_input.shoot)
             {
                 _animator.SetBool(_animIDShoot, true);
-                _input.shoot = false;
+                
+                //_input.shoot = false;
+                SetHands(2);
             } else
             {
                 _animator.SetBool(_animIDShoot, false);
             }
+            // Clear hands
+            if (!_input.block && !_input.melee && !_input.shoot)
+                SetHands(-1);
         }
     }
 }

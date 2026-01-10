@@ -7,7 +7,7 @@ AvatarMask:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: Rig_Medium_Handslot_Mask
-  m_Mask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+  m_Mask: 00000000010000000100000000000000000000000100000001000000010000000100000000000000000000000100000001000000
   m_Elements:
   - m_Path: 
     m_Weight: 1
@@ -56,18 +56,18 @@ AvatarMask:
   - m_Path: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r/hand.r/handslot.r
     m_Weight: 1
   - m_Path: Rig_Medium/root/hips/upperleg.l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.l/lowerleg.l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.l/lowerleg.l/foot.l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.l/lowerleg.l/foot.l/toes.l
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.r
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.r/lowerleg.r
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.r/lowerleg.r/foot.r
-    m_Weight: 1
+    m_Weight: 0
   - m_Path: Rig_Medium/root/hips/upperleg.r/lowerleg.r/foot.r/toes.r
-    m_Weight: 1
+    m_Weight: 0

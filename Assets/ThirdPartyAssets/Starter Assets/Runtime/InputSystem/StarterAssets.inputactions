@@ -53,7 +53,7 @@
                 },
                 {
                     "name": "Melee",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "6bf2ac52-f929-4304-addc-8238f0d5452a",
                     "expectedControlType": "",
                     "processors": "",
@@ -62,7 +62,7 @@
                 },
                 {
                     "name": "Shoot",
-                    "type": "Button",
+                    "type": "PassThrough",
                     "id": "64d6b859-d048-44ff-898a-c9742e13bd3d",
                     "expectedControlType": "",
                     "processors": "",
