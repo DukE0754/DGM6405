@@ -31,8 +31,6 @@ public class SceneMgr : Singleton<SceneMgr>
         
         UIMgr.Instance.HideMenu(GameMenus.Fader);
         
-        UIMgr.Instance.ShowMenu(menuToOpen);
-
-		onComplete?.Invoke();
+        UIMgr.Instance.ShowMenu(menuToOpen, () => onComplete?.Invoke());
     }
 }
