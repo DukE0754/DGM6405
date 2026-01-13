@@ -40,4 +40,11 @@ public class PauseMenu : MenuBase
 		Interactable = false;
 		SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu, () => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
 	}
+
+	public void ButtonGameOver()
+	{
+		if (!Interactable) return;
+		Interactable = false;
+		GameMgr.Instance.GameOver();
+	}
 }

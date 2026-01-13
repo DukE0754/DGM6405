@@ -12,10 +12,10 @@ public class SceneMgr : Singleton<SceneMgr>
     public void LoadScene(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
 	{
 		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
-        StartCoroutine(PerformLoadSequence(sceneToLoad, menuToOpen));
+        StartCoroutine(PerformLoadSequence(sceneToLoad, menuToOpen, onComplete));
     }
 
-    private IEnumerator PerformLoadSequence(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
+    private IEnumerator PerformLoadSequence(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete)
     {
         bool waiting = true;
 
