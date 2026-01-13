@@ -30,14 +30,16 @@ public class GameLoopManager : MonoBehaviour
     [UsedImplicitly] // Accessible in case UI wants to show value
     public float GameTimer { get; private set; }
 
-    /// <summary>
-    /// todo Something should tell the game to start
-    /// </summary>
+	private void Start()
+	{
+		if (GameMgr.Instance.GameState != GameMgr.GameStates.Loading)
+		{
+			UIMgr.Instance.ShowMenu(GameMenus.InGameUI, StartGame);
+		}
+	}
+	
     public void StartGame()
-    {
-        // Should the game loop control its own UI, or should that be the GameMgr?
-        UIMgr.Instance.ShowMenu(GameMenus.InGameUI);
-        
+	{
         GameMgr.Instance.StartGame();
 
         if (_isCountdownTimer)
@@ -53,7 +55,6 @@ public class GameLoopManager : MonoBehaviour
             if (!_isCountdownTimer)
             {
                 GameTimer += Time.timeScale * Time.deltaTime; // Count up for now, may change later.
-                throw new NotImplementedException("Nothing currently ends the game loop!");
             }
             else
             {
@@ -75,5 +76,10 @@ public class GameLoopManager : MonoBehaviour
     {
         GameMgr.Instance.GameOver();
     }
+
+	public void OnPause()
+	{
+		GameMgr.Instance.PauseGameToggle();
+	}
 
 }

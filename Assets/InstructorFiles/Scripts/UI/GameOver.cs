@@ -10,12 +10,16 @@ public class GameOver : MenuBase
     }
 
     public void ButtonRetry()
-    {
-        SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI);
+	{
+		if (!Interactable) return;
+		Interactable = false;
+        SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, GameMgr.Instance.StartGame);
     }
 
     public void ButtonMainMenu()
     {
-        SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu);
+		if (!Interactable) return;
+		Interactable = false;
+        SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu, () => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
     }
 }

@@ -13,6 +13,6 @@ public class BootloaderMgr : MonoBehaviour
 
     private void OnSplashAnimationComplete()
     {
-        SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu);
+        SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu, () => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
     }
 }
