@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
@@ -21,17 +20,27 @@ public class MainMenu : MenuBase
     }
 
     public void ButtonStart()
-    {
-        SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI);
+	{
+		if (!Interactable) return;
+		Interactable = false;
+		SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, GameMgr.Instance.StartGame);
     }
 
     public void ButtonSettings()
     {
+		if (!Interactable) return;
+		Interactable = false;
         UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
     }
 
     public void ButtonQuit()
     {
+		if (!Interactable) return;
+		Interactable = false;
+#if UNITY_EDITOR
+		UnityEditor.EditorApplication.isPlaying = false;
+#else
         Application.Quit();
+#endif
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,12 +9,13 @@ using UnityEngine.SceneManagement;
 /// </summary>
 public class SceneMgr : Singleton<SceneMgr>
 {
-    public void LoadScene(GameScenes sceneToLoad, GameMenus menuToOpen)
-    {
+    public void LoadScene(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
+	{
+		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
         StartCoroutine(PerformLoadSequence(sceneToLoad, menuToOpen));
     }
 
-    private IEnumerator PerformLoadSequence(GameScenes sceneToLoad, GameMenus menuToOpen)
+    private IEnumerator PerformLoadSequence(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
     {
         bool waiting = true;
 
@@ -31,5 +33,6 @@ public class SceneMgr : Singleton<SceneMgr>
         
         UIMgr.Instance.ShowMenu(menuToOpen);
 
+		onComplete?.Invoke();
     }
 }

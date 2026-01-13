@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 /// <summary>
@@ -10,18 +11,30 @@ using UnityEngine;
 /// </summary>
 public class GameMgr : Singleton<GameMgr> 
 {
-    /*
-    public override void Awake() {
-        base.Awake();
-    }*/
-    
+	public enum GameStates
+	{
+		Menu,
+		InGame,
+		Paused,
+		GameOver,
+		Loading,
+	}
+	
+	[SerializeField] private GameStates _gameState = GameStates.Menu;
+	
+    public GameStates GameState
+	{
+		get => _gameState;
+		set => _gameState = value;
+	}
+	
     /// <summary>
     /// Are we actively in the gameplay state.
     /// Should the game loop be looping
     /// </summary>
-    public bool IsGameRunning { get; private set; }
-    
-    /// <summary>
+    public bool IsGameRunning => _gameState == GameStates.InGame;
+
+	/// <summary>
     /// Example of GameMgr responsibility.
     /// Score may need to survive the game loop for Game Over screen
     /// </summary>
@@ -60,7 +73,7 @@ public class GameMgr : Singleton<GameMgr>
     /// </summary>
     public void StartGame()
     {
-        IsGameRunning = true;
+        _gameState = GameStates.InGame;
     }
     
     /// <summary>
@@ -68,8 +81,8 @@ public class GameMgr : Singleton<GameMgr>
     /// </summary>
     public void GameOver()
     {
-        IsGameRunning = false;
-        SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.GameOverMenu);
+        _gameState = GameStates.GameOver;
+        SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.GameOverMenu, () => GameState = GameStates.GameOver);
     }
 
     public void NextLevel()
@@ -84,16 +97,20 @@ public class GameMgr : Singleton<GameMgr>
     {
         if (IsGameRunning)
         {
-            IsGameRunning = false;
+            _gameState = GameStates.Paused;
             // Open pause menu here
             Debug.Log("Pause state enabled");
-        }
-        else
+			UIMgr.Instance.ShowMenu(GameMenus.PauseMenu);
+		}
+        else if (_gameState == GameStates.Paused)
         {
-            IsGameRunning = true;
+            _gameState = GameStates.InGame;
             // Close pause menu here
             Debug.Log("Pause state disabled");
         }
+		else
+		{
+			Debug.LogWarning("Game is not running, cannot toggle pause");
+		}
     }
-
 }

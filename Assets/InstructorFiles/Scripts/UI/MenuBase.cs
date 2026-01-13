@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Canvas))] // Ensures Menu has Canvas
 [RequireComponent(typeof(CanvasGroup))] // Ensures Canvas has a CanvasGroup
-public class MenuBase : MonoBehaviour
+public abstract class MenuBase : MonoBehaviour
 {
     /// <summary>
     /// Menus should not be interactable while fading.
@@ -40,15 +40,12 @@ public class MenuBase : MonoBehaviour
         set => _canvas.sortingOrder = value;
     }
 
-    /// <summary>
-    ///     References <see cref="GameMenus" /> to know what type this menu is
-    ///     Expects only 1 of each type
-    /// </summary>
-    /// <returns></returns>
-    public virtual GameMenus MenuType()
-    {
-        return GameMenus.None;
-    }
+	/// <summary>
+	///     References <see cref="GameMenus" /> to know what type this menu is
+	///     Expects only 1 of each type
+	/// </summary>
+	/// <returns></returns>
+	public abstract GameMenus MenuType();
 
     public void OnInstantiate()
     {

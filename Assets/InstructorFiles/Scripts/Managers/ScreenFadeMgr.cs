@@ -4,4 +4,8 @@
 /// </summary>
 public class ScreenFadeOverlay : MenuBase
 {
+	public override GameMenus MenuType()
+	{
+		return GameMenus.Fader;
+	}
 }
