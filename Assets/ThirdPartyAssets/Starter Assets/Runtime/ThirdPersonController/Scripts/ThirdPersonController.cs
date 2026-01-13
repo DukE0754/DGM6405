@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
 #endif
@@ -97,6 +98,10 @@ namespace StarterAssets
         private int _animIDJump;
         private int _animIDFreeFall;
         private int _animIDMotionSpeed;
+        private int _animIDBlock;
+        private int _animIDMelee;
+        private int _animIDShoot;
+        private int _animIDDodge;
 
 #if ENABLE_INPUT_SYSTEM
         private PlayerInput _playerInput;
@@ -159,6 +164,7 @@ namespace StarterAssets
             JumpAndGravity();
             GroundedCheck();
             Move();
+            Weapons();
         }
 
         private void LateUpdate()
@@ -173,6 +179,10 @@ namespace StarterAssets
             _animIDJump = Animator.StringToHash("Jump");
             _animIDFreeFall = Animator.StringToHash("FreeFall");
             _animIDMotionSpeed = Animator.StringToHash("MotionSpeed");
+            _animIDBlock = Animator.StringToHash("Block");
+            _animIDMelee = Animator.StringToHash("Melee");
+            _animIDShoot = Animator.StringToHash("Shoot");
+            _animIDDodge = Animator.StringToHash("Dodge");
         }
 
         private void GroundedCheck()
@@ -375,7 +385,7 @@ namespace StarterAssets
             {
                 if (FootstepAudioClips.Length > 0)
                 {
-                    var index = Random.Range(0, FootstepAudioClips.Length);
+                    var index = UnityEngine.Random.Range(0, FootstepAudioClips.Length);
                     AudioSource.PlayClipAtPoint(FootstepAudioClips[index], transform.TransformPoint(_controller.center), FootstepAudioVolume);
                 }
             }
@@ -387,6 +397,57 @@ namespace StarterAssets
             {
                 AudioSource.PlayClipAtPoint(LandingAudioClip, transform.TransformPoint(_controller.center), FootstepAudioVolume);
             }
+        }
+
+        [SerializeField] private GameObject[] _animWeapons;
+
+        private void SetHands(int id)
+        {
+            for (int i = 0; i < _animWeapons.Length; i++)
+            {
+                _animWeapons[i].SetActive(i == id);
+            }
+        }
+
+        private void Weapons()
+        {
+            //Check if not jumping or falling
+            //Check for input block, shoot, melee
+            //Set the weapon & do the animation
+            //Only one attack at a time
+            if (_input.block)
+            {
+                _animator.SetBool(_animIDBlock, true);
+                
+                SetHands(0);
+
+            } else
+            {
+                _animator.SetBool(_animIDBlock, false);
+            }
+            if (_input.melee)
+            {
+                _animator.SetBool(_animIDMelee, true);
+                
+                //_input.melee = false;
+                SetHands(1);
+            } else
+            {
+                _animator.SetBool(_animIDMelee, false);
+            }
+            if (_input.shoot)
+            {
+                _animator.SetBool(_animIDShoot, true);
+                
+                //_input.shoot = false;
+                SetHands(2);
+            } else
+            {
+                _animator.SetBool(_animIDShoot, false);
+            }
+            // Clear hands
+            if (!_input.block && !_input.melee && !_input.shoot)
+                SetHands(-1);
         }
     }
 }
