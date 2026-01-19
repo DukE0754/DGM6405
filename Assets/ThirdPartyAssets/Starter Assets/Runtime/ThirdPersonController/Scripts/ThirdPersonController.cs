@@ -159,17 +159,21 @@ namespace StarterAssets
 
         private void Update()
         {
-            _hasAnimator = TryGetComponent(out _animator);
+			if (Time.timeScale > 0.01f)
+			{
+				_hasAnimator = TryGetComponent(out _animator);
 
-            JumpAndGravity();
-            GroundedCheck();
-            Move();
-            Weapons();
-        }
+				JumpAndGravity();
+				GroundedCheck();
+				Move();
+				Weapons();
+			}
+		}
 
         private void LateUpdate()
         {
-            CameraRotation();
+			if (Time.timeScale > 0.01f)
+				CameraRotation();
         }
 
         private void AssignAnimationIDs()

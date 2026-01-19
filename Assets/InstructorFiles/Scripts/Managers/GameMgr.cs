@@ -74,6 +74,7 @@ public class GameMgr : Singleton<GameMgr>
     public void StartGame()
     {
         _gameState = GameStates.InGame;
+		Cursor.lockState = CursorLockMode.Locked;
     }
     
     /// <summary>
@@ -81,13 +82,16 @@ public class GameMgr : Singleton<GameMgr>
     /// </summary>
     public void GameOver()
     {
+		Cursor.lockState = CursorLockMode.None;
         _gameState = GameStates.GameOver;
         SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.GameOverMenu, () => GameState = GameStates.GameOver);
     }
 
     public void NextLevel()
     {
-        throw new NotImplementedException("No next level logic");
+		Cursor.lockState = CursorLockMode.None;
+		_gameState = GameStates.GameOver;
+		SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.LevelCompleteMenu, () => GameState = GameStates.GameOver);
     }
 
     /// <summary>
@@ -97,12 +101,14 @@ public class GameMgr : Singleton<GameMgr>
     {
         if (IsGameRunning)
         {
+			Cursor.lockState = CursorLockMode.None;
             _gameState = GameStates.Paused;
             Debug.Log("Pause state enabled");
 			UIMgr.Instance.ShowMenu(GameMenus.PauseMenu);
 		}
         else if (_gameState == GameStates.Paused)
         {
+			Cursor.lockState = CursorLockMode.Locked;
             _gameState = GameStates.InGame;
             Debug.Log("Pause state disabled");
 			UIMgr.Instance.HideMenu(GameMenus.PauseMenu);

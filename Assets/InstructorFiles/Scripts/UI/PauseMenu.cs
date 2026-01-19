@@ -9,15 +9,19 @@ public class PauseMenu : MenuBase
 	
 	private void OnEnable()
 	{
-		//Time.timeScale = 0f;
+		Time.timeScale = 0f;
+		Cursor.lockState = CursorLockMode.None;
 		GameMgr.Instance.GameState = GameMgr.GameStates.Paused;
 	}
 
 	private void OnDisable()
 	{
-		//Time.timeScale = 1f;
-		if (GameMgr.Instance.GameState == GameMgr.GameStates.Paused)
+		Time.timeScale = 1f;
+		if (GameMgr.Instance?.GameState == GameMgr.GameStates.Paused)
+		{
+			Cursor.lockState = CursorLockMode.Locked;
 			GameMgr.Instance.GameState = GameMgr.GameStates.InGame;
+		}
 	}
 	
 	public void ButtonResume()
@@ -31,7 +35,7 @@ public class PauseMenu : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, GameMgr.Instance.StartGame);
+		SceneMgr.Instance.LoadScene(GameScenes.Level_1, GameMenus.InGameUI, GameMgr.Instance.StartGame);
 	}
 	
 	public void ButtonQuit()
