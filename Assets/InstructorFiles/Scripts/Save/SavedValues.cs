@@ -4,9 +4,11 @@
 /// </summary>
 public class SavedValues
 {
-    public bool ToggleValue;
-    public int IntValue;
-    public string StringValue;
+    //public bool ToggleValue;
+    //public int IntValue;
+    //public string StringValue;
+    public int HighestLevelCompleted;
+    public int[] BestTimeMs;
 
     public float GlobalVolume;
     public float MusicVolume;
