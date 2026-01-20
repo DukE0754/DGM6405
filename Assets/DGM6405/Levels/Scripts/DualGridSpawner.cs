@@ -636,7 +636,7 @@ public class DualGridSpawner : MonoBehaviour
 
 	// Tracks pending destroy requests as InstanceIDs (safe across domain/editor churn).
 	private static readonly Queue<int>
-		_editorDestroyQueue = new Queue<int>(); // Stores GameObject instance IDs to destroy later.
+		EditorDestroyQueue = new Queue<int>(); // Stores GameObject instance IDs to destroy later.
 
 	// Ensures we only hook EditorApplication.update once.
 	private static bool _editorDestroyHooked = false; // True once we've subscribed to the editor update pump.
@@ -663,7 +663,7 @@ public class DualGridSpawner : MonoBehaviour
 		int id = obj.GetInstanceID(); // Unique identifier for this UnityEngine.Object instance.
 
 		// Queue this object for destruction during a safe editor update moment.
-		_editorDestroyQueue.Enqueue(id); // Adds the instance ID to the pending destroy list.
+		EditorDestroyQueue.Enqueue(id); // Adds the instance ID to the pending destroy list.
 
 		// Hook the editor update loop once so we can drain the queue safely.
 		if (!_editorDestroyHooked) // Only subscribe a single time.
@@ -684,39 +684,56 @@ public class DualGridSpawner : MonoBehaviour
 	private static void DrainEditorDestroyQueue()
 	{
 		// Never destroy objects while Unity is transitioning into/out of play mode.
-		if (UnityEditor.EditorApplication
-			.isPlayingOrWillChangePlaymode) // Enter/exit playmode is when inspectors rebind.
-			return; // Skip draining until the transition completes.
+		// This avoids inspector / serialization churn while Unity is rebinding objects.
+		if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+			return;
 
-		// If there's nothing to destroy, unhook and exit.
-		if (_editorDestroyQueue.Count == 0) // No pending items.
+		// If there's nothing to destroy, unhook and exit to avoid per-frame overhead.
+		if (EditorDestroyQueue.Count == 0)
 		{
-			UnityEditor.EditorApplication.update -= DrainEditorDestroyQueue; // Stop polling.
-			_editorDestroyHooked = false; // Allow future re-hooking.
-			return; // Done.
+			// Unsubscribe from the editor update loop since the queue is empty.
+			UnityEditor.EditorApplication.update -= DrainEditorDestroyQueue;
+
+			// Mark as unhooked so future SafeDestroy calls can re-hook.
+			_editorDestroyHooked = false;
+
+			// Exit early since there is no work to perform.
+			return;
 		}
 
-		// Drain all pending destroy requests this tick.
-		while (_editorDestroyQueue.Count > 0) // Process until empty.
+		// Drain all pending destroy requests this tick so the scene stays in sync immediately.
+		while (EditorDestroyQueue.Count > 0)
 		{
 			// Pull the next instance ID to destroy.
-			int id = _editorDestroyQueue.Dequeue(); // Removes one pending destroy request.
+			int id = EditorDestroyQueue.Dequeue();
 
-			// Resolve the instance ID back into an Object (it might already be gone).
-			var unityObj = UnityEditor.EditorUtility.InstanceIDToObject(id); // Returns UnityEngine.Object or null.
+			// Resolve the instance ID back into a Unity object (may be null if already destroyed).
+			UnityEngine.Object unityObj = UnityEditor.EditorUtility.InstanceIDToObject(id);
 
-			// If it no longer exists, skip it.
-			if (!unityObj) // Already destroyed or unloaded.
-				continue; // Move on.
+			// If the object no longer exists (already destroyed / unloaded), skip it.
+			if (!unityObj)
+				continue;
 
-			// We only expect GameObjects here, but be defensive.
-			var go = unityObj as GameObject; // Cast to GameObject.
-			if (!go) // Not a GameObject (unexpected).
-				continue; // Skip.
+			// We only expect GameObjects here, but we cast defensively.
+			GameObject go = unityObj as GameObject;
 
-			// If the object is currently selected, deselect it to prevent inspector targeting null mid-bind.
+			// If this isn’t a GameObject, skip it (unexpected input).
+			if (!go)
+				continue;
 
+			// If Unity has already marked it for destruction, skip it.
+			if (!go)
+				continue;
+
+			// If the object (or a child) is selected, deselect it to prevent inspector binding errors.
+			// This prevents the inspector from trying to draw a missing target mid-destroy.
+			if (UnityEditor.Selection.activeObject == go)
+				UnityEditor.Selection.activeObject = null;
+
+			// Destroy using Undo so the user can Ctrl+Z in edit mode.
+			// This also properly records prefab instance removals.
+			UnityEditor.Undo.DestroyObjectImmediate(go);
 		}
 	}
-	#endif
+#endif
 }
