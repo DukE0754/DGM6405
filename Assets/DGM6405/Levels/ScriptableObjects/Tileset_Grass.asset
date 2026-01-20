@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cbd9d193642aa34da1607da0bccfd15, type: 3}
+  m_Name: Tileset_Grass
+  m_EditorClassIdentifier: Assembly-CSharp::DualGridTileset
+  Empty: {fileID: 2273228053176596213, guid: 45d7fa7b769c9694ea97df081fe174f5, type: 3}
+  Convex: {fileID: 2165314096966137472, guid: fe0aa8e3814f0444195ca6aecc452538, type: 3}
+  Edge: {fileID: 1187926134986713733, guid: 8f721b66660276c46a591ae3d82f77e3, type: 3}
+  Diagonal: {fileID: 908658364985985289, guid: 0700610256e174c449dd78d3be60255e, type: 3}
+  Concave: {fileID: 1069170213846067740, guid: 41988575aed2ecb459bb57cdf94b37f5, type: 3}
+  Full: {fileID: 4886170575910143840, guid: a8432e7e9ac885348a172d328aa618ea, type: 3}

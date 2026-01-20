@@ -115,6 +115,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 88c407cd9579d7b48b6faea674c32578, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _willNotDestroyOnLoad: 0
   _fadeInDuration: 0.5
   _fadeOutDuration: 0.5
   _sortGap: 10
@@ -124,6 +125,8 @@ MonoBehaviour:
   _settingsMenuPrefab: {fileID: 7759477483224727364, guid: acfd65e77be9c444196060bb458eee63, type: 3}
   _inGameUIPrefab: {fileID: 2968855652903854471, guid: 7fc904751edfd44bf9f6e2d818e2febc, type: 3}
   _gameOverMenuPrefab: {fileID: 4633760019947690283, guid: d566c6d6cd9636740aa1638fca58d5c9, type: 3}
+  _pauseMenuPrefab: {fileID: 3592973633136120970, guid: 6a90ae913c7434edaa1ee56894ba53e3, type: 3}
+  _levelCompleteMenuPrefab: {fileID: 3720962945561023688, guid: c0a7c86aa5f279842bbff0e5518e911b, type: 3}
 --- !u!1001 &5911991904489727633
 PrefabInstance:
   m_ObjectHideFlags: 0

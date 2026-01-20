@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using System.ComponentModel;
 using JetBrains.Annotations;

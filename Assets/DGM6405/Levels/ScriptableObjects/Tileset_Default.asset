@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8cbd9d193642aa34da1607da0bccfd15, type: 3}
+  m_Name: Tileset_Default
+  m_EditorClassIdentifier: Assembly-CSharp::DualGridTileset
+  Empty: {fileID: 2273228053176596213, guid: 45d7fa7b769c9694ea97df081fe174f5, type: 3}
+  Convex: {fileID: 2273228053176596213, guid: 2ea4dcf98984a3b488d0637e7fc0763e, type: 3}
+  Edge: {fileID: 2273228053176596213, guid: ab39c6f720ec6d94fbf22133d3e3a44d, type: 3}
+  Diagonal: {fileID: 2273228053176596213, guid: 76e0056e660c4d740827a9ae3e8aa06c, type: 3}
+  Concave: {fileID: 2273228053176596213, guid: e5361c8fe14a88942bc2a32481a53f19, type: 3}
+  Full: {fileID: 2273228053176596213, guid: 5592a266411903b4abb0db293d0db0a3, type: 3}

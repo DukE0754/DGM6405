@@ -5,6 +5,6 @@ public enum GameScenes
 {
     Bootloader,
     MainMenu,
-    Gameplay,
+    Level_1,
     GameOver
 }

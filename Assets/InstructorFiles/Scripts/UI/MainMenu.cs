@@ -23,7 +23,7 @@ public class MainMenu : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, GameMgr.Instance.StartGame);
+		SceneMgr.Instance.LoadScene(GameScenes.Level_1, GameMenus.InGameUI, GameMgr.Instance.StartGame);
     }
 
     public void ButtonSettings()
