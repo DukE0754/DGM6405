@@ -110,6 +110,18 @@ public class PlayerInputHandler : MonoBehaviour
 		dodge = newDodgeState;
 	}
 
+	public void ClearInputs()
+	{
+		move = Vector2.zero;
+		look = Vector2.zero;
+		jump = false;
+		sprint = false;
+		block = false;
+		melee = false;
+		shoot = false;
+		dodge = false;
+	}
+
 	private void OnApplicationFocus(bool hasFocus)
 	{
 		SetCursorState(cursorLocked);

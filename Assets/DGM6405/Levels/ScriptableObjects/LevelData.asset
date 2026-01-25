@@ -17,5 +17,11 @@ MonoBehaviour:
     LevelName: 1 Baby Steps
     ParTimeMs: 30000
   - SceneName: Level_2
+    LevelName: 2 Water You Waiting For?
+    ParTimeMs: 45000
+  - SceneName: Level_3
     LevelName: 2 Jumping for Joy
+    ParTimeMs: 45000
+  - SceneName: Level_4
+    LevelName: 2 Faster, Farther
     ParTimeMs: 45000

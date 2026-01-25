@@ -109,6 +109,38 @@ public class DualGridSpawner : MonoBehaviour
 		_lastEditorRebuildTime = 0f;
 	}
 
+	public void ClearAllSpawnedTiles()
+	{
+		if (!Root)
+			return;
+
+		for (var i = Root.childCount - 1; i >= 0; i--)
+		{
+			var child = Root.GetChild(i);
+			if (child)
+				SafeDestroy(child.gameObject);
+		}
+
+		_spawned.Clear();
+	}
+
+	public void RebuildOnce()
+	{
+		Rebuild();
+	}
+
+	public void ClearAndRebuildOnce()
+	{
+		ClearAllSpawnedTiles();
+		Rebuild();
+	}
+
+	public void ToggleAutoRefresh()
+	{
+		AutoRefresh = !AutoRefresh;
+		RequestRebuild();
+	}
+
 	// =====================================================================
 	// CORE REBUILD
 	// =====================================================================

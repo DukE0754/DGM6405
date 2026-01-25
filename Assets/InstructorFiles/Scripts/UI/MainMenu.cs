@@ -1,46 +1,101 @@
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// The main menu when starting the game
-/// The simple entry point after the game loads and return point if exiting gameplay
+///     Main menu entry point.
+///     Supports New Game and Continue via LevelMgr.
 /// </summary>
 public class MainMenu : MenuBase
 {
-    [SerializeField] private Button _startButton;
-    
-    public override GameMenus MenuType()
-    {
-        return GameMenus.MainMenu;
-    }
+	private void OnEnable()
+	{
+		UpdateButtonStates();
+		//_newGameButton?.Select();
+	}
 
-    private void OnEnable()
-    {
-        _startButton.Select();
-    }
+	public override GameMenus MenuType()
+	{
+		return GameMenus.MainMenu;
+	}
 
-    public void ButtonStart()
+#region Button State
+
+	private void UpdateButtonStates()
+	{
+		if (_continueButton == null)
+			return;
+
+		// Continue is valid only if save exists and level data is valid
+		var hasSave =
+			LevelMgr.Instance.HasValidLevelData &&
+			SaveUtil.SavedValues.HighestLevelCompleted >= 0;
+
+		_continueButton.interactable = hasSave;
+	}
+
+#endregion
+
+#region Serialized Fields
+
+	[SerializeField] private Button _newGameButton;
+	[SerializeField] private Button _continueButton;
+	[SerializeField] private Button _levelSelectButton;
+	[SerializeField] private Button _settingsButton;
+	[SerializeField] private Button _quitButton;
+
+#endregion
+
+#region Button Callbacks
+
+	public void ButtonNewGame()
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		SceneMgr.Instance.LoadScene(GameScenes.Level_1, GameMenus.InGameUI, GameMgr.Instance.StartGame);
-    }
 
-    public void ButtonSettings()
-    {
+		SaveUtil.DeleteSaveData();
+		SaveUtil.Load();
+
+		var levelIndex = LevelMgr.Instance.GetNewGameLevelIndex();
+		LevelMgr.Instance.LoadLevel(levelIndex);
+	}
+
+	public void ButtonContinue()
+	{
 		if (!Interactable) return;
 		Interactable = false;
-        UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
-    }
 
-    public void ButtonQuit()
-    {
+		var levelIndex = LevelMgr.Instance.GetContinueLevelIndex();
+		LevelMgr.Instance.LoadLevel(levelIndex);
+	}
+
+	public void ButtonLevelSelect()
+	{
 		if (!Interactable) return;
 		Interactable = false;
+
+		UIMgr.Instance.ShowMenu(GameMenus.LevelSelectMenu);
+	}
+
+	public void ButtonSettings()
+	{
+		if (!Interactable) return;
+		Interactable = false;
+
+		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
+	}
+
+	public void ButtonQuit()
+	{
+		if (!Interactable) return;
+		Interactable = false;
+
 #if UNITY_EDITOR
-		UnityEditor.EditorApplication.isPlaying = false;
+		EditorApplication.isPlaying = false;
 #else
-        Application.Quit();
+		Application.Quit();
 #endif
-    }
+	}
+
+#endregion
 }

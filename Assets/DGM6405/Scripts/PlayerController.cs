@@ -11,7 +11,7 @@ using UnityEngine.InputSystem;
 #if ENABLE_INPUT_SYSTEM
 [RequireComponent(typeof(PlayerInput))]
 #endif
-public class PlayerController : MonoBehaviour
+public class PlayerController : PausableBehaviour
 {
 	[Header("Player")]
 	[Tooltip("Move speed of the character in m/s")]
@@ -155,23 +155,19 @@ public class PlayerController : MonoBehaviour
 		_fallTimeoutDelta = FallTimeout;
 	}
 
-	private void Update()
+	protected override void PausableUpdate()
 	{
-		if (Time.timeScale > 0.01f)
-		{
-			_hasAnimator = TryGetComponent(out _animator);
+		_hasAnimator = TryGetComponent(out _animator);
 
-			JumpAndGravity();
-			GroundedCheck();
-			Move();
-			Weapons();
-		}
+		JumpAndGravity();
+		GroundedCheck();
+		Move();
+		Weapons();
 	}
 
-	private void LateUpdate()
+	protected override void PausableLateUpdate()
 	{
-		if (Time.timeScale > 0.01f)
-			CameraRotation();
+		CameraRotation();
 	}
 
 	private void AssignAnimationIDs()
@@ -464,5 +460,12 @@ public class PlayerController : MonoBehaviour
 		// Clear hands
 		if (!_input.block && !_input.melee && !_input.shoot)
 			SetHands(-1);
+	}
+
+	protected override void OnPaused()
+	{
+		_input?.ClearInputs();
+		_speed = 0f;
+		_animationBlend = 0f;
 	}
 }

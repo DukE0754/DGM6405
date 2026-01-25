@@ -1,250 +1,225 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
-/// The UI manager for showing various menus and state
+///     The UI manager for showing various menus and state
 /// </summary>
-public class UIMgr : Singleton<UIMgr> 
+public class UIMgr : Singleton<UIMgr>
 {
-    [Header("Timing and sorting")]
-    [SerializeField] private float _fadeInDuration = 0.5f; 
-    [SerializeField] private float _fadeOutDuration = 0.5f; 
-    [SerializeField] private int _sortGap = 10;
-    
-    [Header("Menus")]
-    [SerializeField] private MenuBase _screenFaderPrefab;
-    [SerializeField] private MenuBase _splashMenuPrefab;
-    [SerializeField] private MenuBase _mainMenuPrefab;
-    [SerializeField] private MenuBase _settingsMenuPrefab;
-    [SerializeField] private MenuBase _inGameUIPrefab;
-    [SerializeField] private MenuBase _gameOverMenuPrefab;
+	[Header("Timing and sorting")]
+	[SerializeField] private float _fadeInDuration = 0.5f;
+
+	[SerializeField] private float _fadeOutDuration = 0.5f;
+	[SerializeField] private int _sortGap = 10;
+
+	[Header("Menus")]
+	[SerializeField] private MenuBase _screenFaderPrefab;
+	[SerializeField] private MenuBase _splashMenuPrefab;
+	[SerializeField] private MenuBase _mainMenuPrefab;
+	[SerializeField] private MenuBase _settingsMenuPrefab;
+	[SerializeField] private MenuBase _inGameUIPrefab;
+	[SerializeField] private MenuBase _gameOverMenuPrefab;
 	[SerializeField] private MenuBase _pauseMenuPrefab;
 	[SerializeField] private MenuBase _levelCompleteMenuPrefab;
+	[SerializeField] private MenuBase _levelSelectMenuPrefab;
+	
+	private readonly Stack<MenuBase> _activeMenus = new();
+	private readonly Dictionary<GameMenus, MenuBase> _disabledMenus = new();
 
-    private readonly Dictionary<GameMenus, MenuBase> _menuInstances = new();
-    private readonly Stack<MenuBase> _activeMenus = new();
-    private readonly Dictionary<GameMenus, MenuBase> _disabledMenus = new();
-    
-    /// <summary>
-    /// Clear the stack and close all menus
-    /// </summary>
-    public void CloseAllMenus()
-    {
-        while (_activeMenus.Count > 0)
-        {
-            var menu = _activeMenus.Pop();
-            menu.PerformFullFadeOut(_fadeOutDuration);
-            _disabledMenus.Add(menu.MenuType(), menu);
-        }
-    }
-    
-    /// <summary>
-    /// Show a menu by adding it to the stack
-    /// </summary>
-    /// <param name="menuToOpen"></param>
-    /// <param name="onMenuOpenComplete"></param>
-    /// <param name="fadeIn"></param>
-    /// <returns></returns>
-    public MenuBase ShowMenu(GameMenus menuToOpen, Action onMenuOpenComplete = null, bool fadeIn = true)
-    {
-        var menu = PushMenu(menuToOpen);
-        if (!menu)
-        {
-            return null;
-        }
-        if (fadeIn)
-        {
-            menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
-        }
-        else 
-        {
-            onMenuOpenComplete?.Invoke();
-        }
-        return menu;
-    }
+	private readonly Dictionary<GameMenus, MenuBase> _menuInstances = new();
 
-    /// <summary>
-    /// Use polymorphism to call a function specific to <see cref="SplashMenu"/>
-    /// </summary>
-    /// <param name="onComplete"></param>
-    public void ShowSplash(Action onComplete)
-    {
-        var menu = ShowMenu(GameMenus.Splash);
-        if (menu is SplashMenu splashMenu)
-        {
-            splashMenu.OnShow(onComplete);
-        }
-    }
+	/// <summary>
+	///     Clear the stack and close all menus
+	/// </summary>
+	public void CloseAllMenus()
+	{
+		while (_activeMenus.Count > 0)
+		{
+			var menu = _activeMenus.Pop();
+			menu.PerformFullFadeOut(_fadeOutDuration);
+			_disabledMenus.Add(menu.MenuType(), menu);
+		}
+	}
 
-    /// <summary>
-    /// Half fade the screen when long processing happens
-    /// Usually only needed if contacting the internet
-    /// </summary>
-    /// <param name="onComplete"></param>
-    /// <returns></returns>
-    public MenuBase ShowHalfFader(Action onComplete)
-    {
-        var menu = ShowMenu(GameMenus.Fader, fadeIn: false);
-        if (menu is ScreenFadeOverlay screenFadeOverlay)
-        {
-            screenFadeOverlay.PerformHalfFadeIn(_fadeInDuration, onComplete);
-        }
+	/// <summary>
+	///     Show a menu by adding it to the stack
+	/// </summary>
+	/// <param name="menuToOpen"></param>
+	/// <param name="onMenuOpenComplete"></param>
+	/// <param name="fadeIn"></param>
+	/// <returns></returns>
+	public MenuBase ShowMenu(GameMenus menuToOpen, Action onMenuOpenComplete = null, bool fadeIn = true)
+	{
+		var menu = PushMenu(menuToOpen);
+		if (!menu) return null;
+		if (fadeIn)
+			menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
+		else
+			onMenuOpenComplete?.Invoke();
+		return menu;
+	}
 
-        return menu;
-    }
-    
-    /// <summary>
-    /// Internal function.
-    /// Pushes the given menu to the stack
-    /// </summary>
-    /// <param name="menu"></param>
-    /// <returns></returns>
-    private MenuBase PushMenu(GameMenus menu)
-    {
-        // Check if object already exists
-        if (!_menuInstances.ContainsKey(menu))
-        {
-            // instantiate the game object
-            var createdMenu = Instantiate(GetMenuPrefabFromType(menu), transform);
-            // Call for self-setup
-            createdMenu.OnInstantiate();
-            _menuInstances.Add(menu, createdMenu);
-        }
-        var uiObj = _menuInstances[menu];
-        
-        if (_activeMenus.Contains(uiObj))
-        {
-            Debug.LogError($"Already opened menu {menu}");
-            return uiObj;
-        }
+	/// <summary>
+	///     Use polymorphism to call a function specific to <see cref="SplashMenu" />
+	/// </summary>
+	/// <param name="onComplete"></param>
+	public void ShowSplash(Action onComplete)
+	{
+		var menu = ShowMenu(GameMenus.Splash);
+		if (menu is SplashMenu splashMenu) splashMenu.OnShow(onComplete);
+	}
 
-        if (_disabledMenus.ContainsKey(menu))
-        {
-            _disabledMenus.Remove(menu);
-        }
+	/// <summary>
+	///     Half fade the screen when long processing happens
+	///     Usually only needed if contacting the internet
+	/// </summary>
+	/// <param name="onComplete"></param>
+	/// <returns></returns>
+	public MenuBase ShowHalfFader(Action onComplete)
+	{
+		var menu = ShowMenu(GameMenus.Fader, fadeIn: false);
+		if (menu is ScreenFadeOverlay screenFadeOverlay)
+			screenFadeOverlay.PerformHalfFadeIn(_fadeInDuration, onComplete);
 
-        int sortOverride;
-        
-        if (_activeMenus.TryPeek(out var currentTop))
-        {
-            sortOverride = currentTop.SortOrder + _sortGap;
-        }
-        else
-        {
-            sortOverride = 0;
-        }
+		return menu;
+	}
 
-        uiObj.SortOrder = sortOverride;
-        
-        uiObj.PerformFullFadeIn(_fadeInDuration);
-        _activeMenus.Push(uiObj);
-        
-        return uiObj;
-    }
+	/// <summary>
+	///     Internal function.
+	///     Pushes the given menu to the stack
+	/// </summary>
+	/// <param name="menu"></param>
+	/// <returns></returns>
+	private MenuBase PushMenu(GameMenus menu)
+	{
+		// Check if object already exists
+		if (!_menuInstances.ContainsKey(menu))
+		{
+			// instantiate the game object
+			var createdMenu = Instantiate(GetMenuPrefabFromType(menu), transform);
+			// Call for self-setup
+			createdMenu.OnInstantiate();
+			_menuInstances.Add(menu, createdMenu);
+		}
 
-    /// <summary>
-    /// Hide a given menu
-    /// </summary>
-    /// <param name="menuToClose"></param>
-    /// <param name="onMenuFullyHidden"></param>
-    /// <param name="fadeOut"></param>
-    public void HideMenu(GameMenus menuToClose, Action onMenuFullyHidden = null, bool fadeOut = true)
-    {
-        var menu = PopMenu(menuToClose);
-        if (menu == null)
-            return;
-        
-        if (fadeOut)
-        {
-            menu.PerformFullFadeOut(_fadeOutDuration, onMenuFullyHidden);
-        }
-        else
-        {
-            onMenuFullyHidden?.Invoke();
-        }
-    }
+		var uiObj = _menuInstances[menu];
 
-    /// <summary>
-    /// Internal function.
-    /// Removes a menu from the stack
-    /// </summary>
-    /// <param name="menu"></param>
-    /// <returns></returns>
-    private MenuBase PopMenu(GameMenus menu)
-    {
-        if (!_menuInstances.TryGetValue(menu, out var uiObj))
-        {
-            Debug.LogError($"Menu {menu} was never created");
-            return null;
-        }
+		if (_activeMenus.Contains(uiObj))
+		{
+			Debug.LogError($"Already opened menu {menu}");
+			return uiObj;
+		}
 
-        if (_activeMenus.TryPeek(out var peekedUI))
-        {
-            if (peekedUI != uiObj)
-            {
-                Debug.LogError($"The top of the stack {peekedUI.name} wasn't the object we wanted to hide {uiObj.name}");
-                return null;
-            }
-        }
+		if (_disabledMenus.ContainsKey(menu)) _disabledMenus.Remove(menu);
 
-        if (_activeMenus.TryPop(out var poppedUI))
-        {
-            if (!_disabledMenus.TryAdd(menu, poppedUI))
-            {
-                Debug.LogError($"Failed to add {menu} to the disabled menus list. Was it already marked as disabled?");
-            }
-        }
+		int sortOverride;
 
-        return poppedUI;
-    }
+		if (_activeMenus.TryPeek(out var currentTop))
+			sortOverride = currentTop.SortOrder + _sortGap;
+		else
+			sortOverride = 0;
 
-    /// <summary>
-    /// Gets a prefab by the passed <see cref="GameMenus"/> type
-    /// TODO there are more efficient ways to do this
-    /// </summary>
-    /// <param name="menuType"></param>
-    /// <returns></returns>
-    /// <exception cref="ArgumentOutOfRangeException"></exception>
-    private MenuBase GetMenuPrefabFromType(GameMenus menuType)
-    {
-        MenuBase menu;
-        switch (menuType)
-        {
-            case GameMenus.Fader:
-                menu = _screenFaderPrefab;
-                break;
-            case GameMenus.Splash:
-                menu = _splashMenuPrefab;
-                break;
-            case GameMenus.MainMenu:
-                menu = _mainMenuPrefab;
-                break;
-            case GameMenus.SettingsMenu:
-                menu = _settingsMenuPrefab;
-                break;
-            case GameMenus.InGameUI:
-                menu = _inGameUIPrefab;
-                break;
-            case GameMenus.GameOverMenu:
-                menu = _gameOverMenuPrefab;
-                break;
+		uiObj.SortOrder = sortOverride;
+
+		uiObj.PerformFullFadeIn(_fadeInDuration);
+		_activeMenus.Push(uiObj);
+
+		return uiObj;
+	}
+
+	/// <summary>
+	///     Hide a given menu
+	/// </summary>
+	/// <param name="menuToClose"></param>
+	/// <param name="onMenuFullyHidden"></param>
+	/// <param name="fadeOut"></param>
+	public void HideMenu(GameMenus menuToClose, Action onMenuFullyHidden = null, bool fadeOut = true)
+	{
+		var menu = PopMenu(menuToClose);
+		if (menu == null)
+			return;
+
+		if (fadeOut)
+			menu.PerformFullFadeOut(_fadeOutDuration, onMenuFullyHidden);
+		else
+			onMenuFullyHidden?.Invoke();
+	}
+
+	/// <summary>
+	///     Internal function.
+	///     Removes a menu from the stack
+	/// </summary>
+	/// <param name="menu"></param>
+	/// <returns></returns>
+	private MenuBase PopMenu(GameMenus menu)
+	{
+		if (!_menuInstances.TryGetValue(menu, out var uiObj))
+		{
+			Debug.LogError($"Menu {menu} was never created");
+			return null;
+		}
+
+		if (_activeMenus.TryPeek(out var peekedUI))
+			if (peekedUI != uiObj)
+			{
+				Debug.LogError(
+					$"The top of the stack {peekedUI.name} wasn't the object we wanted to hide {uiObj.name}");
+				return null;
+			}
+
+		if (_activeMenus.TryPop(out var poppedUI))
+			if (!_disabledMenus.TryAdd(menu, poppedUI))
+				Debug.LogError($"Failed to add {menu} to the disabled menus list. Was it already marked as disabled?");
+
+		return poppedUI;
+	}
+
+	/// <summary>
+	///     Gets a prefab by the passed <see cref="GameMenus" /> type
+	///     TODO there are more efficient ways to do this
+	/// </summary>
+	/// <param name="menuType"></param>
+	/// <returns></returns>
+	/// <exception cref="ArgumentOutOfRangeException"></exception>
+	private MenuBase GetMenuPrefabFromType(GameMenus menuType)
+	{
+		MenuBase menu;
+		switch (menuType)
+		{
+			case GameMenus.Fader:
+				menu = _screenFaderPrefab;
+				break;
+			case GameMenus.Splash:
+				menu = _splashMenuPrefab;
+				break;
+			case GameMenus.MainMenu:
+				menu = _mainMenuPrefab;
+				break;
+			case GameMenus.SettingsMenu:
+				menu = _settingsMenuPrefab;
+				break;
+			case GameMenus.InGameUI:
+				menu = _inGameUIPrefab;
+				break;
+			case GameMenus.GameOverMenu:
+				menu = _gameOverMenuPrefab;
+				break;
 			case GameMenus.PauseMenu:
 				menu = _pauseMenuPrefab;
 				break;
 			case GameMenus.LevelCompleteMenu:
 				menu = _levelCompleteMenuPrefab;
 				break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null);
-        }
+			case GameMenus.LevelSelectMenu:
+				menu = _levelSelectMenuPrefab;
+				break;
+			default:
+				throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null);
+		}
 
-        if (menu == null)
-        {
-            Debug.LogError($"Failed to find prefab for {menuType}");
-        }
+		if (menu == null) Debug.LogError($"Failed to find prefab for {menuType}");
 
-        return menu;
-    }
+		return menu;
+	}
 }

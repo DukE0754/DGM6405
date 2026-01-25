@@ -1,28 +1,111 @@
 using UnityEngine;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 /// <summary>
-/// Settings menu
-/// Should include sliders and toggles for player preferences
-/// Such as audio settings or accessibility settings
+///     Settings menu
+///     Should include sliders and toggles for player preferences
+///     Such as audio settings or accessibility settings
 /// </summary>
 public class Settings : MenuBase
 {
-    [FormerlySerializedAs("BackButton")] [SerializeField] private Button _backButton;
+	[SerializeField] private Button _backButton;
+	[SerializeField] private Slider _masterSlider;
+	[SerializeField] private Slider _sfxSlider;
+	[SerializeField] private Slider _musicSlider;
+	[SerializeField] private Toggle _muteAllToggle;
 
-    private void OnEnable()
-    {
-        _backButton.Select();
-    }
+	private bool _ignoreEvents;
+	private bool _isMuted;
 
-    public override GameMenus MenuType()
-    {
-        return GameMenus.SettingsMenu;
-    }
+	private void Awake()
+	{
+		if (_masterSlider) _masterSlider.onValueChanged.AddListener(OnMasterChanged);
+		if (_sfxSlider) _sfxSlider.onValueChanged.AddListener(OnSfxChanged);
+		if (_musicSlider) _musicSlider.onValueChanged.AddListener(OnMusicChanged);
+		if (_muteAllToggle) _muteAllToggle.onValueChanged.AddListener(OnMuteAllChanged);
+	}
 
-    public void Close()
-    {
-        UIMgr.Instance.HideMenu(GameMenus.SettingsMenu);
-    }
+	private void OnEnable()
+	{
+		_backButton.Select();
+		_isMuted = false;
+		RefreshSlidersFromSaveData();
+		if (_muteAllToggle) _muteAllToggle.isOn = false;
+	}
+
+	private void OnDestroy()
+	{
+		if (_masterSlider) _masterSlider.onValueChanged.RemoveListener(OnMasterChanged);
+		if (_sfxSlider) _sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
+		if (_musicSlider) _musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
+		if (_muteAllToggle) _muteAllToggle.onValueChanged.RemoveListener(OnMuteAllChanged);
+	}
+
+	private void RefreshSlidersFromSaveData()
+	{
+		if (SaveUtil.SavedValues == null) return;
+
+		_ignoreEvents = true;
+		if (_masterSlider) _masterSlider.value = SaveUtil.SavedValues.GlobalVolume;
+		if (_sfxSlider) _sfxSlider.value = SaveUtil.SavedValues.SfxVolume;
+		if (_musicSlider) _musicSlider.value = SaveUtil.SavedValues.MusicVolume;
+		_ignoreEvents = false;
+	}
+
+	private void OnMasterChanged(float value)
+	{
+		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_isMuted)
+			AudioMgr.Instance.GlobalVolume = value;
+		else
+			AudioMgr.Instance.SetMasterVolume(value, true);
+	}
+
+	private void OnSfxChanged(float value)
+	{
+		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_isMuted)
+			AudioMgr.Instance.SfxVolume = value;
+		else
+			AudioMgr.Instance.SetSfxVolume(value, true);
+	}
+
+	private void OnMusicChanged(float value)
+	{
+		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_isMuted)
+			AudioMgr.Instance.MusicVolume = value;
+		else
+			AudioMgr.Instance.SetMusicVolume(value, true);
+	}
+
+	private void OnMuteAllChanged(bool isMuted)
+	{
+		if (_ignoreEvents || AudioMgr.Instance == null) return;
+
+		_isMuted = isMuted;
+		if (_isMuted)
+		{
+			AudioMgr.Instance.SetMasterVolume(0f, false);
+			AudioMgr.Instance.SetMusicVolume(0f, false);
+			AudioMgr.Instance.SetSfxVolume(0f, false);
+		}
+		else
+		{
+			if (_masterSlider) AudioMgr.Instance.SetMasterVolume(_masterSlider.value, true);
+			if (_musicSlider) AudioMgr.Instance.SetMusicVolume(_musicSlider.value, true);
+			if (_sfxSlider) AudioMgr.Instance.SetSfxVolume(_sfxSlider.value, true);
+		}
+	}
+
+	public override GameMenus MenuType()
+	{
+		return GameMenus.SettingsMenu;
+	}
+
+	public void Close()
+	{
+		SaveUtil.Save();
+		UIMgr.Instance.HideMenu(GameMenus.SettingsMenu);
+	}
 }

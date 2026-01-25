@@ -7,7 +7,7 @@ public class SavedValues
     //public bool ToggleValue;
     //public int IntValue;
     //public string StringValue;
-    public int HighestLevelCompleted;
+    public int HighestLevelCompleted = -1;
     public int[] BestTimeMs;
 
     public float GlobalVolume;

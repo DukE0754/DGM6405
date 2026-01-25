@@ -6,7 +6,15 @@ public class LevelCompleteTrigger : MonoBehaviour
 	{
 		if (other.CompareTag("Player"))
 		{
-			GameMgr.Instance.NextLevel();
+			var gameLoop = FindFirstObjectByType<GameLoopManager>();
+			var timeMs = 0;
+
+			if (gameLoop != null)
+			{
+				timeMs = Mathf.RoundToInt(gameLoop.GameTimer * 1000f);
+			}
+
+			GameMgr.Instance.NextLevel(timeMs);
 		}
 	}
 }

@@ -2,47 +2,42 @@ using UnityEngine;
 
 public class PauseMenu : MenuBase
 {
-	public override GameMenus MenuType()
-	{
-		return GameMenus.PauseMenu;
-	}
-	
 	private void OnEnable()
 	{
-		Time.timeScale = 0f;
-		Cursor.lockState = CursorLockMode.None;
-		GameMgr.Instance.GameState = GameMgr.GameStates.Paused;
+		GameMgr.Instance?.SetPaused(true);
 	}
 
 	private void OnDisable()
 	{
-		Time.timeScale = 1f;
-		if (GameMgr.Instance?.GameState == GameMgr.GameStates.Paused)
-		{
-			Cursor.lockState = CursorLockMode.Locked;
-			GameMgr.Instance.GameState = GameMgr.GameStates.InGame;
-		}
+		GameMgr.Instance?.SetPaused(false);
 	}
-	
+
+	public override GameMenus MenuType()
+	{
+		return GameMenus.PauseMenu;
+	}
+
 	public void ButtonResume()
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		UIMgr.Instance.HideMenu(GameMenus.PauseMenu);
+		GameMgr.Instance.SetPaused(false);
 	}
 
 	public void ButtonRestart()
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		SceneMgr.Instance.LoadScene(GameScenes.Level_1, GameMenus.InGameUI, GameMgr.Instance.StartGame);
+		LevelMgr.Instance.ReloadCurrentLevel();
 	}
-	
+
 	public void ButtonQuit()
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		SceneMgr.Instance.LoadScene(GameScenes.MainMenu, GameMenus.MainMenu, () => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
+		SceneMgr.Instance.LoadScene(
+			GameScenes.MainMenu, GameMenus.MainMenu, 
+			() => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
 	}
 
 	public void ButtonGameOver()

@@ -13,8 +13,7 @@ public class LevelComplete : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		// TODO level incrementation
-		SceneMgr.Instance.LoadScene(GameScenes.Level_1, GameMenus.InGameUI, GameMgr.Instance.StartGame);
+		LevelMgr.Instance.LoadNextLevelOrFinish();
 	}
 
 	public void ButtonMainMenu()

@@ -313,6 +313,18 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: -5515783359193845756, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5515783359193845756, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5515783359193845756, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: -5515783359193845756, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
       value: 7.0321913
       objectReference: {fileID: 0}
@@ -437,16 +449,44 @@ PrefabInstance:
       value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0.00000027235552
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -0.0000034150949
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7214371169738337839, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 90.00001
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7354008096416770832, guid: 93dcf3e1d678002459f1bc4d482228d5, type: 3}
       propertyPath: m_Layer
@@ -671,8 +711,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f619c20bb18468458e9908de0e7c5d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameLoopManager
-  _isCountdownTimer: 0
-  _maxTimer: 120
 --- !u!114 &7985012336759457731
 MonoBehaviour:
   m_ObjectHideFlags: 0

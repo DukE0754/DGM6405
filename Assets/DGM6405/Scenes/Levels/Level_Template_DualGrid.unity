@@ -2502,7 +2502,7 @@ GameObject:
   - component: {fileID: 614297246}
   - component: {fileID: 614297244}
   - component: {fileID: 614297245}
-  m_Layer: 0
+  m_Layer: 20
   m_Name: MaskTilemap
   m_TagString: Untagged
   m_Icon: {fileID: 0}
