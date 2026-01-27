@@ -4,13 +4,32 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 #endif
 
-/* Note: animations are called via the controller for both the character and capsule using animator null checks
+/* 
+ * DEPRECATED: This PlayerController has been refactored into modular systems.
+ * 
+ * Migration Guide:
+ * - Replace PlayerController with PlayerCommandBrain + modular systems
+ * - See Assets/DGM6405/Documentation/INTEGRATION_GUIDE.md for setup instructions
+ * 
+ * New Architecture:
+ * - CharacterMovementSystem: Handles movement
+ * - JumpGravitySystem: Handles jumping and gravity
+ * - CameraRotationSystem: Handles camera rotation
+ * - CharacterAnimationSystem: Handles all animations
+ * - BlockSystem, ShootSystem, MeleeSystem: Handle combat
+ * - CharacterSoundSystem: Handles sounds
+ * - AimSystem: Handles aiming and IK
+ * - PlayerCommandBrain: Orchestrates all systems
+ * 
+ * This class is kept for backwards compatibility but should be replaced.
+ * All functionality has been moved to the modular systems.
  */
 
 [RequireComponent(typeof(CharacterController))]
 #if ENABLE_INPUT_SYSTEM
 [RequireComponent(typeof(PlayerInput))]
 #endif
+[System.Obsolete("PlayerController is deprecated. Use PlayerCommandBrain with modular character systems instead. See INTEGRATION_GUIDE.md for migration instructions.")]
 public class PlayerController : PausableBehaviour
 {
 	[Header("Player")]
@@ -137,6 +156,14 @@ public class PlayerController : PausableBehaviour
 
 	private void Start()
 	{
+		// Deprecation warning
+		Debug.LogWarning(
+			$"[{name}] PlayerController is deprecated. " +
+			"Please migrate to PlayerCommandBrain with modular character systems. " +
+			"See Assets/DGM6405/Documentation/INTEGRATION_GUIDE.md for instructions.",
+			this
+		);
+
 		_cinemachineTargetYaw = CinemachineCameraTarget.transform.rotation.eulerAngles.y;
 
 		_hasAnimator = TryGetComponent(out _animator);
