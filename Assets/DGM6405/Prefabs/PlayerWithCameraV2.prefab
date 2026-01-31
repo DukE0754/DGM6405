@@ -141,7 +141,7 @@ MonoBehaviour:
       serializedVersion: 2
       m_Bits: 1
     UseFollowTarget:
-      Enabled: 0
+      Enabled: 1
       YOffset: 0
     Damping: 0.5
     SmoothingTime: 0
@@ -509,7 +509,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3799710668188483721, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3998084831928198246, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalRotation.w
@@ -985,15 +985,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5327510341169870585, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+    - {fileID: 7740054852397866758, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+    - {fileID: 2514015827012775822, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 8980312366013264700, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       insertIndex: -1
       addedObject: {fileID: 3878907962203138073}
     m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 3107103336984040204}
     - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       insertIndex: -1
       addedObject: {fileID: 4249173615142340639}
@@ -1057,222 +1056,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
   m_PrefabInstance: {fileID: 7345496249011969570}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &3107103336984040204
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1304878149290850212}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e83668c454b4396488081147cb5c9176, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FIMSpace.FLook.FLookAnimator
-  BirdMode: 0
-  LagRotation: 0.85
-  LagEvery: 0.285
-  DelayPosition: 0
-  DelayMaxDistance: 0.25111
-  DelayGoSpeed: 0.6
-  BirdTargetPosition: {x: 0, y: 0, z: 1}
-  UseEyes: 0
-  EyesTarget: {fileID: 0}
-  LeftEye: {fileID: 0}
-  InvertLeftEye: 0
-  RightEye: {fileID: 0}
-  InvertRightEye: 0
-  HeadReference: {fileID: 0}
-  EyesOffsetRotation: {x: 0, y: 0, z: 0}
-  LeftEyeOffsetRotation: {x: 0, y: 0, z: 0}
-  RightEyeOffsetRotation: {x: 0, y: 0, z: 0}
-  EyesSpeed: 0.5
-  EyesBlend: 1
-  EyesXRange: {x: -60, y: 60}
-  EyesYRange: {x: -50, y: 50}
-  EyesNoKeyframes: 1
-  CustomEyesLogics: 0
-  NoddingTransitions: 0
-  NodAxis: {x: 1, y: 0, z: 0}
-  BackBonesNod: 0.15
-  ParentalOffsetsV: 2
-  ParentalReferenceBone: {fileID: 0}
-  DestroyMomentTargetOnMaxDistance: 1
-  OverrideRotations: 0
-  BackBonesCount: 2
-  _preBackBonesCount: 0
-  LookBones:
-  - Transform: {fileID: 7039442373068498459}
-    animatedStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    localStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    animatedTargetRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetRotation: {x: 0, y: 0, z: 0, w: 0}
-    correctionOffset: {x: 0, y: 0, z: 0}
-    finalRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastKeyframeRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastFinalLocalRotation: {x: 0, y: 0, z: 0, w: 0}
-    forward: {x: 0, y: 0, z: 0}
-    right: {x: 0, y: 0, z: 0}
-    up: {x: 0, y: 0, z: 0}
-    initLocalPos: {x: 1.1717555e-29, y: 0.26879653, z: 0}
-    initLocalRot: {x: -0, y: -0, z: -0, w: 1}
-    targetDelayPosition: {x: 0, y: 0, z: 0}
-    animatedDelayPosition: {x: 0, y: 0, z: 0}
-    lookWeight: 1
-    lookWeightB: 1
-    motionWeight: 1
-  - Transform: {fileID: 5948266729777379908}
-    animatedStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    localStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    animatedTargetRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetRotation: {x: 0, y: 0, z: 0, w: 0}
-    correctionOffset: {x: 0, y: 0, z: 0}
-    finalRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastKeyframeRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastFinalLocalRotation: {x: 0, y: 0, z: 0, w: 0}
-    forward: {x: 0, y: 0, z: 1}
-    right: {x: 1, y: 0, z: 0}
-    up: {x: 0, y: 1, z: 0}
-    initLocalPos: {x: 3.69611e-29, y: 0.37498796, z: 1.7763568e-15}
-    initLocalRot: {x: -0, y: -0, z: -0.043619428, w: 0.9990483}
-    targetDelayPosition: {x: 0, y: 0, z: 0}
-    animatedDelayPosition: {x: 0, y: 0, z: 0}
-    lookWeight: 0.49296874
-    lookWeightB: 1
-    motionWeight: 0.49296874
-  - Transform: {fileID: 3069068858891751977}
-    animatedStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    localStaticRotation: {x: 0, y: 0, z: 0, w: 0}
-    animatedTargetRotation: {x: 0, y: 0, z: 0, w: 0}
-    targetRotation: {x: 0, y: 0, z: 0, w: 0}
-    correctionOffset: {x: 0, y: 0, z: 0}
-    finalRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastKeyframeRotation: {x: 0, y: 0, z: 0, w: 0}
-    lastFinalLocalRotation: {x: 0, y: 0, z: 0, w: 0}
-    forward: {x: 0, y: 0, z: 1}
-    right: {x: 0.9961947, y: 0.08715583, z: -6.7762616e-21}
-    up: {x: -0.08715583, y: 0.9961947, z: -7.0776714e-15}
-    initLocalPos: {x: 0, y: 0.1919775, z: 0}
-    initLocalRot: {x: -0, y: -0, z: 0.04361941, w: 0.99904823}
-    targetDelayPosition: {x: 0, y: 0, z: 0}
-    animatedDelayPosition: {x: 0, y: 0, z: 0}
-    lookWeight: 0.39171878
-    lookWeightB: 1
-    motionWeight: 0.39171878
-  NoTargetHeadStops: 0
-  _editor_hideEyes: 0
-  _editor_displayName: Look Animator 2
-  _Editor_Category: 1
-  _gizmosDrawMaxDist: 1
-  gizmosAlpha: 0.85
-  drawGizmos: 1
-  _gizmosDrawingGuides: 1
-  LeadBone: {fileID: 7039442373068498459}
-  BaseTransform: {fileID: 1823970424633306398}
-  FaloffValue: 0.35
-  FaloffValueB: 1.1
-  BigAngleAutomation: 0
-  BigAngleAutomationCompensation: 0
-  AutoBackbonesWeights: 1
-  CurveSpread: 0
-  BackBonesFalloff:
-    serializedVersion: 2
-    m_Curve:
-    - serializedVersion: 3
-      time: 0
-      value: 1
-      inSlope: 0
-      outSlope: -0.9
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 1
-      value: 0.1
-      inSlope: -0.9
-      outSlope: 0
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
-    m_RotationOrder: 4
-  CompensationBones:
-  - Transform: {fileID: 8150372904869829440}
-  - Transform: {fileID: 8682181066837672202}
-  CompensationWeight: 0.5
-  CompensationWeightB: 0.5
-  CompensatePositions: 0
-  CompensatePositionsB: 0
-  StartAfterTPose: 1
-  AnimatePhysics: 0
-  OptimizeWithMesh: {fileID: 0}
-  OptimizeAtDistance: 0
-  customDistanceCamera: {fileID: 0}
-  ObjectToFollow: {fileID: 3878907962203138073}
-  FollowOffset: {x: 0, y: 0, z: 0}
-  FollowMode: 0
-  RotationSpeed: 0.65
-  UltraSmoother: 0
-  StopLookingAbove: 180
-  StopLookingAboveFactor: 1
-  StopLookAboveMargin: 0
-  ChangeTargetSmoothing: 0
-  AdvancedFalloff: 0
-  MaximumDistance: 0
-  HoldRotateToOppositeUntil: 0
-  MaxOutDistanceFactor: 0
-  Distance2D: 0
-  DistanceMeasurePoint: {x: 0, y: 0, z: 0}
-  LookWhenAbove: 0
-  LookWhenAboveVertical: 0
-  WhenAboveGoBackAfter: 0
-  WhenAboveGoBackAfterVertical: 0
-  WhenAboveGoBackDuration: 0.2
-  StartLookElasticRangeX: 0
-  StartLookElasticRangeY: 0
-  XRotationLimits: {x: -80, y: 80}
-  XElasticRange: 20
-  LimitHolder: 1
-  YRotationLimits: {x: -50, y: 50}
-  YElasticRange: 15
-  LookAnimatorAmount: 1
-  StartLookPointOffset: {x: 0, y: 0, z: 0}
-  AnchorStartLookPoint: 1
-  RefreshStartLookPoint: 1
-  SyncWithAnimator: 1
-  MonitorAnimator: 0
-  WeightsMultiplier: 1
-  MaxRotationSpeed: 2.5
-  BaseRotationCompensation: 0
-  DetectZeroKeyframes: 1
-  LookAtPositionSmoother: 0
-  DeltaType: 0
-  SimulationSpeed: 1
-  OverrideHeadForPerfectLookDirection: 0
-  ApplyClampingForOverrideMode: 0
-  Calibration: 1
-  FixingPreset: 0
-  ModelForwardAxis: {x: 0, y: 0, z: 1}
-  ModelUpAxis: {x: 0, y: 1, z: 0}
-  ManualFromAxis: {x: 0, y: 0, z: 1}
-  ManualToAxis: {x: 0, y: 0, z: 1}
-  FromAuto: {x: 0, y: 0, z: 0}
-  OffsetAuto: {x: 0, y: 0, z: 0}
-  parentalReferenceLookForward: {x: 0, y: 0, z: 0}
-  parentalReferenceUp: {x: 0, y: 0, z: 0}
-  DynamicReferenceUp: {x: 0, y: 0, z: 0}
-  RotationOffset: {x: 0, y: 0, z: 0}
-  BackBonesAddOffset: {x: 0, y: 0, z: 0}
-  RotCorrectionMultiplier: {x: 1, y: 1, z: 1}
-  DebugRays: 0
-  AnimationStyle: 0
-  ConstantParentalAxisUpdate: 1
 --- !u!114 &4249173615142340639
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1380,6 +1163,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74722bcad125f4e11a02720bee637918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimationSystem
+  _animationWalkSpeed: 2
+  _animationRunSpeed: 5.335
   _context: {fileID: 4249173615142340639}
   _animator: {fileID: 9140021228847955211}
 --- !u!114 &6873801074178047821
@@ -1394,7 +1179,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 985beaaae1376416db117f090c3a352a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterSoundSystem
-  _footstepAudioClips: []
+  _footstepAudioClips:
+  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
+  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
+  - {fileID: 8300000, guid: 186de84b3207156479abe98f4958fed0, type: 3}
+  - {fileID: 8300000, guid: 1a91fcd19acf1e54bba0945d9f390849, type: 3}
+  - {fileID: 8300000, guid: 14e8a8d2158bec840b56c54f5266e692, type: 3}
+  - {fileID: 8300000, guid: 29841e7d5bbfb5b419c9ad16ca8bc4c1, type: 3}
+  - {fileID: 8300000, guid: dd1af302b8902684d9381de1f2d3a5af, type: 3}
+  - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
+  - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
+  - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
   _landingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
   _blockAudioClip: {fileID: 8300000, guid: 0954cae6f37d85d4b89c439913315a3b, type: 3}
   _shootAudioClip: {fileID: 8300000, guid: 05e6d54ef1befd342a5f796306f1e0cb, type: 3}
@@ -1530,11 +1325,6 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 5743852164875975506, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
   m_PrefabInstance: {fileID: 7345496249011969570}
   m_PrefabAsset: {fileID: 0}
---- !u!4 &3069068858891751977 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 5721810365573385227, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
-  m_PrefabInstance: {fileID: 7345496249011969570}
-  m_PrefabAsset: {fileID: 0}
 --- !u!143 &3825363562277663933 stripped
 CharacterController:
   m_CorrespondingSourceObject: {fileID: 5829375423550253727, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
@@ -1551,11 +1341,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 62899f850307741f2a39c98a8b639597, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Unity.InputSystem::UnityEngine.InputSystem.PlayerInput
---- !u!4 &5948266729777379908 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 3998084831928198246, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
-  m_PrefabInstance: {fileID: 7345496249011969570}
-  m_PrefabAsset: {fileID: 0}
 --- !u!114 &6075510057945097615 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3576137237486893997, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
@@ -1575,16 +1360,6 @@ Transform:
 --- !u!1 &7591131759727384290 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 912383502692780224, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
-  m_PrefabInstance: {fileID: 7345496249011969570}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &8150372904869829440 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 1507440418502903138, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
-  m_PrefabInstance: {fileID: 7345496249011969570}
-  m_PrefabAsset: {fileID: 0}
---- !u!4 &8682181066837672202 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 2129424468033527592, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
   m_PrefabInstance: {fileID: 7345496249011969570}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8846242063327028442 stripped

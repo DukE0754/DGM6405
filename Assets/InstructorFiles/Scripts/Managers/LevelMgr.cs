@@ -39,6 +39,35 @@ public class LevelMgr : Singleton<LevelMgr>
 		HasValidLevelData &&
 		CurrentLevelIndex == LevelCount - 1;
 
+	/// <summary>
+	/// Gets the level info for the current level.
+	/// Returns true if level info was found, false otherwise (e.g. test scenes).
+	/// </summary>
+	public bool TryGetCurrentLevelInfo(out LevelData.LevelInfo info)
+	{
+		info = null;
+		if (!HasValidLevelData) return false;
+
+		if (CurrentLevelIndex < 0 || CurrentLevelIndex >= LevelCount)
+		{
+			// Fallback scenario: Check current level name and if it exists in _levelData.Levels
+			var currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+			for (var i = 0; i < _levelData.Levels.Length; i++)
+			{
+				if (_levelData.Levels[i].SceneName == currentSceneName)
+				{
+					CurrentLevelIndex = i;
+					info = _levelData.Levels[i];
+					return true;
+				}
+			}
+			return false;
+		}
+
+		info = _levelData.Levels[CurrentLevelIndex];
+		return true;
+	}
+
 #endregion
 
 

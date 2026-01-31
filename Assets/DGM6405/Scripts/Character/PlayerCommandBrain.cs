@@ -48,6 +48,49 @@ public class PlayerCommandBrain : PausableBehaviour
 
 	private void Awake()
 	{
+		InitializeComponents();
+	}
+
+	private void OnEnable()
+	{
+		GameLoopManager.OnLevelReady += OnLevelReady;
+	}
+
+	private void OnDisable()
+	{
+		GameLoopManager.OnLevelReady -= OnLevelReady;
+	}
+
+	private void Start()
+	{
+		// Fallback for test scenes where GameLoopManager might not exist or already fired event
+		// Wait a frame to ensure GameLoopManager has a chance to run its Start
+		Invoke(nameof(CheckInitialisationFallback), 0.1f);
+	}
+
+	private bool _isInitialised = false;
+
+	private void OnLevelReady()
+	{
+		if (_isInitialised) return;
+		ApplyLevelRestrictions();
+		_isInitialised = true;
+	}
+
+	private void CheckInitialisationFallback()
+	{
+		if (!_isInitialised)
+		{
+			Debug.Log($"[{name}] PlayerCommandBrain: Initialising via fallback (Test Scene mode).", this);
+			// Default to all enabled in test scenes
+			EnableAllSystems();
+			_isInitialised = true;
+			GameMgr.Instance.StartGame();
+		}
+	}
+
+	private void InitializeComponents()
+	{
 		// Get input handler if not assigned
 		if (_inputHandler == null) _inputHandler = GetComponent<PlayerInputHandler>();
 
@@ -123,6 +166,34 @@ public class PlayerCommandBrain : PausableBehaviour
 		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 
 		if (_weaponHandSlots == null) _weaponHandSlots = GetComponent<WeaponHandSlots>();
+	}
+
+	private void ApplyLevelRestrictions()
+	{
+		if (LevelMgr.Instance.TryGetCurrentLevelInfo(out var levelInfo))
+		{
+			if (_blockSystem != null) _blockSystem.enabled = levelInfo.AllowBlock;
+			if (_shootSystem != null) _shootSystem.enabled = levelInfo.AllowShoot;
+			if (_meleeSystem != null) _meleeSystem.enabled = levelInfo.AllowMelee;
+			
+			// Aim system should be enabled only if shooting is allowed
+			if (_aimSystem != null) _aimSystem.enabled = levelInfo.AllowShoot;
+			
+			Debug.Log($"[{name}] PlayerCommandBrain: Level restrictions applied. " +
+			          $"Block:{levelInfo.AllowBlock}, Shoot:{levelInfo.AllowShoot}, Melee:{levelInfo.AllowMelee}, Aim:{levelInfo.AllowShoot}", this);
+		}
+		else
+		{
+			EnableAllSystems();
+		}
+	}
+
+	private void EnableAllSystems()
+	{
+		if (_blockSystem != null) _blockSystem.enabled = true;
+		if (_shootSystem != null) _shootSystem.enabled = true;
+		if (_meleeSystem != null) _meleeSystem.enabled = true;
+		if (_aimSystem != null) _aimSystem.enabled = true;
 	}
 
 	private void OnValidate()
@@ -250,13 +321,22 @@ public class PlayerCommandBrain : PausableBehaviour
 		}
 
 		// Process melee
-		if (_meleeSystem != null) _meleeSystem.TryMelee(isMeleeInput);
+		if (_meleeSystem != null && _meleeSystem.enabled) 
+			_meleeSystem.TryMelee(isMeleeInput);
+		else
+			isMeleeInput = false;
 
 		// Process shoot
-		if (_shootSystem != null) _shootSystem.TryShoot(isShootInput);
+		if (_shootSystem != null && _shootSystem.enabled) 
+			_shootSystem.TryShoot(isShootInput);
+		else
+			isShootInput = false;
 
 		// Process block
-		if (_blockSystem != null) _blockSystem.SetBlocking(isBlockInput);
+		if (_blockSystem != null && _blockSystem.enabled) 
+			_blockSystem.SetBlocking(isBlockInput);
+		else
+			isBlockInput = false;
 
 		// If no combat action is active, clear weapon slots
 		if (!isMeleeInput && !isShootInput && !isBlockInput)

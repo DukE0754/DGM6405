@@ -198,16 +198,13 @@ public class CharacterMovementSystem : PausableBehaviour
 		}
 
 		// Set target speed based on move speed, sprint speed and if sprint is pressed
-		var targetSpeed = sprint ? _sprintSpeed : _moveSpeed;
-
-		// If there is no input, set the target speed to 0
-		if (moveInput == Vector2.zero) targetSpeed = 0.0f;
+		var inputMagnitude = Mathf.Clamp01(moveInput.magnitude);
+		var targetSpeed = (sprint ? _sprintSpeed : _moveSpeed) * inputMagnitude;
 
 		// A reference to the players current horizontal velocity
 		var currentHorizontalSpeed = new Vector3(_controller.velocity.x, 0.0f, _controller.velocity.z).magnitude;
 
 		var speedOffset = 0.1f;
-		var inputMagnitude = 1f; // Default to 1, can be made configurable for analog movement
 
 		// Accelerate or decelerate to target speed
 		if (currentHorizontalSpeed < targetSpeed - speedOffset ||
@@ -216,7 +213,7 @@ public class CharacterMovementSystem : PausableBehaviour
 			// Creates curved result rather than a linear one giving a more organic speed change
 			// Note T in Lerp is clamped, so we don't need to clamp our speed
 			Speed = Mathf.Lerp(
-				currentHorizontalSpeed, targetSpeed * inputMagnitude,
+				currentHorizontalSpeed, targetSpeed,
 				Time.deltaTime * _speedChangeRate);
 
 			// Round speed to 3 decimal places
@@ -228,7 +225,7 @@ public class CharacterMovementSystem : PausableBehaviour
 		}
 
 		AnimationBlend = Mathf.Lerp(AnimationBlend, targetSpeed, Time.deltaTime * _speedChangeRate);
-		if (AnimationBlend < 0.01f) AnimationBlend = 0f;
+		// Removed threshold snap to allow smooth transition to 0 in animator blend tree
 
 		// Normalize input direction
 		var inputDirection = new Vector3(moveInput.x, 0.0f, moveInput.y).normalized;
@@ -258,7 +255,8 @@ public class CharacterMovementSystem : PausableBehaviour
 			new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
 		// Update animation system
-		if (_animationSystem != null) _animationSystem.SetMovement(AnimationBlend, inputMagnitude);
+		if (_animationSystem != null)
+			_animationSystem.SetMovement(AnimationBlend, Speed, _moveSpeed, _sprintSpeed);
 	}
 
 	protected override void OnPaused()
@@ -268,6 +266,7 @@ public class CharacterMovementSystem : PausableBehaviour
 		AnimationBlend = 0f;
 
 		// Update animation to reflect stopped state
-		if (_animationSystem != null) _animationSystem.SetMovement(0f, 0f);
+		if (_animationSystem != null)
+			_animationSystem.SetMovement(0f, 0f, _moveSpeed, _sprintSpeed);
 	}
 }

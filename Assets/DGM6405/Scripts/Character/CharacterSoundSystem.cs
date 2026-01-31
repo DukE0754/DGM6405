@@ -119,10 +119,6 @@ public class CharacterSoundSystem : PausableBehaviour
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 			return;
 
-		// Check animation event weight if provided
-		if (animationEvent != null && animationEvent.animatorClipInfo.weight <= 0.5f)
-			return;
-
 		// Validate clip
 		if (_landingAudioClip == null)
 		{

@@ -6,6 +6,17 @@ using UnityEngine;
 /// </summary>
 public class CharacterAnimationSystem : PausableBehaviour
 {
+	[Header("Animation Settings")]
+	[Tooltip("Smoothing time for animation parameter changes")]
+	[SerializeField] private float _animSmoothingTime = 0.1f;
+
+	[Header("Animation Reference Speeds")]
+	[Tooltip("Speed the character moves at when the walk animation is at full influence (motion speed 1)")]
+	[SerializeField] private float _animationWalkSpeed = 2.0f;
+
+	[Tooltip("Speed the character moves at when the run animation is at full influence (motion speed 1)")]
+	[SerializeField] private float _animationRunSpeed = 5.335f;
+
 	[Header("References")]
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
@@ -75,6 +86,10 @@ public class CharacterAnimationSystem : PausableBehaviour
 				$"[{name}] CharacterAnimationSystem: Animator or CharacterContext reference not assigned in inspector.",
 				this
 			);
+
+		// Clamp reference speeds to valid ranges
+		_animationWalkSpeed = Mathf.Max(0.01f, _animationWalkSpeed);
+		_animationRunSpeed = Mathf.Max(_animationWalkSpeed, _animationRunSpeed);
 	}
 
 	/// <summary>
@@ -97,14 +112,51 @@ public class CharacterAnimationSystem : PausableBehaviour
 	///     Updates movement animation parameters.
 	/// </summary>
 	/// <param name="speedBlend">Blended speed value for animation.</param>
-	/// <param name="motionSpeed">Motion speed multiplier (input magnitude).</param>
-	public void SetMovement(float speedBlend, float motionSpeed)
+	/// <param name="currentSpeed">Current actual speed of the character.</param>
+	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
+	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
+	public void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
 
-		_animator.SetFloat(_animIDSpeed, speedBlend);
-		_animator.SetFloat(_animIDMotionSpeed, motionSpeed);
+		// Calculate motion speed multiplier based on reference speeds
+		var motionSpeed = 1f;
+		const float threshold = 0.01f;
+
+		if (currentSpeed > threshold)
+		{
+			// Interpolate expected speed based on current speedBlend
+			// speedBlend is 0 (Idle) -> walkSpeed (Walk) -> sprintSpeed (Run)
+			// Reference speeds are _animationWalkSpeed and _animationRunSpeed
+			float expectedSpeed;
+			if (speedBlend <= walkSpeed)
+			{
+				// For the idle-to-walk transition, the Walk animation's playback speed 
+				// should be proportional to the actual movement speed to avoid sliding.
+				// We use the Walk reference speed as the baseline for this entire range.
+				expectedSpeed = _animationWalkSpeed;
+			}
+			else
+			{
+				expectedSpeed = Mathf.Lerp(_animationWalkSpeed, _animationRunSpeed,
+					(speedBlend - walkSpeed) / (sprintSpeed - walkSpeed));
+			}
+
+			// Motion speed is actual speed / expected speed to align animation playback
+			if (expectedSpeed > threshold)
+			{
+				motionSpeed = currentSpeed / expectedSpeed;
+			}
+		}
+		else
+		{
+			// When nearly stopped, keep motion speed at 1 to allow the idle transition to play at normal speed
+			motionSpeed = 1f;
+		}
+
+		_animator.SetFloat(_animIDSpeed, speedBlend, _animSmoothingTime, Time.deltaTime);
+		_animator.SetFloat(_animIDMotionSpeed, motionSpeed, _animSmoothingTime, Time.deltaTime);
 	}
 
 	/// <summary>
@@ -195,6 +247,6 @@ public class CharacterAnimationSystem : PausableBehaviour
 	{
 		// Optionally reset animation parameters when paused
 		// For now, let animations continue but paused via Time.timeScale
-		// Systems can call SetMovement(0, 0) if needed
+		// Systems can call SetMovement(0, 0, 0, 0, 0) if needed
 	}
 }

@@ -36,6 +36,8 @@ public class GameMgr : Singleton<GameMgr>
 
 	public event Action<bool> PauseStateChanged;
 
+	public int LastRunTimeMs { get; private set; }
+
 	/// <summary>
 	///     Begin the game and start the game loop
 	///     This should only happen after the game scene is fully loaded
@@ -46,6 +48,7 @@ public class GameMgr : Singleton<GameMgr>
 		_gameState = GameStates.InGame;
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.Locked;
+		LastRunTimeMs = 0;
 	}
 
 	/// <summary>
@@ -64,6 +67,7 @@ public class GameMgr : Singleton<GameMgr>
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.None;
 		_gameState = GameStates.GameOver;
+		LastRunTimeMs = timeMs;
 		LevelMgr.Instance.CompleteCurrentLevel(timeMs);
 		SceneMgr.Instance.LoadScene(
 			GameScenes.GameOver, GameMenus.LevelCompleteMenu, () => GameState = GameStates.GameOver);
