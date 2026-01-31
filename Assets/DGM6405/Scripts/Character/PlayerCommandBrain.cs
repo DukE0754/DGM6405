@@ -4,321 +4,286 @@ using UnityEngine.InputSystem;
 #endif
 
 /// <summary>
-/// Command brain for player character.
-/// Reads input from PlayerInputHandler and dispatches commands to modular systems.
+///     Command brain for player character.
+///     Reads input from PlayerInputHandler and dispatches commands to modular systems.
 /// </summary>
 public class PlayerCommandBrain : PausableBehaviour
 {
-    [Header("Input")]
-    [Tooltip("PlayerInputHandler component. Required.")]
-    [SerializeField] private PlayerInputHandler _inputHandler;
+	[Header("Input")]
+	[Tooltip("PlayerInputHandler component. Required.")]
+	[SerializeField] private PlayerInputHandler _inputHandler;
 
 #if ENABLE_INPUT_SYSTEM
-    [Tooltip("PlayerInput component for detecting control scheme. Optional.")]
-    [SerializeField] private PlayerInput _playerInput;
+	[Tooltip("PlayerInput component for detecting control scheme. Optional.")]
+	[SerializeField] private PlayerInput _playerInput;
 #endif
 
-    [Header("Systems")]
-    [Tooltip("CharacterMovementSystem for movement commands. Required.")]
-    [SerializeField] private CharacterMovementSystem _movementSystem;
+	[Header("Systems")]
+	[Tooltip("CharacterMovementSystem for movement commands. Required.")]
+	[SerializeField] private CharacterMovementSystem _movementSystem;
 
-    [Tooltip("JumpGravitySystem for jump commands. Required.")]
-    [SerializeField] private JumpGravitySystem _jumpGravitySystem;
+	[Tooltip("JumpGravitySystem for jump commands. Required.")]
+	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
 
-    [Tooltip("CameraRotationSystem for camera rotation. Required.")]
-    [SerializeField] private CameraRotationSystem _cameraRotationSystem;
+	[Tooltip("CameraRotationSystem for camera rotation. Required.")]
+	[SerializeField] private CameraRotationSystem _cameraRotationSystem;
 
-    [Tooltip("BlockSystem for blocking commands. Optional.")]
-    [SerializeField] private BlockSystem _blockSystem;
+	[Tooltip("BlockSystem for blocking commands. Optional.")]
+	[SerializeField] private BlockSystem _blockSystem;
 
-    [Tooltip("ShootSystem for shooting commands. Optional.")]
-    [SerializeField] private ShootSystem _shootSystem;
+	[Tooltip("ShootSystem for shooting commands. Optional.")]
+	[SerializeField] private ShootSystem _shootSystem;
 
-    [Tooltip("MeleeSystem for melee attack commands. Optional.")]
-    [SerializeField] private MeleeSystem _meleeSystem;
+	[Tooltip("MeleeSystem for melee attack commands. Optional.")]
+	[SerializeField] private MeleeSystem _meleeSystem;
 
-    [Tooltip("AimSystem for aim point updates. Optional.")]
-    [SerializeField] private AimSystem _aimSystem;
+	[Tooltip("AimSystem for aim point updates. Optional.")]
+	[SerializeField] private AimSystem _aimSystem;
 
-    // Cached control scheme check
-    private bool _isCurrentDeviceMouse;
+	[Tooltip("WeaponHandSlots for clearing weapon slots when no combat system is active. Optional.")]
+	[SerializeField] private WeaponHandSlots _weaponHandSlots;
 
-    private void Awake()
-    {
+	// Cached control scheme check
+	private bool _isCurrentDeviceMouse;
 
-        // Get input handler if not assigned
-        if (_inputHandler == null)
-        {
-            _inputHandler = GetComponent<PlayerInputHandler>();
-        }
+	private void Awake()
+	{
+		// Get input handler if not assigned
+		if (_inputHandler == null) _inputHandler = GetComponent<PlayerInputHandler>();
 
-        // Validate input handler
-        if (_inputHandler == null)
-        {
-            Debug.LogError(
-                $"[{name}] PlayerCommandBrain: PlayerInputHandler is required! " +
-                "Add PlayerInputHandler component or assign reference in inspector.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Validate input handler
+		if (_inputHandler == null)
+		{
+			Debug.LogError(
+				$"[{name}] PlayerCommandBrain: PlayerInputHandler is required! " +
+				"Add PlayerInputHandler component or assign reference in inspector.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
 #if ENABLE_INPUT_SYSTEM
-        // Get player input if not assigned
-        if (_playerInput == null)
-        {
-            _playerInput = GetComponent<PlayerInput>();
-        }
+		// Get player input if not assigned
+		if (_playerInput == null) _playerInput = GetComponent<PlayerInput>();
 #endif
 
-        // Get movement system if not assigned
-        if (_movementSystem == null)
-        {
-            _movementSystem = GetComponent<CharacterMovementSystem>();
-        }
+		// Get movement system if not assigned
+		if (_movementSystem == null) _movementSystem = GetComponent<CharacterMovementSystem>();
 
-        // Validate movement system
-        if (_movementSystem == null)
-        {
-            Debug.LogError(
-                $"[{name}] PlayerCommandBrain: CharacterMovementSystem is required! " +
-                "Add CharacterMovementSystem component or assign reference in inspector.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Validate movement system
+		if (_movementSystem == null)
+		{
+			Debug.LogError(
+				$"[{name}] PlayerCommandBrain: CharacterMovementSystem is required! " +
+				"Add CharacterMovementSystem component or assign reference in inspector.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
-        // Get jump gravity system if not assigned
-        if (_jumpGravitySystem == null)
-        {
-            _jumpGravitySystem = GetComponent<JumpGravitySystem>();
-        }
+		// Get jump gravity system if not assigned
+		if (_jumpGravitySystem == null) _jumpGravitySystem = GetComponent<JumpGravitySystem>();
 
-        // Validate jump gravity system
-        if (_jumpGravitySystem == null)
-        {
-            Debug.LogError(
-                $"[{name}] PlayerCommandBrain: JumpGravitySystem is required! " +
-                "Add JumpGravitySystem component or assign reference in inspector.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Validate jump gravity system
+		if (_jumpGravitySystem == null)
+		{
+			Debug.LogError(
+				$"[{name}] PlayerCommandBrain: JumpGravitySystem is required! " +
+				"Add JumpGravitySystem component or assign reference in inspector.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
-        // Get camera rotation system if not assigned
-        if (_cameraRotationSystem == null)
-        {
-            _cameraRotationSystem = GetComponent<CameraRotationSystem>();
-        }
+		// Get camera rotation system if not assigned
+		if (_cameraRotationSystem == null) _cameraRotationSystem = GetComponent<CameraRotationSystem>();
 
-        // Validate camera rotation system
-        if (_cameraRotationSystem == null)
-        {
-            Debug.LogError(
-                $"[{name}] PlayerCommandBrain: CameraRotationSystem is required! " +
-                "Add CameraRotationSystem component or assign reference in inspector.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Validate camera rotation system
+		if (_cameraRotationSystem == null)
+		{
+			Debug.LogError(
+				$"[{name}] PlayerCommandBrain: CameraRotationSystem is required! " +
+				"Add CameraRotationSystem component or assign reference in inspector.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
-        // Get combat systems if not assigned (optional)
-        if (_blockSystem == null)
-        {
-            _blockSystem = GetComponent<BlockSystem>();
-        }
+		// Get combat systems if not assigned (optional)
+		if (_blockSystem == null) _blockSystem = GetComponent<BlockSystem>();
 
-        if (_shootSystem == null)
-        {
-            _shootSystem = GetComponent<ShootSystem>();
-        }
+		if (_shootSystem == null) _shootSystem = GetComponent<ShootSystem>();
 
-        if (_meleeSystem == null)
-        {
-            _meleeSystem = GetComponent<MeleeSystem>();
-        }
+		if (_meleeSystem == null) _meleeSystem = GetComponent<MeleeSystem>();
 
-        if (_aimSystem == null)
-        {
-            _aimSystem = GetComponent<AimSystem>();
-        }
-    }
+		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 
-    protected override void PausableUpdate()
-    {
-        // Check game state before processing input
-        if (GameMgr.Instance == null)
-        {
-            Debug.LogWarning($"[{name}] PlayerCommandBrain: GameMgr.Instance is null. Skipping update.", this);
-            return;
-        }
+		if (_weaponHandSlots == null) _weaponHandSlots = GetComponent<WeaponHandSlots>();
+	}
 
-        if (!GameMgr.Instance.IsGameRunning)
-            return;
+	private void OnValidate()
+	{
+		// Warn if required components not assigned
+		if (_inputHandler == null)
+			Debug.LogWarning(
+				$"[{name}] PlayerCommandBrain: PlayerInputHandler reference not assigned in inspector.", this);
 
-        // Update control scheme check
-        UpdateControlScheme();
+		if (_movementSystem == null)
+			Debug.LogWarning(
+				$"[{name}] PlayerCommandBrain: CharacterMovementSystem reference not assigned in inspector.", this);
 
-        // Process movement and jump
-        ProcessMovementCommands();
+		if (_jumpGravitySystem == null)
+			Debug.LogWarning(
+				$"[{name}] PlayerCommandBrain: JumpGravitySystem reference not assigned in inspector.", this);
 
-        // Process combat commands
-        ProcessCombatCommands();
-    }
+		if (_cameraRotationSystem == null)
+			Debug.LogWarning(
+				$"[{name}] PlayerCommandBrain: CameraRotationSystem reference not assigned in inspector.", this);
+	}
 
-    protected override void PausableLateUpdate()
-    {
-        // Check game state
-        if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
-            return;
+	protected override void PausableUpdate()
+	{
+		// Check game state before processing input
+		if (GameMgr.Instance == null)
+		{
+			Debug.LogWarning($"[{name}] PlayerCommandBrain: GameMgr.Instance is null. Skipping update.", this);
+			return;
+		}
 
-        // Process camera rotation in LateUpdate
-        ProcessCameraCommands();
-    }
+		if (!GameMgr.Instance.IsGameRunning)
+			return;
 
-    /// <summary>
-    /// Updates the current control scheme detection.
-    /// </summary>
-    private void UpdateControlScheme()
-    {
+		// Update control scheme check
+		UpdateControlScheme();
+
+		// Process movement and jump
+		ProcessMovementCommands();
+
+		// Process combat commands
+		ProcessCombatCommands();
+	}
+
+	protected override void PausableLateUpdate()
+	{
+		// Check game state
+		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
+			return;
+
+		// Process camera rotation in LateUpdate
+		ProcessCameraCommands();
+	}
+
+	/// <summary>
+	///     Updates the current control scheme detection.
+	/// </summary>
+	private void UpdateControlScheme()
+	{
 #if ENABLE_INPUT_SYSTEM
-        if (_playerInput != null)
-        {
-            _isCurrentDeviceMouse = _playerInput.currentControlScheme == "KeyboardMouse";
-        }
-        else
-        {
-            _isCurrentDeviceMouse = false;
-        }
+		if (_playerInput != null)
+			_isCurrentDeviceMouse = _playerInput.currentControlScheme == "KeyboardMouse";
+		else
+			_isCurrentDeviceMouse = false;
 #else
         _isCurrentDeviceMouse = false;
 #endif
-    }
+	}
 
-    /// <summary>
-    /// Processes movement and jump commands from input.
-    /// </summary>
-    private void ProcessMovementCommands()
-    {
-        // Validate input handler
-        if (_inputHandler == null)
-            return;
+	/// <summary>
+	///     Processes movement and jump commands from input.
+	/// </summary>
+	private void ProcessMovementCommands()
+	{
+		// Validate input handler
+		if (_inputHandler == null)
+			return;
 
-        // Process movement
-        if (_movementSystem != null)
-        {
-            _movementSystem.ApplyMovement(_inputHandler.move, _inputHandler.sprint);
-        }
+		// Process movement
+		if (_movementSystem != null) _movementSystem.ApplyMovement(_inputHandler.move, _inputHandler.sprint);
 
-        // Process jump and gravity
-        if (_jumpGravitySystem != null)
-        {
-            _jumpGravitySystem.TickVertical(_inputHandler.jump);
-        }
-    }
+		// Process jump and gravity
+		if (_jumpGravitySystem != null)
+		{
+			_jumpGravitySystem.TickVertical(_inputHandler.jump);
+			_inputHandler.jump = false;
+		}
+	}
 
-    /// <summary>
-    /// Processes camera rotation commands from input.
-    /// </summary>
-    private void ProcessCameraCommands()
-    {
-        // Validate input handler and camera system
-        if (_inputHandler == null || _cameraRotationSystem == null)
-            return;
+	/// <summary>
+	///     Processes camera rotation commands from input.
+	/// </summary>
+	private void ProcessCameraCommands()
+	{
+		// Validate input handler and camera system
+		if (_inputHandler == null || _cameraRotationSystem == null)
+			return;
 
-        // Process camera rotation
-        _cameraRotationSystem.ApplyLook(_inputHandler.look, _isCurrentDeviceMouse);
-    }
+		// Process camera rotation
+		_cameraRotationSystem.ApplyLook(_inputHandler.look, _isCurrentDeviceMouse);
+	}
 
-    /// <summary>
-    /// Processes combat commands (block, shoot, melee) from input.
-    /// </summary>
-    private void ProcessCombatCommands()
-    {
-        // Validate input handler
-        if (_inputHandler == null)
-            return;
+	/// <summary>
+	///     Processes combat commands (block, shoot, melee) from input.
+	/// </summary>
+	private void ProcessCombatCommands()
+	{
+		// Validate input handler
+		if (_inputHandler == null)
+			return;
 
-        // Process block
-        if (_blockSystem != null)
-        {
-            _blockSystem.SetBlocking(_inputHandler.block);
-        }
+		// Enforce exclusivity: Melee > Shoot > Block
+		var isMeleeInput = _inputHandler.melee;
+		var isShootInput = _inputHandler.shoot;
+		var isBlockInput = _inputHandler.block;
 
-        // Process shoot
-        if (_shootSystem != null)
-        {
-            _shootSystem.TryShoot(_inputHandler.shoot);
-        }
+		if (isMeleeInput)
+		{
+			isShootInput = false;
+			isBlockInput = false;
+		}
+		else if (isShootInput)
+		{
+			isBlockInput = false;
+		}
 
-        // Process melee
-        if (_meleeSystem != null)
-        {
-            _meleeSystem.TryMelee(_inputHandler.melee);
-        }
+		// Process melee
+		if (_meleeSystem != null) _meleeSystem.TryMelee(isMeleeInput);
 
-        // Note: Dodge can be added here when implemented
-        // if (_dodgeSystem != null)
-        // {
-        //     _dodgeSystem.TryDodge(_inputHandler.dodge);
-        // }
-    }
+		// Process shoot
+		if (_shootSystem != null) _shootSystem.TryShoot(isShootInput);
 
-    protected override void OnPaused()
-    {
-        // Clear all inputs when paused
-        if (_inputHandler != null)
-        {
-            _inputHandler.ClearInputs();
-        }
+		// Process block
+		if (_blockSystem != null) _blockSystem.SetBlocking(isBlockInput);
 
-        // Notify systems to stop active actions
-        if (_movementSystem != null)
-        {
-            _movementSystem.ApplyMovement(Vector2.zero, false);
-        }
+		// If no combat action is active, clear weapon slots
+		if (!isMeleeInput && !isShootInput && !isBlockInput)
+		{
+			if (_weaponHandSlots != null)
+				_weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.None);
+		}
 
-        if (_blockSystem != null)
-        {
-            _blockSystem.SetBlocking(false);
-        }
+		// Note: Dodge can be added here when implemented
+		// if (_dodgeSystem != null)
+		// {
+		//     _dodgeSystem.TryDodge(_inputHandler.dodge);
+		// }
+	}
 
-        if (_shootSystem != null)
-        {
-            _shootSystem.TryShoot(false);
-        }
+	protected override void OnPaused()
+	{
+		// Clear all inputs when paused
+		if (_inputHandler != null) _inputHandler.ClearInputs();
 
-        if (_meleeSystem != null)
-        {
-            _meleeSystem.TryMelee(false);
-        }
-    }
+		// Notify systems to stop active actions
+		if (_movementSystem != null) _movementSystem.ApplyMovement(Vector2.zero, false);
 
-    private void OnValidate()
-    {
-        // Warn if required components not assigned
-        if (_inputHandler == null)
-        {
-            Debug.LogWarning($"[{name}] PlayerCommandBrain: PlayerInputHandler reference not assigned in inspector.", this);
-        }
+		if (_blockSystem != null) _blockSystem.SetBlocking(false);
 
-        if (_movementSystem == null)
-        {
-            Debug.LogWarning($"[{name}] PlayerCommandBrain: CharacterMovementSystem reference not assigned in inspector.", this);
-        }
+		if (_shootSystem != null) _shootSystem.TryShoot(false);
 
-        if (_jumpGravitySystem == null)
-        {
-            Debug.LogWarning($"[{name}] PlayerCommandBrain: JumpGravitySystem reference not assigned in inspector.", this);
-        }
-
-        if (_cameraRotationSystem == null)
-        {
-            Debug.LogWarning($"[{name}] PlayerCommandBrain: CameraRotationSystem reference not assigned in inspector.", this);
-        }
-    }
+		if (_meleeSystem != null) _meleeSystem.TryMelee(false);
+	}
 }

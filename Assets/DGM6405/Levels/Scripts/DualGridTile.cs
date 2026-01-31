@@ -61,6 +61,7 @@ public class DualGridTile : MonoBehaviour
 
 	[Header("Spawn Identity (Assigned by Spawner)")]
 	public Vector3Int Key;
+
 	public ShapeType SpawnedShape;
 
 	// =====================================================================
@@ -208,19 +209,19 @@ public class DualGridTile : MonoBehaviour
 			_ => ShapeType.Empty
 		};
 	}
-	
+
 	// Returns the canonical mask for a given ShapeType // comment every line
 	public static byte GetCanonicalMask(ShapeType shape) // comment every line
 	{
 		return shape switch // comment every line
 		{
-			ShapeType.Empty    => 0,  // comment every line
-			ShapeType.Convex   => 1,  // Q00 // comment every line
-			ShapeType.Edge     => 3,  // Q00 + Q10 // comment every line
-			ShapeType.Diagonal => 6,  // Q10 + Q01 // comment every line
-			ShapeType.Concave  => 7,  // Q00 + Q10 + Q01 // comment every line
-			ShapeType.Full     => 15, // comment every line
-			_                  => 0  // comment every line
+			ShapeType.Empty => 0, // comment every line
+			ShapeType.Convex => 1, // Q00 // comment every line
+			ShapeType.Edge => 3, // Q00 + Q10 // comment every line
+			ShapeType.Diagonal => 6, // Q10 + Q01 // comment every line
+			ShapeType.Concave => 7, // Q00 + Q10 + Q01 // comment every line
+			ShapeType.Full => 15, // comment every line
+			_ => 0 // comment every line
 		};
 	}
 
@@ -246,7 +247,7 @@ public class DualGridTile : MonoBehaviour
 	// PREFAB MASK GIZMOS
 	// =====================================================================
 
-	void DrawPrefabMask()
+	private void DrawPrefabMask()
 	{
 		// We draw micro-quadrants in WORLD space, but their positions are defined
 		// in the prefab's LOCAL space around its pivot.
@@ -261,18 +262,18 @@ public class DualGridTile : MonoBehaviour
 		// Micro-quadrants are a 2x2 inside that footprint, so their centers are:
 		//     +/- FootprintSize/4
 
-		Vector3 basePos = transform.position + Vector3.up * GizmoHeightOffset;
+		var basePos = transform.position + Vector3.up * GizmoHeightOffset;
 
-		float half = FootprintSize * 0.5f;     // 0.25 when FootprintSize = 0.5
-		float quarter = FootprintSize * 0.25f; // 0.125 when FootprintSize = 0.5
+		var half = FootprintSize * 0.5f; // 0.25 when FootprintSize = 0.5
+		var quarter = FootprintSize * 0.25f; // 0.125 when FootprintSize = 0.5
 
 		// Local offsets around pivot (0,0,0)
-		Vector3 q00 = new Vector3(-quarter, 0, -quarter);
-		Vector3 q10 = new Vector3( quarter, 0, -quarter);
-		Vector3 q01 = new Vector3(-quarter, 0,  quarter);
-		Vector3 q11 = new Vector3( quarter, 0,  quarter);
+		var q00 = new Vector3(-quarter, 0, -quarter);
+		var q10 = new Vector3(quarter, 0, -quarter);
+		var q01 = new Vector3(-quarter, 0, quarter);
+		var q11 = new Vector3(quarter, 0, quarter);
 
-		byte mask = GetMask();
+		var mask = GetMask();
 
 		DrawMicro(basePos, q00, (mask & 1) != 0);
 		DrawMicro(basePos, q10, (mask & 2) != 0);

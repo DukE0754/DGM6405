@@ -4,55 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Controller for the level select menu (MVC: menu=controller, grid item=view, data=model).
+///     Controller for the level select menu (MVC: menu=controller, grid item=view, data=model).
 /// </summary>
 public class LevelSelectMenu : MenuBase
 {
-	public override GameMenus MenuType()
-	{
-		return GameMenus.LevelSelectMenu;
-	}
-
-#region Serialized Fields
-
-	[Header("Grid")]
-	[SerializeField] private LevelSelectGridItem _gridItemPrefab;
-	[SerializeField] private Transform _gridParent;
-	[SerializeField] private int _itemsPerPage = 9;
-
-	[Header("Paging")]
-	[SerializeField] private Button _previousPageButton;
-	[SerializeField] private Button _nextPageButton;
-	[SerializeField] private TMP_Text _pageLabel;
-
-	[Header("Navigation")]
-	[SerializeField] private Button _backButton;
-
-#endregion
-
-#region Model
-
-	private class LevelSelectEntry
-	{
-		public int Index;
-		public string LevelName;
-		public int ParTimeMs;
-		public int BestTimeMs;
-		public bool IsUnlocked;
-		public bool IsCompleted;
-	}
-
-	private readonly List<LevelSelectEntry> _entries = new();
-
-#endregion
-
-#region View State
-
-	private readonly List<LevelSelectGridItem> _gridItems = new();
-	private int _currentPageIndex;
-
-#endregion
-
 	private void OnEnable()
 	{
 		if (_itemsPerPage < 1)
@@ -67,6 +22,11 @@ public class LevelSelectMenu : MenuBase
 	private void OnDisable()
 	{
 		Interactable = false;
+	}
+
+	public override GameMenus MenuType()
+	{
+		return GameMenus.LevelSelectMenu;
 	}
 
 	private void EnsureSaveLoaded()
@@ -88,16 +48,17 @@ public class LevelSelectMenu : MenuBase
 		for (var i = 0; i < levels.Length; i++)
 		{
 			var isUnlocked = LevelMgr.Instance.IsLevelUnlocked(i);
-			var bestTime = (bestTimes != null && i < bestTimes.Length) ? bestTimes[i] : 0;
-			_entries.Add(new LevelSelectEntry
-			{
-				Index = i,
-				LevelName = levels[i].LevelName,
-				ParTimeMs = levels[i].ParTimeMs,
-				BestTimeMs = bestTime,
-				IsUnlocked = isUnlocked,
-				IsCompleted = SaveUtil.SavedValues.HighestLevelCompleted >= i
-			});
+			var bestTime = bestTimes != null && i < bestTimes.Length ? bestTimes[i] : 0;
+			_entries.Add(
+				new LevelSelectEntry
+				{
+					Index = i,
+					LevelName = levels[i].LevelName,
+					ParTimeMs = levels[i].ParTimeMs,
+					BestTimeMs = bestTime,
+					IsUnlocked = isUnlocked,
+					IsCompleted = SaveUtil.SavedValues.HighestLevelCompleted >= i
+				});
 		}
 	}
 
@@ -126,7 +87,7 @@ public class LevelSelectMenu : MenuBase
 			return;
 		}
 
-		var totalPages = Mathf.CeilToInt(_entries.Count / (float)_itemsPerPage);
+		var totalPages = Mathf.CeilToInt(_entries.Count / (float) _itemsPerPage);
 		_currentPageIndex = Mathf.Clamp(pageIndex, 0, Mathf.Max(0, totalPages - 1));
 
 		for (var i = 0; i < _gridItems.Count; i++)
@@ -169,12 +130,61 @@ public class LevelSelectMenu : MenuBase
 			return;
 		}
 
-		var totalPages = Mathf.CeilToInt(_entries.Count / (float)_itemsPerPage);
+		var totalPages = Mathf.CeilToInt(_entries.Count / (float) _itemsPerPage);
 		if (_previousPageButton != null)
 			_previousPageButton.interactable = _currentPageIndex > 0;
 		if (_nextPageButton != null)
 			_nextPageButton.interactable = _currentPageIndex < totalPages - 1;
 	}
+
+	private void OnLevelSelected(int levelIndex)
+	{
+		if (!Interactable) return;
+		Interactable = false;
+		LevelMgr.Instance.LoadLevel(levelIndex);
+	}
+
+#region Serialized Fields
+
+	[Header("Grid")]
+	[SerializeField] private LevelSelectGridItem _gridItemPrefab;
+
+	[SerializeField] private Transform _gridParent;
+	[SerializeField] private int _itemsPerPage = 9;
+
+	[Header("Paging")]
+	[SerializeField] private Button _previousPageButton;
+
+	[SerializeField] private Button _nextPageButton;
+	[SerializeField] private TMP_Text _pageLabel;
+
+	[Header("Navigation")]
+	[SerializeField] private Button _backButton;
+
+#endregion
+
+#region Model
+
+	private class LevelSelectEntry
+	{
+		public int BestTimeMs;
+		public int Index;
+		public bool IsCompleted;
+		public bool IsUnlocked;
+		public string LevelName;
+		public int ParTimeMs;
+	}
+
+	private readonly List<LevelSelectEntry> _entries = new();
+
+#endregion
+
+#region View State
+
+	private readonly List<LevelSelectGridItem> _gridItems = new();
+	private int _currentPageIndex;
+
+#endregion
 
 #region Button Callbacks
 
@@ -200,11 +210,4 @@ public class LevelSelectMenu : MenuBase
 	}
 
 #endregion
-
-	private void OnLevelSelected(int levelIndex)
-	{
-		if (!Interactable) return;
-		Interactable = false;
-		LevelMgr.Instance.LoadLevel(levelIndex);
-	}
 }

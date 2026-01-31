@@ -1,152 +1,146 @@
 using UnityEngine;
 
 /// <summary>
-/// Handles camera rotation for character.
-/// Updates Cinemachine camera target rotation based on look input.
+///     Handles camera rotation for character.
+///     Updates Cinemachine camera target rotation based on look input.
 /// </summary>
 public class CameraRotationSystem : PausableBehaviour
 {
-    [Header("Camera Settings")]
-    [Tooltip("How far in degrees can you move the camera up")]
-    [SerializeField] private float _topClamp = 70.0f;
+	private const float THRESHOLD = 0.01f;
 
-    [Tooltip("How far in degrees can you move the camera down")]
-    [SerializeField] private float _bottomClamp = -30.0f;
+	[Header("Camera Settings")]
+	[Tooltip("How far in degrees can you move the camera up")]
+	[SerializeField] private float _topClamp = 70.0f;
 
-    [Tooltip("Additional degrees to override the camera. Useful for fine tuning camera position when locked")]
-    [SerializeField] private float _cameraAngleOverride = 0.0f;
+	[Tooltip("How far in degrees can you move the camera down")]
+	[SerializeField] private float _bottomClamp = -30.0f;
 
-    [Tooltip("For locking the camera position on all axis")]
-    [SerializeField] private bool _lockCameraPosition = false;
+	[Tooltip("Additional degrees to override the camera. Useful for fine tuning camera position when locked")]
+	[SerializeField] private float _cameraAngleOverride;
 
-    [Header("Debug Gizmos")]
-    [Tooltip("Show camera gizmos in scene view when selected.")]
-    [SerializeField] private bool _showGizmos = true;
+	[Tooltip("For locking the camera position on all axis")]
+	[SerializeField] private bool _lockCameraPosition;
 
-    [Header("References")]
-    [Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
-    [SerializeField] private CharacterContext _context;
+	[Header("Debug Gizmos")]
+	[Tooltip("Show camera gizmos in scene view when selected.")]
+	[SerializeField] private bool _showGizmos = true;
 
-    [Tooltip("Cinemachine camera target transform. If null, will use from CharacterContext.")]
-    [SerializeField] private Transform _cameraTarget;
+	[Header("References")]
+	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
+	[SerializeField] private CharacterContext _context;
 
-    // Cinemachine rotation state
-    private float _cinemachineTargetYaw;
-    private float _cinemachineTargetPitch;
+	[Tooltip("Cinemachine camera target transform. If null, will use from CharacterContext.")]
+	[SerializeField] private Transform _cameraTarget;
 
-    private const float THRESHOLD = 0.01f;
+	private float _cinemachineTargetPitch;
 
-    private void Awake()
-    {
+	// Cinemachine rotation state
+	private float _cinemachineTargetYaw;
 
-        // Get context if not assigned
-        if (_context == null)
-        {
-            _context = GetComponent<CharacterContext>();
-        }
+	private void Awake()
+	{
+		// Get context if not assigned
+		if (_context == null) _context = GetComponent<CharacterContext>();
 
-        // Get camera target from context or direct reference
-        if (_cameraTarget == null)
-        {
-            if (_context != null)
-            {
-                _cameraTarget = _context.CameraTarget;
-            }
-        }
+		// Get camera target from context or direct reference
+		if (_cameraTarget == null)
+			if (_context != null)
+				_cameraTarget = _context.CameraTarget;
 
-        // Validate camera target
-        if (_cameraTarget == null)
-        {
-            Debug.LogError(
-                $"[{name}] CameraRotationSystem: Camera target transform is required! " +
-                "Assign camera target reference in inspector or CharacterContext.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Validate camera target
+		if (_cameraTarget == null)
+		{
+			Debug.LogError(
+				$"[{name}] CameraRotationSystem: Camera target transform is required! " +
+				"Assign camera target reference in inspector or CharacterContext.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
-        // Initialize rotation from current camera target rotation
-        _cinemachineTargetYaw = _cameraTarget.transform.rotation.eulerAngles.y;
-    }
+		// Initialize rotation from current camera target rotation
+		_cinemachineTargetYaw = _cameraTarget.transform.rotation.eulerAngles.y;
+	}
 
-    protected override void PausableLateUpdate()
-    {
-        // Camera rotation is applied via ApplyLook() called by command brain
-        // This update loop can be used for continuous rotation if needed
-    }
+	private void OnDrawGizmosSelected()
+	{
+		if (!_showGizmos || _cameraTarget == null)
+			return;
 
-    /// <summary>
-    /// Applies look input to camera rotation.
-    /// </summary>
-    /// <param name="lookInput">Look input delta (x, y).</param>
-    /// <param name="isMouse">Whether input is from mouse (affects deltaTime multiplier).</param>
-    public void ApplyLook(Vector2 lookInput, bool isMouse)
-    {
-        // Validate camera target
-        if (_cameraTarget == null)
-        {
-            Debug.LogError($"[{name}] CameraRotationSystem: Camera target reference is null! Assign in inspector.", this);
-            return;
-        }
+		// Look direction line
+		Gizmos.color = Color.cyan;
+		var forward = _cameraTarget.forward;
+		Gizmos.DrawRay(_cameraTarget.position, forward * 5f);
 
-        // If there is an input and camera position is not fixed
-        if (lookInput.sqrMagnitude >= THRESHOLD && !_lockCameraPosition)
-        {
-            // Don't multiply mouse input by Time.deltaTime
-            float deltaTimeMultiplier = isMouse ? 1.0f : Time.deltaTime;
+		// Camera target position
+		Gizmos.color = Color.yellow;
+		Gizmos.DrawWireSphere(_cameraTarget.position, 0.2f);
 
-            _cinemachineTargetYaw += lookInput.x * deltaTimeMultiplier;
-            _cinemachineTargetPitch += lookInput.y * deltaTimeMultiplier;
-        }
+		// Rotation limits visualization (simplified)
+		Gizmos.color = Color.green;
+		var upLimit = Quaternion.Euler(_topClamp, _cinemachineTargetYaw, 0f) * Vector3.forward;
+		var downLimit = Quaternion.Euler(_bottomClamp, _cinemachineTargetYaw, 0f) * Vector3.forward;
+		Gizmos.DrawRay(_cameraTarget.position, upLimit * 3f);
+		Gizmos.DrawRay(_cameraTarget.position, downLimit * 3f);
+	}
 
-        // Clamp our rotations so our values are limited 360 degrees
-        _cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
-        _cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, _bottomClamp, _topClamp);
+	protected override void PausableLateUpdate()
+	{
+		// Camera rotation is applied via ApplyLook() called by command brain
+		// This update loop can be used for continuous rotation if needed
+	}
 
-        // Cinemachine will follow this target
-        _cameraTarget.transform.rotation = Quaternion.Euler(
-            _cinemachineTargetPitch + _cameraAngleOverride,
-            _cinemachineTargetYaw, 0.0f);
-    }
+	/// <summary>
+	///     Applies look input to camera rotation.
+	/// </summary>
+	/// <param name="lookInput">Look input delta (x, y).</param>
+	/// <param name="isMouse">Whether input is from mouse (affects deltaTime multiplier).</param>
+	public void ApplyLook(Vector2 lookInput, bool isMouse)
+	{
+		// Validate camera target
+		if (_cameraTarget == null)
+		{
+			Debug.LogError(
+				$"[{name}] CameraRotationSystem: Camera target reference is null! Assign in inspector.", this);
+			return;
+		}
 
-    /// <summary>
-    /// Clamps angle between min and max, handling 360-degree wrapping.
-    /// </summary>
-    private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
-    {
-        if (lfAngle < -360f)
-            lfAngle += 360f;
-        if (lfAngle > 360f)
-            lfAngle -= 360f;
-        return Mathf.Clamp(lfAngle, lfMin, lfMax);
-    }
+		// If there is an input and camera position is not fixed
+		if (lookInput.sqrMagnitude >= THRESHOLD && !_lockCameraPosition)
+		{
+			// Don't multiply mouse input by Time.deltaTime
+			var deltaTimeMultiplier = isMouse ? 1.0f : Time.deltaTime;
 
-    protected override void OnPaused()
-    {
-        // Camera rotation naturally stops when paused since PausableLateUpdate() won't be called
-        // Optionally lock camera position here if needed
-    }
+			_cinemachineTargetYaw += lookInput.x * deltaTimeMultiplier;
+			_cinemachineTargetPitch += lookInput.y * deltaTimeMultiplier;
+		}
 
-    private void OnDrawGizmosSelected()
-    {
-        if (!_showGizmos || _cameraTarget == null)
-            return;
+		// Clamp our rotations so our values are limited 360 degrees
+		_cinemachineTargetYaw = ClampAngle(_cinemachineTargetYaw, float.MinValue, float.MaxValue);
+		_cinemachineTargetPitch = ClampAngle(_cinemachineTargetPitch, _bottomClamp, _topClamp);
 
-        // Look direction line
-        Gizmos.color = Color.cyan;
-        Vector3 forward = _cameraTarget.forward;
-        Gizmos.DrawRay(_cameraTarget.position, forward * 5f);
+		// Cinemachine will follow this target
+		_cameraTarget.transform.rotation = Quaternion.Euler(
+			_cinemachineTargetPitch + _cameraAngleOverride,
+			_cinemachineTargetYaw, 0.0f);
+	}
 
-        // Camera target position
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(_cameraTarget.position, 0.2f);
+	/// <summary>
+	///     Clamps angle between min and max, handling 360-degree wrapping.
+	/// </summary>
+	private static float ClampAngle(float lfAngle, float lfMin, float lfMax)
+	{
+		if (lfAngle < -360f)
+			lfAngle += 360f;
+		if (lfAngle > 360f)
+			lfAngle -= 360f;
+		return Mathf.Clamp(lfAngle, lfMin, lfMax);
+	}
 
-        // Rotation limits visualization (simplified)
-        Gizmos.color = Color.green;
-        Vector3 upLimit = Quaternion.Euler(_topClamp, _cinemachineTargetYaw, 0f) * Vector3.forward;
-        Vector3 downLimit = Quaternion.Euler(_bottomClamp, _cinemachineTargetYaw, 0f) * Vector3.forward;
-        Gizmos.DrawRay(_cameraTarget.position, upLimit * 3f);
-        Gizmos.DrawRay(_cameraTarget.position, downLimit * 3f);
-    }
+	protected override void OnPaused()
+	{
+		// Camera rotation naturally stops when paused since PausableLateUpdate() won't be called
+		// Optionally lock camera position here if needed
+	}
 }

@@ -1,273 +1,245 @@
 using UnityEngine;
 
 /// <summary>
-/// Handles vertical movement including jumping and gravity.
-/// Manages ground detection and vertical velocity.
+///     Handles vertical movement including jumping and gravity.
+///     Manages ground detection and vertical velocity.
 /// </summary>
 public class JumpGravitySystem : PausableBehaviour
 {
-    [Header("Jump Settings")]
-    [Tooltip("The height the player can jump")]
-    [SerializeField] private float _jumpHeight = 1.2f;
+	[Header("Jump Settings")]
+	[Tooltip("The height the player can jump")]
+	[SerializeField] private float _jumpHeight = 1.2f;
 
-    [Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
-    [SerializeField] private float _gravity = -15.0f;
+	[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+	[SerializeField] private float _gravity = -15.0f;
 
-    [Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-    [SerializeField] private float _jumpTimeout = 0.50f;
+	[Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
+	[SerializeField] private float _jumpTimeout = 0.50f;
 
-    [Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-    [SerializeField] private float _fallTimeout = 0.15f;
+	[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
+	[SerializeField] private float _fallTimeout = 0.15f;
 
-    [Header("Ground Detection")]
-    [Tooltip("Useful for rough ground")]
-    [SerializeField] private float _groundedOffset = -0.14f;
+	[Header("Ground Detection")]
+	[Tooltip("Useful for rough ground")]
+	[SerializeField] private float _groundedOffset = -0.14f;
 
-    [Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
-    [SerializeField] private float _groundedRadius = 0.28f;
+	[Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
+	[SerializeField] private float _groundedRadius = 0.28f;
 
-    [Tooltip("What layers the character uses as ground")]
-    [SerializeField] private LayerMask _groundLayers;
+	[Tooltip("What layers the character uses as ground")]
+	[SerializeField] private LayerMask _groundLayers;
 
-    [Header("Debug Gizmos")]
-    [Tooltip("Show jump/gravity gizmos in scene view when selected.")]
-    [SerializeField] private bool _showGizmos = true;
+	[Header("Debug Gizmos")]
+	[Tooltip("Show jump/gravity gizmos in scene view when selected.")]
+	[SerializeField] private bool _showGizmos = true;
 
-    [Header("References")]
-    [Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
-    [SerializeField] private CharacterContext _context;
+	[Header("References")]
+	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
+	[SerializeField] private CharacterContext _context;
 
-    [Tooltip("CharacterController component. If null, will use from CharacterContext.")]
-    [SerializeField] private CharacterController _controller;
+	[Tooltip("CharacterController component. If null, will use from CharacterContext.")]
+	[SerializeField] private CharacterController _controller;
 
-    [Tooltip("CharacterAnimationSystem for updating jump/fall animations. Optional.")]
-    [SerializeField] private CharacterAnimationSystem _animationSystem;
+	[Tooltip("CharacterAnimationSystem for updating jump/fall animations. Optional.")]
+	[SerializeField] private CharacterAnimationSystem _animationSystem;
 
-    // Internal state
-    private float _verticalVelocity;
-    private float _terminalVelocity = 53.0f;
-    private float _jumpTimeoutDelta;
-    private float _fallTimeoutDelta;
-    private bool _isGrounded;
+	private float _fallTimeoutDelta;
+	private float _jumpTimeoutDelta;
+	private readonly float _terminalVelocity = 53.0f;
 
-    // Public properties
-    public bool IsGrounded => _isGrounded;
-    public float VerticalVelocity => _verticalVelocity;
+	// Internal state
 
-    private void Awake()
-    {
+	// Public properties
+	public bool IsGrounded { get; private set; }
 
-        // Get context if not assigned
-        if (_context == null)
-        {
-            _context = GetComponent<CharacterContext>();
-        }
+	public float VerticalVelocity { get; private set; }
 
-        // Get controller from context or direct reference
-        if (_controller == null)
-        {
-            if (_context != null)
-            {
-                _controller = _context.Controller;
-            }
-            else
-            {
-                _controller = GetComponent<CharacterController>();
-            }
-        }
+	private void Awake()
+	{
+		// Get context if not assigned
+		if (_context == null) _context = GetComponent<CharacterContext>();
 
-        // Validate controller
-        if (_controller == null)
-        {
-            Debug.LogError(
-                $"[{name}] JumpGravitySystem: CharacterController is required! " +
-                "Either add CharacterController component or assign CharacterContext with controller reference.",
-                this
-            );
-            enabled = false;
-            return;
-        }
+		// Get controller from context or direct reference
+		if (_controller == null)
+		{
+			if (_context != null)
+				_controller = _context.Controller;
+			else
+				_controller = GetComponent<CharacterController>();
+		}
 
-        // Find animation system if not assigned
-        if (_animationSystem == null)
-        {
-            _animationSystem = GetComponent<CharacterAnimationSystem>();
-        }
+		// Validate controller
+		if (_controller == null)
+		{
+			Debug.LogError(
+				$"[{name}] JumpGravitySystem: CharacterController is required! " +
+				"Either add CharacterController component or assign CharacterContext with controller reference.",
+				this
+			);
+			enabled = false;
+			return;
+		}
 
-        // Reset timeouts on start
-        _jumpTimeoutDelta = _jumpTimeout;
-        _fallTimeoutDelta = _fallTimeout;
-    }
+		// Find animation system if not assigned
+		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
 
-    protected override void PausableUpdate()
-    {
-        // Check game state
-        if (GameMgr.Instance == null)
-        {
-            Debug.LogWarning($"[{name}] JumpGravitySystem: GameMgr.Instance is null. Skipping update.", this);
-            return;
-        }
+		// Reset timeouts on start
+		_jumpTimeoutDelta = _jumpTimeout;
+		_fallTimeoutDelta = _fallTimeout;
+	}
 
-        if (!GameMgr.Instance.IsGameRunning)
-            return;
+	private void OnDrawGizmosSelected()
+	{
+		if (!_showGizmos)
+			return;
 
-        // Vertical movement is updated via TickVertical() called by command brain
-        // This update loop can be used for continuous updates if needed
-    }
+		// Ground check visualization
+		var transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
+		var transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
 
-    /// <summary>
-    /// Updates vertical movement including ground check, jump, and gravity.
-    /// Should be called once per frame by command brain.
-    /// </summary>
-    /// <param name="jumpRequested">Whether jump input is active.</param>
-    public void TickVertical(bool jumpRequested)
-    {
-        // Validate controller
-        if (_controller == null)
-        {
-            Debug.LogError($"[{name}] JumpGravitySystem: CharacterController reference is null! Assign in inspector.", this);
-            return;
-        }
+		if (IsGrounded)
+			Gizmos.color = transparentGreen;
+		else
+			Gizmos.color = transparentRed;
 
-        // Perform ground check
-        GroundedCheck();
+		// Draw sphere at ground check position
+		var spherePos = new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z);
+		Gizmos.DrawSphere(spherePos, _groundedRadius);
 
-        if (_isGrounded)
-        {
-            // Reset the fall timeout timer
-            _fallTimeoutDelta = _fallTimeout;
+		// Draw line from character center to sphere center
+		Gizmos.color = Color.white;
+		Gizmos.DrawLine(transform.position, spherePos);
 
-            // Update animator if using character
-            if (_animationSystem != null)
-            {
-                _animationSystem.SetJumping(false);
-                _animationSystem.SetFreeFall(false);
-            }
+		// Vertical velocity indicator
+		if (Mathf.Abs(VerticalVelocity) > 0.01f)
+		{
+			Gizmos.color = VerticalVelocity > 0f ? Color.blue : Color.red;
+			var velStart = transform.position;
+			var velEnd = velStart + Vector3.up * VerticalVelocity * 0.5f;
+			Gizmos.DrawLine(velStart, velEnd);
+			Gizmos.DrawWireSphere(velEnd, 0.1f);
+		}
 
-            // Stop our velocity dropping infinitely when grounded
-            if (_verticalVelocity < 0.0f)
-            {
-                _verticalVelocity = -2f;
-            }
+		// Terminal velocity limit
+		Gizmos.color = Color.gray;
+		var terminalY = transform.position.y + _terminalVelocity * 0.5f;
+		Gizmos.DrawLine(
+			transform.position + Vector3.left * 0.5f,
+			transform.position + Vector3.right * 0.5f);
+	}
 
-            // Jump
-            if (jumpRequested && _jumpTimeoutDelta <= 0.0f)
-            {
-                // The square root of H * -2 * G = how much velocity needed to reach desired height
-                _verticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
+	private void OnValidate()
+	{
+		// Clamp values to valid ranges
+		_jumpHeight = Mathf.Max(0f, _jumpHeight);
+		_jumpTimeout = Mathf.Max(0f, _jumpTimeout);
+		_fallTimeout = Mathf.Max(0f, _fallTimeout);
+		_groundedRadius = Mathf.Max(0f, _groundedRadius);
+	}
 
-                // Update animator if using character
-                if (_animationSystem != null)
-                {
-                    _animationSystem.SetJumping(true);
-                }
-            }
+	protected override void PausableUpdate()
+	{
+		// Check game state
+		if (GameMgr.Instance == null)
+		{
+			Debug.LogWarning($"[{name}] JumpGravitySystem: GameMgr.Instance is null. Skipping update.", this);
+			return;
+		}
 
-            // Jump timeout
-            if (_jumpTimeoutDelta >= 0.0f)
-            {
-                _jumpTimeoutDelta -= Time.deltaTime;
-            }
-        }
-        else
-        {
-            // Reset the jump timeout timer
-            _jumpTimeoutDelta = _jumpTimeout;
+		if (!GameMgr.Instance.IsGameRunning)
+			return;
 
-            // Fall timeout
-            if (_fallTimeoutDelta >= 0.0f)
-            {
-                _fallTimeoutDelta -= Time.deltaTime;
-            }
-            else
-            {
-                // Update animator if using character
-                if (_animationSystem != null)
-                {
-                    _animationSystem.SetFreeFall(true);
-                }
-            }
-        }
+		// Vertical movement is updated via TickVertical() called by command brain
+		// This update loop can be used for continuous updates if needed
+	}
 
-        // Apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-        if (_verticalVelocity < _terminalVelocity)
-        {
-            _verticalVelocity += _gravity * Time.deltaTime;
-        }
-    }
+	/// <summary>
+	///     Updates vertical movement including ground check, jump, and gravity.
+	///     Should be called once per frame by command brain.
+	/// </summary>
+	/// <param name="jumpRequested">Whether jump input is active.</param>
+	public void TickVertical(bool jumpRequested)
+	{
+		// Validate controller
+		if (_controller == null)
+		{
+			Debug.LogError(
+				$"[{name}] JumpGravitySystem: CharacterController reference is null! Assign in inspector.", this);
+			return;
+		}
 
-    /// <summary>
-    /// Performs ground detection using sphere cast.
-    /// </summary>
-    private void GroundedCheck()
-    {
-        // Set sphere position, with offset
-        Vector3 spherePosition = new Vector3(
-            transform.position.x, transform.position.y - _groundedOffset,
-            transform.position.z);
-        _isGrounded = Physics.CheckSphere(
-            spherePosition, _groundedRadius, _groundLayers,
-            QueryTriggerInteraction.Ignore);
+		// Perform ground check
+		GroundedCheck();
 
-        // Update animator if using character
-        if (_animationSystem != null)
-        {
-            _animationSystem.SetGrounded(_isGrounded);
-        }
-    }
+		if (IsGrounded)
+		{
+			// Reset the fall timeout timer
+			_fallTimeoutDelta = _fallTimeout;
 
-    protected override void OnPaused()
-    {
-        // Freeze vertical velocity when paused
-        _verticalVelocity = 0f;
-    }
+			// Update animator if using character
+			if (_animationSystem != null)
+			{
+				_animationSystem.SetJumping(false);
+				_animationSystem.SetFreeFall(false);
+			}
 
-    private void OnDrawGizmosSelected()
-    {
-        if (!_showGizmos)
-            return;
+			// Stop our velocity dropping infinitely when grounded
+			if (VerticalVelocity < 0.0f) VerticalVelocity = -2f;
 
-        // Ground check visualization
-        Color transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-        Color transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
+			// Jump
+			if (jumpRequested && _jumpTimeoutDelta <= 0.0f)
+			{
+				// The square root of H * -2 * G = how much velocity needed to reach desired height
+				VerticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
 
-        if (_isGrounded)
-            Gizmos.color = transparentGreen;
-        else
-            Gizmos.color = transparentRed;
+				// Update animator if using character
+				if (_animationSystem != null) _animationSystem.SetJumping(true);
+			}
 
-        // Draw sphere at ground check position
-        Vector3 spherePos = new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z);
-        Gizmos.DrawSphere(spherePos, _groundedRadius);
+			// Jump timeout
+			if (_jumpTimeoutDelta >= 0.0f) _jumpTimeoutDelta -= Time.deltaTime;
+		}
+		else
+		{
+			// Reset the jump timeout timer
+			_jumpTimeoutDelta = _jumpTimeout;
 
-        // Draw line from character center to sphere center
-        Gizmos.color = Color.white;
-        Gizmos.DrawLine(transform.position, spherePos);
+			// Fall timeout
+			if (_fallTimeoutDelta >= 0.0f)
+			{
+				_fallTimeoutDelta -= Time.deltaTime;
+			}
+			else
+			{
+				// Update animator if using character
+				if (_animationSystem != null) _animationSystem.SetFreeFall(true);
+			}
+		}
 
-        // Vertical velocity indicator
-        if (Mathf.Abs(_verticalVelocity) > 0.01f)
-        {
-            Gizmos.color = _verticalVelocity > 0f ? Color.blue : Color.red;
-            Vector3 velStart = transform.position;
-            Vector3 velEnd = velStart + Vector3.up * _verticalVelocity * 0.5f;
-            Gizmos.DrawLine(velStart, velEnd);
-            Gizmos.DrawWireSphere(velEnd, 0.1f);
-        }
+		// Apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
+		if (VerticalVelocity < _terminalVelocity) VerticalVelocity += _gravity * Time.deltaTime;
+	}
 
-        // Terminal velocity limit
-        Gizmos.color = Color.gray;
-        float terminalY = transform.position.y + _terminalVelocity * 0.5f;
-        Gizmos.DrawLine(
-            transform.position + Vector3.left * 0.5f,
-            transform.position + Vector3.right * 0.5f);
-    }
+	/// <summary>
+	///     Performs ground detection using sphere cast.
+	/// </summary>
+	private void GroundedCheck()
+	{
+		// Set sphere position, with offset
+		var spherePosition = new Vector3(
+			transform.position.x, transform.position.y - _groundedOffset,
+			transform.position.z);
+		IsGrounded = Physics.CheckSphere(
+			spherePosition, _groundedRadius, _groundLayers,
+			QueryTriggerInteraction.Ignore);
 
-    private void OnValidate()
-    {
-        // Clamp values to valid ranges
-        _jumpHeight = Mathf.Max(0f, _jumpHeight);
-        _jumpTimeout = Mathf.Max(0f, _jumpTimeout);
-        _fallTimeout = Mathf.Max(0f, _fallTimeout);
-        _groundedRadius = Mathf.Max(0f, _groundedRadius);
-    }
+		// Update animator if using character
+		if (_animationSystem != null) _animationSystem.SetGrounded(IsGrounded);
+	}
+
+	protected override void OnPaused()
+	{
+		// Freeze vertical velocity when paused
+		VerticalVelocity = 0f;
+	}
 }

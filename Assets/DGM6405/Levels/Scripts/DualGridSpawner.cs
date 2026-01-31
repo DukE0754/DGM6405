@@ -1,5 +1,5 @@
-using System;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Tilemaps;
 
@@ -66,10 +66,10 @@ public class DualGridSpawner : MonoBehaviour
 	private void Update()
 	{
 #if UNITY_EDITOR
-		if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+		if (EditorApplication.isPlayingOrWillChangePlaymode)
 			return;
 #endif
-		
+
 		if (!AutoRefresh)
 			return;
 
@@ -93,10 +93,10 @@ public class DualGridSpawner : MonoBehaviour
 	private void OnValidate()
 	{
 #if UNITY_EDITOR
-		if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+		if (EditorApplication.isPlayingOrWillChangePlaymode)
 			return;
 #endif
-		
+
 		RequestRebuild();
 	}
 
@@ -148,7 +148,7 @@ public class DualGridSpawner : MonoBehaviour
 	public void Rebuild()
 	{
 #if UNITY_EDITOR
-		if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+		if (EditorApplication.isPlayingOrWillChangePlaymode)
 			return;
 #endif
 
@@ -361,17 +361,11 @@ public class DualGridSpawner : MonoBehaviour
 
 					// Now choose WHICH edge based on which adjacent side this quad is on
 					if (quadBit == adjA)
-					{
 						// Edge runs along adjB ↔ opposite(adjB)
 						rotationTargetMask = (byte) (adjB | oppositeBit);
-					}
 					else
-					{
 						// Edge runs along adjA ↔ opposite(adjA)
 						rotationTargetMask = (byte) (adjA | oppositeBit);
-					}
-
-
 				} // comment every line
 			} // comment every line
 
@@ -615,12 +609,12 @@ public class DualGridSpawner : MonoBehaviour
 #if UNITY_EDITOR
 		if (!Application.isPlaying)
 		{
-			obj = (GameObject) UnityEditor.PrefabUtility.InstantiatePrefab(prefab, Root);
+			obj = (GameObject) PrefabUtility.InstantiatePrefab(prefab, Root);
 			obj.transform.SetPositionAndRotation(
 				worldPos,
 				Quaternion.Euler(0, rotation, 0)
 			);
-			UnityEditor.Undo.RegisterCreatedObjectUndo(obj, "Spawn DualGrid Tile");
+			Undo.RegisterCreatedObjectUndo(obj, "Spawn DualGrid Tile");
 		}
 		else
 #endif
@@ -662,19 +656,6 @@ public class DualGridSpawner : MonoBehaviour
 		}
 	}
 
-	// ... inside DualGridSpawner class ...
-
-#if UNITY_EDITOR
-
-	// Tracks pending destroy requests as InstanceIDs (safe across domain/editor churn).
-	private static readonly Queue<int>
-		EditorDestroyQueue = new Queue<int>(); // Stores GameObject instance IDs to destroy later.
-
-	// Ensures we only hook EditorApplication.update once.
-	private static bool _editorDestroyHooked = false; // True once we've subscribed to the editor update pump.
-
-#endif
-
 	private void SafeDestroy(GameObject obj)
 	{
 		// If the reference is already null, there is nothing to destroy.
@@ -692,7 +673,7 @@ public class DualGridSpawner : MonoBehaviour
 		}
 
 		// Convert the object to an instance ID so we don't capture a fragile reference in a lambda.
-		int id = obj.GetInstanceID(); // Unique identifier for this UnityEngine.Object instance.
+		var id = obj.GetInstanceID(); // Unique identifier for this UnityEngine.Object instance.
 
 		// Queue this object for destruction during a safe editor update moment.
 		EditorDestroyQueue.Enqueue(id); // Adds the instance ID to the pending destroy list.
@@ -701,11 +682,10 @@ public class DualGridSpawner : MonoBehaviour
 		if (!_editorDestroyHooked) // Only subscribe a single time.
 		{
 			_editorDestroyHooked = true; // Mark as hooked so we don't double-subscribe.
-			UnityEditor.EditorApplication.update += DrainEditorDestroyQueue; // Drain the queue every editor update.
+			EditorApplication.update += DrainEditorDestroyQueue; // Drain the queue every editor update.
 		}
 
 #else
-
 	// Non-editor builds only need runtime destruction.
 	Destroy(obj); // Deferred runtime destroy.
 
@@ -717,14 +697,14 @@ public class DualGridSpawner : MonoBehaviour
 	{
 		// Never destroy objects while Unity is transitioning into/out of play mode.
 		// This avoids inspector / serialization churn while Unity is rebinding objects.
-		if (UnityEditor.EditorApplication.isPlayingOrWillChangePlaymode)
+		if (EditorApplication.isPlayingOrWillChangePlaymode)
 			return;
 
 		// If there's nothing to destroy, unhook and exit to avoid per-frame overhead.
 		if (EditorDestroyQueue.Count == 0)
 		{
 			// Unsubscribe from the editor update loop since the queue is empty.
-			UnityEditor.EditorApplication.update -= DrainEditorDestroyQueue;
+			EditorApplication.update -= DrainEditorDestroyQueue;
 
 			// Mark as unhooked so future SafeDestroy calls can re-hook.
 			_editorDestroyHooked = false;
@@ -737,17 +717,17 @@ public class DualGridSpawner : MonoBehaviour
 		while (EditorDestroyQueue.Count > 0)
 		{
 			// Pull the next instance ID to destroy.
-			int id = EditorDestroyQueue.Dequeue();
+			var id = EditorDestroyQueue.Dequeue();
 
 			// Resolve the instance ID back into a Unity object (may be null if already destroyed).
-			UnityEngine.Object unityObj = UnityEditor.EditorUtility.InstanceIDToObject(id);
+			var unityObj = EditorUtility.InstanceIDToObject(id);
 
 			// If the object no longer exists (already destroyed / unloaded), skip it.
 			if (!unityObj)
 				continue;
 
 			// We only expect GameObjects here, but we cast defensively.
-			GameObject go = unityObj as GameObject;
+			var go = unityObj as GameObject;
 
 			// If this isn’t a GameObject, skip it (unexpected input).
 			if (!go)
@@ -759,13 +739,26 @@ public class DualGridSpawner : MonoBehaviour
 
 			// If the object (or a child) is selected, deselect it to prevent inspector binding errors.
 			// This prevents the inspector from trying to draw a missing target mid-destroy.
-			if (UnityEditor.Selection.activeObject == go)
-				UnityEditor.Selection.activeObject = null;
+			if (Selection.activeObject == go)
+				Selection.activeObject = null;
 
 			// Destroy using Undo so the user can Ctrl+Z in edit mode.
 			// This also properly records prefab instance removals.
-			UnityEditor.Undo.DestroyObjectImmediate(go);
+			Undo.DestroyObjectImmediate(go);
 		}
 	}
+#endif
+
+	// ... inside DualGridSpawner class ...
+
+#if UNITY_EDITOR
+
+	// Tracks pending destroy requests as InstanceIDs (safe across domain/editor churn).
+	private static readonly Queue<int>
+		EditorDestroyQueue = new(); // Stores GameObject instance IDs to destroy later.
+
+	// Ensures we only hook EditorApplication.update once.
+	private static bool _editorDestroyHooked; // True once we've subscribed to the editor update pump.
+
 #endif
 }

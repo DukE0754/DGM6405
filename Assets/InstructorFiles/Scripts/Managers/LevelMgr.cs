@@ -15,8 +15,9 @@ public class LevelMgr : Singleton<LevelMgr>
 #endregion
 
 #region Runtime State
+
 	public int CurrentLevelIndex { get; private set; } = -1;
-	
+
 #endregion
 
 #region Public Properties

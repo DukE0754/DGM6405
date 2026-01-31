@@ -24,50 +24,10 @@ public class PlayerInputHandler : MonoBehaviour
 
 	public bool cursorInputForLook = true;
 
-#if ENABLE_INPUT_SYSTEM
-	public void OnMove(InputValue value)
+	private void OnApplicationFocus(bool hasFocus)
 	{
-		MoveInput(value.Get<Vector2>());
+		SetCursorState(cursorLocked);
 	}
-
-	public void OnLook(InputValue value)
-	{
-		if (cursorInputForLook)
-		{
-			LookInput(value.Get<Vector2>());
-		}
-	}
-
-	public void OnJump(InputValue value)
-	{
-		JumpInput(value.isPressed);
-	}
-
-	public void OnSprint(InputValue value)
-	{
-		SprintInput(value.isPressed);
-	}
-
-	public void OnBlock(InputValue value)
-	{
-		BlockInput(value.isPressed);
-	}
-
-	public void OnMelee(InputValue value)
-	{
-		MeleeInput(value.isPressed);
-	}
-
-	public void OnShoot(InputValue value)
-	{
-		ShootInput(value.isPressed);
-	}
-
-	public void OnDodge(InputValue value)
-	{
-		DodgeInput(value.isPressed);
-	}
-#endif
 
 
 	public void MoveInput(Vector2 newMoveDirection)
@@ -122,13 +82,50 @@ public class PlayerInputHandler : MonoBehaviour
 		dodge = false;
 	}
 
-	private void OnApplicationFocus(bool hasFocus)
-	{
-		SetCursorState(cursorLocked);
-	}
-
 	private void SetCursorState(bool newState)
 	{
 		Cursor.lockState = newState ? CursorLockMode.Locked : CursorLockMode.None;
 	}
+
+#if ENABLE_INPUT_SYSTEM
+	public void OnMove(InputValue value)
+	{
+		MoveInput(value.Get<Vector2>());
+	}
+
+	public void OnLook(InputValue value)
+	{
+		if (cursorInputForLook) LookInput(value.Get<Vector2>());
+	}
+
+	public void OnJump(InputValue value)
+	{
+		JumpInput(value.isPressed);
+	}
+
+	public void OnSprint(InputValue value)
+	{
+		SprintInput(value.isPressed);
+	}
+
+	public void OnBlock(InputValue value)
+	{
+		BlockInput(value.isPressed);
+	}
+
+	public void OnMelee(InputValue value)
+	{
+		MeleeInput(value.isPressed);
+	}
+
+	public void OnShoot(InputValue value)
+	{
+		ShootInput(value.isPressed);
+	}
+
+	public void OnDodge(InputValue value)
+	{
+		DodgeInput(value.isPressed);
+	}
+#endif
 }
