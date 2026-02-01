@@ -29,7 +29,7 @@ Transform:
   m_GameObject: {fileID: 1608850931735784467}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.1, y: 0.54999995, z: -1}
+  m_LocalPosition: {x: 0.1, y: 0.35, z: -1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -263,7 +263,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.54999995
+      value: 0.40019935
       objectReference: {fileID: 0}
     - target: {fileID: 8944336655422409503, guid: f6d148d888ffbf54b9afe9936dfaec1f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -493,15 +493,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2248522865725635320, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -90
+      value: 0.00000020009419
       objectReference: {fileID: 0}
     - target: {fileID: 2248522865725635320, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: -9.36
+      value: -0.0000025090026
       objectReference: {fileID: 0}
     - target: {fileID: 2248522865725635320, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 90
+      value: 90.00001
       objectReference: {fileID: 0}
     - target: {fileID: 2514015827012775822, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_Enabled
@@ -634,6 +634,18 @@ PrefabInstance:
     - target: {fileID: 5214820627068003539, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalRotation.z
       value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214820627068003539, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0.035772264
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214820627068003539, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -2.9204142
+      objectReference: {fileID: 0}
+    - target: {fileID: 5214820627068003539, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: -90.05511
       objectReference: {fileID: 0}
     - target: {fileID: 5642591331984179921, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalPosition.x
@@ -949,7 +961,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8980312366013264700, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.2
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8980312366013264700, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       propertyPath: m_LocalPosition.z
@@ -1029,6 +1041,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7151520559642693165}
+    - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2742346973546801844}
   m_SourcePrefab: {fileID: 100100000, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
 --- !u!114 &801648990460991969 stripped
 MonoBehaviour:
@@ -1163,6 +1178,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 74722bcad125f4e11a02720bee637918, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterAnimationSystem
+  _animSmoothingTime: 0.1
   _animationWalkSpeed: 2
   _animationRunSpeed: 5.335
   _context: {fileID: 4249173615142340639}
@@ -1315,6 +1331,182 @@ MonoBehaviour:
   - {fileID: 1016619505560817176}
   - {fileID: 7591131759727384290}
   - {fileID: 871638266791716752}
+--- !u!114 &2742346973546801844
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304878149290850212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e83668c454b4396488081147cb5c9176, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::FIMSpace.FLook.FLookAnimator
+  BirdMode: 0
+  LagRotation: 0.85
+  LagEvery: 0.285
+  DelayPosition: 0
+  DelayMaxDistance: 0.25111
+  DelayGoSpeed: 0.6
+  BirdTargetPosition: {x: 0, y: 0, z: 1}
+  UseEyes: 0
+  EyesTarget: {fileID: 0}
+  LeftEye: {fileID: 0}
+  InvertLeftEye: 0
+  RightEye: {fileID: 0}
+  InvertRightEye: 0
+  HeadReference: {fileID: 0}
+  EyesOffsetRotation: {x: 0, y: 0, z: 0}
+  LeftEyeOffsetRotation: {x: 0, y: 0, z: 0}
+  RightEyeOffsetRotation: {x: 0, y: 0, z: 0}
+  EyesSpeed: 0.5
+  EyesBlend: 1
+  EyesXRange: {x: -60, y: 60}
+  EyesYRange: {x: -50, y: 50}
+  EyesNoKeyframes: 1
+  CustomEyesLogics: 0
+  NoddingTransitions: 0
+  NodAxis: {x: 1, y: 0, z: 0}
+  BackBonesNod: 0.15
+  ParentalOffsetsV: 2
+  ParentalReferenceBone: {fileID: 0}
+  DestroyMomentTargetOnMaxDistance: 1
+  OverrideRotations: 0
+  BackBonesCount: 0
+  _preBackBonesCount: 0
+  LookBones:
+  - Transform: {fileID: 7039442373068498459}
+    animatedStaticRotation: {x: 0, y: 0, z: 0, w: 0}
+    targetStaticRotation: {x: 0, y: 0, z: 0, w: 0}
+    localStaticRotation: {x: 0, y: 0, z: 0, w: 0}
+    animatedTargetRotation: {x: 0, y: 0, z: 0, w: 0}
+    targetRotation: {x: 0, y: 0, z: 0, w: 0}
+    correctionOffset: {x: 0, y: 0, z: 0}
+    finalRotation: {x: 0, y: 0, z: 0, w: 0}
+    lastKeyframeRotation: {x: 0, y: 0, z: 0, w: 0}
+    lastFinalLocalRotation: {x: 0, y: 0, z: 0, w: 0}
+    forward: {x: 0, y: 0, z: 0}
+    right: {x: 0, y: 0, z: 0}
+    up: {x: 0, y: 0, z: 0}
+    initLocalPos: {x: 1.1717555e-29, y: 0.26879653, z: 0}
+    initLocalRot: {x: -0.15974468, y: -0.2135224, z: -0.03542918, w: 0.9631379}
+    targetDelayPosition: {x: 0, y: 0, z: 0}
+    animatedDelayPosition: {x: 0, y: 0, z: 0}
+    lookWeight: 1
+    lookWeightB: 1
+    motionWeight: 1
+  NoTargetHeadStops: 0
+  _editor_hideEyes: 0
+  _editor_displayName: Look Animator 2
+  _Editor_Category: 0
+  _gizmosDrawMaxDist: 1
+  gizmosAlpha: 0.85
+  drawGizmos: 1
+  _gizmosDrawingGuides: 1
+  LeadBone: {fileID: 7039442373068498459}
+  BaseTransform: {fileID: 1823970424633306398}
+  FaloffValue: 1
+  FaloffValueB: 1.1
+  BigAngleAutomation: 0
+  BigAngleAutomationCompensation: 0
+  AutoBackbonesWeights: 1
+  CurveSpread: 0
+  BackBonesFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: -0.9
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0.1
+      inSlope: -0.9
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  CompensationBones:
+  - Transform: {fileID: 8150372904869829440}
+  - Transform: {fileID: 8682181066837672202}
+  CompensationWeight: 1
+  CompensationWeightB: 0.5
+  CompensatePositions: 0
+  CompensatePositionsB: 0
+  StartAfterTPose: 0
+  AnimatePhysics: 0
+  OptimizeWithMesh: {fileID: 0}
+  OptimizeAtDistance: 0
+  customDistanceCamera: {fileID: 0}
+  ObjectToFollow: {fileID: 3878907962203138073}
+  FollowOffset: {x: 0, y: 0, z: 0}
+  FollowMode: 0
+  RotationSpeed: 2.5
+  UltraSmoother: 0
+  StopLookingAbove: 180
+  StopLookingAboveFactor: 1
+  StopLookAboveMargin: 0
+  ChangeTargetSmoothing: 0
+  AdvancedFalloff: 0
+  MaximumDistance: 0
+  HoldRotateToOppositeUntil: 0
+  MaxOutDistanceFactor: 0
+  Distance2D: 0
+  DistanceMeasurePoint: {x: 0, y: 0, z: 0}
+  LookWhenAbove: 0
+  LookWhenAboveVertical: 0
+  WhenAboveGoBackAfter: 0
+  WhenAboveGoBackAfterVertical: 0
+  WhenAboveGoBackDuration: 0.2
+  StartLookElasticRangeX: 0
+  StartLookElasticRangeY: 0
+  XRotationLimits: {x: -80, y: 80}
+  XElasticRange: 20
+  LimitHolder: 1
+  YRotationLimits: {x: -50, y: 50}
+  YElasticRange: 15
+  LookAnimatorAmount: 1
+  StartLookPointOffset: {x: 0, y: 0, z: 0}
+  AnchorStartLookPoint: 1
+  RefreshStartLookPoint: 1
+  SyncWithAnimator: 1
+  MonitorAnimator: 0
+  WeightsMultiplier: 1
+  MaxRotationSpeed: 2.5
+  BaseRotationCompensation: 1
+  DetectZeroKeyframes: 1
+  LookAtPositionSmoother: 0
+  DeltaType: 0
+  SimulationSpeed: 1
+  OverrideHeadForPerfectLookDirection: 0
+  ApplyClampingForOverrideMode: 0
+  Calibration: 0
+  FixingPreset: 2
+  ModelForwardAxis: {x: 0, y: 0, z: 1}
+  ModelUpAxis: {x: 0, y: 1, z: 0}
+  ManualFromAxis: {x: 0, y: 0, z: 1}
+  ManualToAxis: {x: 0, y: 0, z: 1}
+  FromAuto: {x: 0, y: 0, z: 0}
+  OffsetAuto: {x: 0, y: 0, z: 0}
+  parentalReferenceLookForward: {x: 0, y: 0, z: 0}
+  parentalReferenceUp: {x: 0, y: 0, z: 0}
+  DynamicReferenceUp: {x: 0, y: 0, z: 0}
+  RotationOffset: {x: 0, y: 0, z: 0}
+  BackBonesAddOffset: {x: 0, y: 0, z: 0}
+  RotCorrectionMultiplier: {x: 1, y: 1, z: 1}
+  DebugRays: 0
+  AnimationStyle: 0
+  ConstantParentalAxisUpdate: 1
 --- !u!4 &1823970424633306398 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8980312366013264700, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
@@ -1360,6 +1552,16 @@ Transform:
 --- !u!1 &7591131759727384290 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 912383502692780224, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+  m_PrefabInstance: {fileID: 7345496249011969570}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8150372904869829440 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1507440418502903138, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+  m_PrefabInstance: {fileID: 7345496249011969570}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &8682181066837672202 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2129424468033527592, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
   m_PrefabInstance: {fileID: 7345496249011969570}
   m_PrefabAsset: {fileID: 0}
 --- !u!4 &8846242063327028442 stripped

@@ -133,10 +133,10 @@ public class MeleeSystem : PausableBehaviour
 		var wasMeleeAttacking = IsMeleeAttacking;
 		IsMeleeAttacking = isMeleeAttacking;
 
-		// If just started attacking, play sound
-		if (IsMeleeAttacking && !wasMeleeAttacking)
-			if (_soundSystem != null)
-				_soundSystem.PlayMelee();
+		// // If just started attacking, play sound
+		// if (IsMeleeAttacking && !wasMeleeAttacking)
+		// 	if (_soundSystem != null)
+		// 		_soundSystem.PlayMelee();
 
 		// Update animation and weapon visibility
 		UpdateMeleeState();
