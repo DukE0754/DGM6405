@@ -43,7 +43,11 @@ public class Settings : MenuBase
 
 	private void RefreshSlidersFromSaveData()
 	{
-		if (SaveUtil.SavedValues == null) return;
+		if (SaveUtil.SavedValues == null)
+		{
+			Debug.LogError("Failed to find save data");
+			return;
+		}
 
 		_ignoreEvents = true;
 		if (_masterSlider) _masterSlider.value = SaveUtil.SavedValues.GlobalVolume;

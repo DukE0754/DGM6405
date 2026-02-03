@@ -31,6 +31,14 @@ public class PauseMenu : MenuBase
 		LevelMgr.Instance.ReloadCurrentLevel();
 	}
 
+	public void ButtonSettings()
+	{
+		if (!Interactable) return;
+		Interactable = false;
+
+		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu, () => Interactable = true);
+	}
+	
 	public void ButtonQuit()
 	{
 		if (!Interactable) return;

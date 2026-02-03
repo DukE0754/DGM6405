@@ -110,7 +110,8 @@ public class GameMgr : Singleton<GameMgr>
 		Cursor.lockState = CursorLockMode.Locked;
 		_gameState = GameStates.InGame;
 		Debug.Log("Pause state disabled");
-		UIMgr.Instance.HideMenu(GameMenus.PauseMenu);
+		UIMgr.Instance.CloseAllMenus();
+		UIMgr.Instance.ShowMenu(GameMenus.InGameUI, null, false);
 		PauseStateChanged?.Invoke(false);
 	}
 

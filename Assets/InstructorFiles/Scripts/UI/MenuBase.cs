@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -15,7 +16,7 @@ public abstract class MenuBase : MonoBehaviour
     /// Menus should not be interactable while fading.
     /// Use to prevent double-click issues.
     /// </summary>
-    protected bool Interactable = false;
+    [SerializeField] protected bool Interactable = false;
 
     /// <summary>
     /// Canvas of the menu

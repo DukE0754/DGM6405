@@ -57,7 +57,10 @@ public class UIMgr : Singleton<UIMgr>
 		if (fadeIn)
 			menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
 		else
+		{
+			menu.PerformFullFadeIn(0);
 			onMenuOpenComplete?.Invoke();
+		}
 		return menu;
 	}
 
@@ -68,6 +71,7 @@ public class UIMgr : Singleton<UIMgr>
 	public void ShowSplash(Action onComplete)
 	{
 		var menu = ShowMenu(GameMenus.Splash);
+		menu.PerformFullFadeIn(_fadeInDuration);
 		if (menu is SplashMenu splashMenu) splashMenu.OnShow(onComplete);
 	}
 
@@ -122,8 +126,7 @@ public class UIMgr : Singleton<UIMgr>
 			sortOverride = 0;
 
 		uiObj.SortOrder = sortOverride;
-
-		uiObj.PerformFullFadeIn(_fadeInDuration);
+		
 		_activeMenus.Push(uiObj);
 
 		return uiObj;

@@ -74,7 +74,7 @@ public class MainMenu : MenuBase
 		if (!Interactable) return;
 		Interactable = false;
 
-		UIMgr.Instance.ShowMenu(GameMenus.LevelSelectMenu);
+		UIMgr.Instance.ShowMenu(GameMenus.LevelSelectMenu, () => Interactable = true);
 	}
 
 	public void ButtonSettings()
@@ -82,7 +82,7 @@ public class MainMenu : MenuBase
 		if (!Interactable) return;
 		Interactable = false;
 
-		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu);
+		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu, () => Interactable = true);
 	}
 
 	public void ButtonQuit()
