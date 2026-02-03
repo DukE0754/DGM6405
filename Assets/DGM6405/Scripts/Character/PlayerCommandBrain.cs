@@ -273,7 +273,8 @@ public class PlayerCommandBrain : PausableBehaviour
 			return;
 
 		// Process movement
-		if (_movementSystem != null) _movementSystem.ApplyMovement(_inputHandler.move, _inputHandler.sprint);
+		if (_movementSystem != null) 
+			_movementSystem.ApplyMovement(_inputHandler.move, _inputHandler.sprint);
 
 		// Process jump and gravity
 		if (_jumpGravitySystem != null)
