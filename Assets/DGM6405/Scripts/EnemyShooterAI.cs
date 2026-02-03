@@ -12,6 +12,7 @@ public class EnemyShooterAI : MonoBehaviour
 
     [Header("Aim")]
     [SerializeField] private Vector3 targetOffset = Vector3.up;
+    [SerializeField] private bool requireTarget = false;
 
     [Header("Debug")]
     [SerializeField] private Color gizmoColor = Color.red;
@@ -23,21 +24,26 @@ public class EnemyShooterAI : MonoBehaviour
 
     private void Update()
     {
-        if (shooter == null || target == null) return;
+        if (shooter == null)  return;
+        if (requireTarget)
+        {
+            if (target == null) return;
+            Vector3 aimPoint = target.position + targetOffset;
+            Vector3 dir = aimPoint - transform.position;
 
-        Vector3 aimPoint = target.position + targetOffset;
-        Vector3 dir = aimPoint - transform.position;
+            float dist = dir.magnitude;
+            if (dist > shootRange) return;
+            if (dir.sqrMagnitude < 0.0001f) return;
 
-        float dist = dir.magnitude;
-        if (dist > shootRange) return;
-        if (dir.sqrMagnitude < 0.0001f) return;
+            Quaternion desiredRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                desiredRotation,
+                rotationSpeed * Time.deltaTime
+            );
+        }
 
-        Quaternion desiredRotation = Quaternion.LookRotation(dir.normalized, Vector3.up);
-        transform.rotation = Quaternion.Slerp(
-            transform.rotation,
-            desiredRotation,
-            rotationSpeed * Time.deltaTime
-        );
+
 
         shooter.ShootForward();
     }
