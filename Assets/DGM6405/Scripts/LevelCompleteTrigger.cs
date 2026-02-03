@@ -9,9 +9,13 @@ public class LevelCompleteTrigger : MonoBehaviour
 			var gameLoop = FindFirstObjectByType<GameLoopManager>();
 			var timeMs = 0;
 
-			if (gameLoop != null)
+			if (gameLoop != null) 
 			{
 				timeMs = Mathf.RoundToInt(gameLoop.GameTimer * 1000f);
+			}
+			else
+			{
+				Debug.LogWarning("LevelCompleteTrigger: No GameLoopManager found in scene. Time will be 0.");
 			}
 
 			GameMgr.Instance.NextLevel(timeMs);

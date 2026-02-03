@@ -11,5 +11,10 @@ public class LevelData : ScriptableObject
         public string SceneName;
         public string LevelName;
         public int ParTimeMs;
+        
+        [Header("Abilities")]
+        public bool AllowBlock = true;
+        public bool AllowShoot = true;
+        public bool AllowMelee = true;
     }
 }

@@ -31,43 +31,12 @@ public class GameMgr : Singleton<GameMgr>
 	///     Should the game loop be looping
 	/// </summary>
 	public bool IsGameRunning => _gameState == GameStates.InGame;
+
 	public bool IsPaused => _gameState == GameStates.Paused;
 
 	public event Action<bool> PauseStateChanged;
 
-#region Score
-	/// <summary>
-	///     Example of GameMgr responsibility.
-	///     Score may need to survive the game loop for Game Over screen
-	/// </summary>
-	public float Score { get; private set; }
-
-	/// <summary>
-	///     Reset the score, assumes starting at zero
-	/// </summary>
-	public void ResetScore()
-	{
-		Score = 0;
-	}
-
-	/// <summary>
-	///     Gain score from a source
-	/// </summary>
-	/// <param name="value"></param>
-	public void AddScore(float value)
-	{
-		Score += value;
-	}
-
-	/// <summary>
-	///     Subtract score, don't allow lower than zero
-	/// </summary>
-	/// <param name="value"></param>
-	public void SubtractScore(float value)
-	{
-		Score = Mathf.Max(0, Score - value);
-	}
-	#endregion
+	public int LastRunTimeMs { get; private set; }
 
 	/// <summary>
 	///     Begin the game and start the game loop
@@ -79,6 +48,7 @@ public class GameMgr : Singleton<GameMgr>
 		_gameState = GameStates.InGame;
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.Locked;
+		LastRunTimeMs = 0;
 	}
 
 	/// <summary>
@@ -97,6 +67,7 @@ public class GameMgr : Singleton<GameMgr>
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.None;
 		_gameState = GameStates.GameOver;
+		LastRunTimeMs = timeMs;
 		LevelMgr.Instance.CompleteCurrentLevel(timeMs);
 		SceneMgr.Instance.LoadScene(
 			GameScenes.GameOver, GameMenus.LevelCompleteMenu, () => GameState = GameStates.GameOver);
@@ -142,4 +113,40 @@ public class GameMgr : Singleton<GameMgr>
 		UIMgr.Instance.HideMenu(GameMenus.PauseMenu);
 		PauseStateChanged?.Invoke(false);
 	}
+
+#region Score
+
+	/// <summary>
+	///     Example of GameMgr responsibility.
+	///     Score may need to survive the game loop for Game Over screen
+	/// </summary>
+	public float Score { get; private set; }
+
+	/// <summary>
+	///     Reset the score, assumes starting at zero
+	/// </summary>
+	public void ResetScore()
+	{
+		Score = 0;
+	}
+
+	/// <summary>
+	///     Gain score from a source
+	/// </summary>
+	/// <param name="value"></param>
+	public void AddScore(float value)
+	{
+		Score += value;
+	}
+
+	/// <summary>
+	///     Subtract score, don't allow lower than zero
+	/// </summary>
+	/// <param name="value"></param>
+	public void SubtractScore(float value)
+	{
+		Score = Mathf.Max(0, Score - value);
+	}
+
+#endregion
 }

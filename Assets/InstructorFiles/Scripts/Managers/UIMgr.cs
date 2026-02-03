@@ -15,6 +15,7 @@ public class UIMgr : Singleton<UIMgr>
 
 	[Header("Menus")]
 	[SerializeField] private MenuBase _screenFaderPrefab;
+
 	[SerializeField] private MenuBase _splashMenuPrefab;
 	[SerializeField] private MenuBase _mainMenuPrefab;
 	[SerializeField] private MenuBase _settingsMenuPrefab;
@@ -23,7 +24,7 @@ public class UIMgr : Singleton<UIMgr>
 	[SerializeField] private MenuBase _pauseMenuPrefab;
 	[SerializeField] private MenuBase _levelCompleteMenuPrefab;
 	[SerializeField] private MenuBase _levelSelectMenuPrefab;
-	
+
 	private readonly Stack<MenuBase> _activeMenus = new();
 	private readonly Dictionary<GameMenus, MenuBase> _disabledMenus = new();
 

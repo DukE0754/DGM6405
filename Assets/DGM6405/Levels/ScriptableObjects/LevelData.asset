@@ -13,15 +13,27 @@ MonoBehaviour:
   m_Name: LevelData
   m_EditorClassIdentifier: Assembly-CSharp::LevelData
   Levels:
-  - SceneName: Level_1
+  - SceneName: Level_1_1
     LevelName: 1 Baby Steps
     ParTimeMs: 30000
-  - SceneName: Level_2
+    AllowBlock: 0
+    AllowShoot: 0
+    AllowMelee: 0
+  - SceneName: Level_1_2
     LevelName: 2 Water You Waiting For?
     ParTimeMs: 45000
-  - SceneName: Level_3
+    AllowBlock: 0
+    AllowShoot: 0
+    AllowMelee: 0
+  - SceneName: Level_1_3
     LevelName: 2 Jumping for Joy
     ParTimeMs: 45000
-  - SceneName: Level_4
+    AllowBlock: 0
+    AllowShoot: 0
+    AllowMelee: 0
+  - SceneName: Level_1_4
     LevelName: 2 Faster, Farther
     ParTimeMs: 45000
+    AllowBlock: 0
+    AllowShoot: 0
+    AllowMelee: 0
