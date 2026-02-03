@@ -90,7 +90,7 @@ public class GameMgr : Singleton<GameMgr>
 
 			if (!IsGameRunning)
 			{
-				Debug.LogWarning("Game is not running, cannot toggle pause");
+				//Debug.Log("Game is not running, cannot toggle pause");
 				return;
 			}
 
