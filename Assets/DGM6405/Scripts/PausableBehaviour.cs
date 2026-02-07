@@ -1,34 +1,53 @@
+using DGM6405.Events;
 using UnityEngine;
 
-public abstract class PausableBehaviour : MonoBehaviour
+public abstract class PausableBehaviour : MonoBehaviour, IGameStateListener
 {
-	private bool _isPaused;
+	protected bool IsPaused { get; private set; }
 
-	protected bool IsPaused => _isPaused;
+	private void Update()
+	{
+		if (!IsPaused)
+			PausableUpdate();
+	}
+
+	private void FixedUpdate()
+	{
+		if (!IsPaused)
+			PausableFixedUpdate();
+	}
+
+	private void LateUpdate()
+	{
+		if (!IsPaused)
+			PausableLateUpdate();
+	}
 
 	protected virtual void OnEnable()
 	{
-		if (GameMgr.Instance == null)
+		if (GlobalEventBus.Instance == null)
 			return;
 
-		_isPaused = GameMgr.Instance.IsPaused;
-		GameMgr.Instance.PauseStateChanged += HandlePauseStateChanged;
+		if (GameMgr.Instance != null)
+			IsPaused = GameMgr.Instance.IsPaused;
+
+		GlobalEventBus.Instance.Register<IGameStateListener>(this);
 	}
 
 	protected virtual void OnDisable()
 	{
-		if (GameMgr.Instance == null)
+		if (GlobalEventBus.Instance == null)
 			return;
 
-		GameMgr.Instance.PauseStateChanged -= HandlePauseStateChanged;
+		GlobalEventBus.Instance.Unregister<IGameStateListener>(this);
 	}
 
-	private void HandlePauseStateChanged(bool paused)
+	public void OnPauseStateChanged(bool paused)
 	{
-		if (_isPaused == paused)
+		if (IsPaused == paused)
 			return;
 
-		_isPaused = paused;
+		IsPaused = paused;
 
 		if (paused)
 			OnPaused();
@@ -36,27 +55,23 @@ public abstract class PausableBehaviour : MonoBehaviour
 			OnResumed();
 	}
 
-	private void Update()
+	protected virtual void OnPaused()
 	{
-		if (!_isPaused)
-			PausableUpdate();
 	}
 
-	private void LateUpdate()
+	protected virtual void OnResumed()
 	{
-		if (!_isPaused)
-			PausableLateUpdate();
 	}
 
-	private void FixedUpdate()
+	protected virtual void PausableUpdate()
 	{
-		if (!_isPaused)
-			PausableFixedUpdate();
 	}
 
-	protected virtual void OnPaused() { }
-	protected virtual void OnResumed() { }
-	protected virtual void PausableUpdate() { }
-	protected virtual void PausableLateUpdate() { }
-	protected virtual void PausableFixedUpdate() { }
+	protected virtual void PausableLateUpdate()
+	{
+	}
+
+	protected virtual void PausableFixedUpdate()
+	{
+	}
 }

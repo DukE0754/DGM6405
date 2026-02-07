@@ -55,12 +55,15 @@ public class UIMgr : Singleton<UIMgr>
 		var menu = PushMenu(menuToOpen);
 		if (!menu) return null;
 		if (fadeIn)
+		{
 			menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
+		}
 		else
 		{
 			menu.PerformFullFadeIn(0);
 			onMenuOpenComplete?.Invoke();
 		}
+
 		return menu;
 	}
 
@@ -126,7 +129,7 @@ public class UIMgr : Singleton<UIMgr>
 			sortOverride = 0;
 
 		uiObj.SortOrder = sortOverride;
-		
+
 		_activeMenus.Push(uiObj);
 
 		return uiObj;

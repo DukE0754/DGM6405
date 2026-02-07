@@ -1,26 +1,21 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles shooting/ranged combat.
 ///     Manages projectile spawning, weapon visibility, and shooting animations.
 /// </summary>
-public class ShootSystem : PausableBehaviour
+public class ShootSystem : PausableBehaviour, IShootListener
 {
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
+
 	[Header("References")]
 	[Tooltip("ProjectileShooter component for spawning projectiles. Required.")]
 	[SerializeField] private ProjectileShooter _projectileShooter;
 
-	[Tooltip("CharacterAnimationSystem for updating shoot animations. Required.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
-
-	[Tooltip("WeaponHandSlots for managing weapon visibility. If null, will use from CharacterContext.")]
-	[SerializeField] private WeaponHandSlots _weaponHandSlots;
-
 	[Tooltip("AimSystem for getting aim point. Optional, but recommended for accurate aiming.")]
 	[SerializeField] private AimSystem _aimSystem;
-
-	[Tooltip("CharacterSoundSystem for playing shoot sounds. Optional.")]
-	[SerializeField] private CharacterSoundSystem _soundSystem;
 
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
@@ -36,53 +31,26 @@ public class ShootSystem : PausableBehaviour
 
 	private void Awake()
 	{
-		// Get context if not assigned
-		if (_context == null) _context = GetComponent<CharacterContext>();
-
-		// Get projectile shooter if not assigned
-		if (_projectileShooter == null) _projectileShooter = GetComponent<ProjectileShooter>();
+		// Validate context
+		if (_context == null)
+		{
+			Debug.LogError($"[{name}] ShootSystem: CharacterContext is required!", this);
+			enabled = false;
+			return;
+		}
 
 		// Validate projectile shooter
 		if (_projectileShooter == null)
 		{
-			Debug.LogError(
-				$"[{name}] ShootSystem: ProjectileShooter is required! " +
-				"Add ProjectileShooter component or assign reference in inspector.",
-				this
-			);
+			Debug.LogError($"[{name}] ShootSystem: ProjectileShooter is required!", this);
 			enabled = false;
 			return;
 		}
 
-		// Get animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
-
-		// Validate animation system
-		if (_animationSystem == null)
-		{
-			Debug.LogError(
-				$"[{name}] ShootSystem: CharacterAnimationSystem is required! " +
-				"Add CharacterAnimationSystem component or assign reference in inspector.",
-				this
-			);
-			enabled = false;
-			return;
-		}
-
-		// Get weapon hand slots from context or direct reference
-		if (_weaponHandSlots == null)
-		{
-			if (_context != null)
-				_weaponHandSlots = _context.WeaponHandSlots;
-			else
-				_weaponHandSlots = GetComponent<WeaponHandSlots>();
-		}
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 
 		// Get aim system if not assigned
 		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
-
-		// Get sound system if not assigned
-		if (_soundSystem == null) _soundSystem = GetComponent<CharacterSoundSystem>();
 	}
 
 	private void OnDrawGizmosSelected()
@@ -117,30 +85,29 @@ public class ShootSystem : PausableBehaviour
 
 	private void OnValidate()
 	{
-		// Warn if required components not assigned
-		if (_projectileShooter == null)
-			Debug.LogWarning($"[{name}] ShootSystem: ProjectileShooter reference not assigned in inspector.", this);
-
-		if (_animationSystem == null)
-			Debug.LogWarning(
-				$"[{name}] ShootSystem: CharacterAnimationSystem reference not assigned in inspector.", this);
+		// Auto-hookup in editor
+		if (_context == null) _context = GetComponent<CharacterContext>();
+		if (_projectileShooter == null) _projectileShooter = GetComponent<ProjectileShooter>();
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
+		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 	}
 
 	/// <summary>
 	///     Attempts to shoot based on input command.
 	/// </summary>
 	/// <param name="isShooting">Whether shoot input is active.</param>
-	public void TryShoot(bool isShooting)
+	public void OnShoot(bool shootInput)
+	{
+		TryShoot(shootInput);
+	}
+
+	private void TryShoot(bool isShooting)
 	{
 		// Check game state
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 		{
 			// Cancel shooting if game is not running
-			if (IsShooting)
-			{
-				IsShooting = false;
-				UpdateShootState();
-			}
+			if (IsShooting) IsShooting = false;
 
 			return;
 		}
@@ -151,9 +118,6 @@ public class ShootSystem : PausableBehaviour
 
 		// If just started shooting, fire projectile
 		if (IsShooting && !wasShooting) FireProjectile();
-
-		// Update animation and weapon visibility
-		UpdateShootState();
 	}
 
 	/// <summary>
@@ -179,35 +143,11 @@ public class ShootSystem : PausableBehaviour
 			// Fallback to forward shooting if no aim system
 			_projectileShooter.ShootForward();
 		}
-
-		// Play shoot sound
-		if (_soundSystem != null) _soundSystem.PlayShoot();
-	}
-
-	/// <summary>
-	///     Updates animation and weapon slot visibility based on shooting state.
-	/// </summary>
-	private void UpdateShootState()
-	{
-		// Update animation
-		if (_animationSystem != null) _animationSystem.SetShoot(IsShooting);
-
-		// Update weapon slot visibility
-		if (_weaponHandSlots != null)
-		{
-			if (IsShooting)
-				_weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.Ranged);
-			// Coordination is now handled by PlayerCommandBrain.
-		}
 	}
 
 	protected override void OnPaused()
 	{
 		// Cancel shooting when paused
-		if (IsShooting)
-		{
-			IsShooting = false;
-			UpdateShootState();
-		}
+		if (IsShooting) IsShooting = false;
 	}
 }

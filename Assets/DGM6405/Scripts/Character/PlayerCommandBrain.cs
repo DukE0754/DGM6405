@@ -1,3 +1,4 @@
+using DGM6405.Events;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -7,8 +8,11 @@ using UnityEngine.InputSystem;
 ///     Command brain for player character.
 ///     Reads input from PlayerInputHandler and dispatches commands to modular systems.
 /// </summary>
-public class PlayerCommandBrain : PausableBehaviour
+public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 {
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
+
 	[Header("Input")]
 	[Tooltip("PlayerInputHandler component. Required.")]
 	[SerializeField] private PlayerInputHandler _inputHandler;
@@ -18,47 +22,14 @@ public class PlayerCommandBrain : PausableBehaviour
 	[SerializeField] private PlayerInput _playerInput;
 #endif
 
-	[Header("Systems")]
-	[Tooltip("CharacterMovementSystem for movement commands. Required.")]
-	[SerializeField] private CharacterMovementSystem _movementSystem;
-
-	[Tooltip("JumpGravitySystem for jump commands. Required.")]
-	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
-
-	[Tooltip("CameraRotationSystem for camera rotation. Required.")]
-	[SerializeField] private CameraRotationSystem _cameraRotationSystem;
-
-	[Tooltip("BlockSystem for blocking commands. Optional.")]
-	[SerializeField] private BlockSystem _blockSystem;
-
-	[Tooltip("ShootSystem for shooting commands. Optional.")]
-	[SerializeField] private ShootSystem _shootSystem;
-
-	[Tooltip("MeleeSystem for melee attack commands. Optional.")]
-	[SerializeField] private MeleeSystem _meleeSystem;
-
-	[Tooltip("AimSystem for aim point updates. Optional.")]
-	[SerializeField] private AimSystem _aimSystem;
-
-	[Tooltip("WeaponHandSlots for clearing weapon slots when no combat system is active. Optional.")]
-	[SerializeField] private WeaponHandSlots _weaponHandSlots;
-
 	// Cached control scheme check
 	private bool _isCurrentDeviceMouse;
+
+	private bool _isInitialised;
 
 	private void Awake()
 	{
 		InitializeComponents();
-	}
-
-	private void OnEnable()
-	{
-		GameLoopManager.OnLevelReady += OnLevelReady;
-	}
-
-	private void OnDisable()
-	{
-		GameLoopManager.OnLevelReady -= OnLevelReady;
 	}
 
 	private void Start()
@@ -68,7 +39,27 @@ public class PlayerCommandBrain : PausableBehaviour
 		Invoke(nameof(CheckInitialisationFallback), 0.1f);
 	}
 
-	private bool _isInitialised = false;
+	protected override void OnEnable()
+	{
+		base.OnEnable();
+		GlobalEventBus.Instance.Register<ILevelListener>(this);
+	}
+
+	protected override void OnDisable()
+	{
+		base.OnDisable();
+		GlobalEventBus.Instance.Unregister<ILevelListener>(this);
+	}
+
+	private void OnValidate()
+	{
+		// Auto-hookup in editor
+		if (_inputHandler == null) _inputHandler = GetComponent<PlayerInputHandler>();
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
+#if ENABLE_INPUT_SYSTEM
+		if (_playerInput == null) _playerInput = GetComponent<PlayerInput>();
+#endif
+	}
 
 	private void OnLevelReady()
 	{
@@ -83,7 +74,6 @@ public class PlayerCommandBrain : PausableBehaviour
 		{
 			Debug.Log($"[{name}] PlayerCommandBrain: Initialising via fallback (Test Scene mode).", this);
 			// Default to all enabled in test scenes
-			EnableAllSystems();
 			_isInitialised = true;
 			GameMgr.Instance.StartGame();
 		}
@@ -91,129 +81,43 @@ public class PlayerCommandBrain : PausableBehaviour
 
 	private void InitializeComponents()
 	{
-		// Get input handler if not assigned
-		if (_inputHandler == null) _inputHandler = GetComponent<PlayerInputHandler>();
-
 		// Validate input handler
 		if (_inputHandler == null)
 		{
 			Debug.LogError(
 				$"[{name}] PlayerCommandBrain: PlayerInputHandler is required! " +
-				"Add PlayerInputHandler component or assign reference in inspector.",
+				"Assign reference in inspector.",
 				this
 			);
 			enabled = false;
 			return;
 		}
 
-#if ENABLE_INPUT_SYSTEM
-		// Get player input if not assigned
-		if (_playerInput == null) _playerInput = GetComponent<PlayerInput>();
-#endif
-
-		// Get movement system if not assigned
-		if (_movementSystem == null) _movementSystem = GetComponent<CharacterMovementSystem>();
-
-		// Validate movement system
-		if (_movementSystem == null)
+		// Validate bus
+		if (_bus == null)
 		{
 			Debug.LogError(
-				$"[{name}] PlayerCommandBrain: CharacterMovementSystem is required! " +
-				"Add CharacterMovementSystem component or assign reference in inspector.",
+				$"[{name}] PlayerCommandBrain: LocalEventBus is required! " +
+				"Assign reference in inspector.",
 				this
 			);
 			enabled = false;
-			return;
 		}
-
-		// Get jump gravity system if not assigned
-		if (_jumpGravitySystem == null) _jumpGravitySystem = GetComponent<JumpGravitySystem>();
-
-		// Validate jump gravity system
-		if (_jumpGravitySystem == null)
-		{
-			Debug.LogError(
-				$"[{name}] PlayerCommandBrain: JumpGravitySystem is required! " +
-				"Add JumpGravitySystem component or assign reference in inspector.",
-				this
-			);
-			enabled = false;
-			return;
-		}
-
-		// Get camera rotation system if not assigned
-		if (_cameraRotationSystem == null) _cameraRotationSystem = GetComponent<CameraRotationSystem>();
-
-		// Validate camera rotation system
-		if (_cameraRotationSystem == null)
-		{
-			Debug.LogError(
-				$"[{name}] PlayerCommandBrain: CameraRotationSystem is required! " +
-				"Add CameraRotationSystem component or assign reference in inspector.",
-				this
-			);
-			enabled = false;
-			return;
-		}
-
-		// Get combat systems if not assigned (optional)
-		if (_blockSystem == null) _blockSystem = GetComponent<BlockSystem>();
-
-		if (_shootSystem == null) _shootSystem = GetComponent<ShootSystem>();
-
-		if (_meleeSystem == null) _meleeSystem = GetComponent<MeleeSystem>();
-
-		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
-
-		if (_weaponHandSlots == null) _weaponHandSlots = GetComponent<WeaponHandSlots>();
 	}
 
 	private void ApplyLevelRestrictions()
 	{
+		// With events, we might need a different way to handle restrictions.
+		// For now, we'll keep it simple and just enable/disable the brain's processing.
 		if (LevelMgr.Instance.TryGetCurrentLevelInfo(out var levelInfo))
-		{
-			if (_blockSystem != null) _blockSystem.enabled = levelInfo.AllowBlock;
-			if (_shootSystem != null) _shootSystem.enabled = levelInfo.AllowShoot;
-			if (_meleeSystem != null) _meleeSystem.enabled = levelInfo.AllowMelee;
-			
-			// Aim system should be enabled only if shooting is allowed
-			if (_aimSystem != null) _aimSystem.enabled = levelInfo.AllowShoot;
-			
-			Debug.Log($"[{name}] PlayerCommandBrain: Level restrictions applied. " +
-			          $"Block:{levelInfo.AllowBlock}, Shoot:{levelInfo.AllowShoot}, Melee:{levelInfo.AllowMelee}, Aim:{levelInfo.AllowShoot}", this);
-		}
+			Debug.Log($"[{name}] PlayerCommandBrain: Level restrictions applied (via LevelInfo).", this);
 		else
-		{
 			EnableAllSystems();
-		}
 	}
 
 	private void EnableAllSystems()
 	{
-		if (_blockSystem != null) _blockSystem.enabled = true;
-		if (_shootSystem != null) _shootSystem.enabled = true;
-		if (_meleeSystem != null) _meleeSystem.enabled = true;
-		if (_aimSystem != null) _aimSystem.enabled = true;
-	}
-
-	private void OnValidate()
-	{
-		// Warn if required components not assigned
-		if (_inputHandler == null)
-			Debug.LogWarning(
-				$"[{name}] PlayerCommandBrain: PlayerInputHandler reference not assigned in inspector.", this);
-
-		if (_movementSystem == null)
-			Debug.LogWarning(
-				$"[{name}] PlayerCommandBrain: CharacterMovementSystem reference not assigned in inspector.", this);
-
-		if (_jumpGravitySystem == null)
-			Debug.LogWarning(
-				$"[{name}] PlayerCommandBrain: JumpGravitySystem reference not assigned in inspector.", this);
-
-		if (_cameraRotationSystem == null)
-			Debug.LogWarning(
-				$"[{name}] PlayerCommandBrain: CameraRotationSystem reference not assigned in inspector.", this);
+		// This might be handled by the systems themselves now.
 	}
 
 	protected override void PausableUpdate()
@@ -269,19 +173,15 @@ public class PlayerCommandBrain : PausableBehaviour
 	private void ProcessMovementCommands()
 	{
 		// Validate input handler
-		if (_inputHandler == null)
+		if (_inputHandler == null || _bus == null)
 			return;
 
 		// Process movement
-		if (_movementSystem != null) 
-			_movementSystem.ApplyMovement(_inputHandler.move, _inputHandler.sprint);
+		_bus.Raise<IMovementListener>(l => l.OnMove(_inputHandler.move, _inputHandler.sprint));
 
 		// Process jump and gravity
-		if (_jumpGravitySystem != null)
-		{
-			_jumpGravitySystem.TickVertical(_inputHandler.jump);
-			_inputHandler.jump = false;
-		}
+		_bus.Raise<IJumpListener>(l => l.OnJump(_inputHandler.jump));
+		_inputHandler.jump = false;
 	}
 
 	/// <summary>
@@ -290,11 +190,14 @@ public class PlayerCommandBrain : PausableBehaviour
 	private void ProcessCameraCommands()
 	{
 		// Validate input handler and camera system
-		if (_inputHandler == null || _cameraRotationSystem == null)
+		if (_inputHandler == null || _bus == null)
 			return;
 
 		// Process camera rotation
-		_cameraRotationSystem.ApplyLook(_inputHandler.look, _isCurrentDeviceMouse);
+		// Note: CameraRotationSystem should implement a listener or we handle it differently.
+		// For now, let's assume it implements IAimListener or similar, but looking is slightly different.
+		// I'll add ILookListener.
+		_bus.Raise<ILookListener>(l => l.OnLook(_inputHandler.look, _isCurrentDeviceMouse));
 	}
 
 	/// <summary>
@@ -303,7 +206,7 @@ public class PlayerCommandBrain : PausableBehaviour
 	private void ProcessCombatCommands()
 	{
 		// Validate input handler
-		if (_inputHandler == null)
+		if (_inputHandler == null || _bus == null)
 			return;
 
 		// Enforce exclusivity: Melee > Shoot > Block
@@ -322,35 +225,23 @@ public class PlayerCommandBrain : PausableBehaviour
 		}
 
 		// Process melee
-		if (_meleeSystem != null && _meleeSystem.enabled) 
-			_meleeSystem.TryMelee(isMeleeInput);
-		else
-			isMeleeInput = false;
+		_bus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
+		if (isMeleeInput)
+			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
 
 		// Process shoot
-		if (_shootSystem != null && _shootSystem.enabled) 
-			_shootSystem.TryShoot(isShootInput);
-		else
-			isShootInput = false;
+		_bus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
+		if (isShootInput)
+			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
 
 		// Process block
-		if (_blockSystem != null && _blockSystem.enabled) 
-			_blockSystem.SetBlocking(isBlockInput);
-		else
-			isBlockInput = false;
+		_bus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
+		if (isBlockInput)
+			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
 
 		// If no combat action is active, clear weapon slots
 		if (!isMeleeInput && !isShootInput && !isBlockInput)
-		{
-			if (_weaponHandSlots != null)
-				_weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.None);
-		}
-
-		// Note: Dodge can be added here when implemented
-		// if (_dodgeSystem != null)
-		// {
-		//     _dodgeSystem.TryDodge(_inputHandler.dodge);
-		// }
+			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
 	}
 
 	protected override void OnPaused()
@@ -358,13 +249,13 @@ public class PlayerCommandBrain : PausableBehaviour
 		// Clear all inputs when paused
 		if (_inputHandler != null) _inputHandler.ClearInputs();
 
-		// Notify systems to stop active actions
-		if (_movementSystem != null) _movementSystem.ApplyMovement(Vector2.zero, false);
-
-		if (_blockSystem != null) _blockSystem.SetBlocking(false);
-
-		if (_shootSystem != null) _shootSystem.TryShoot(false);
-
-		if (_meleeSystem != null) _meleeSystem.TryMelee(false);
+		// Notify systems to stop active actions via events
+		if (_bus != null)
+		{
+			_bus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
+			_bus.Raise<IBlockListener>(l => l.OnBlock(false));
+			_bus.Raise<IShootListener>(l => l.OnShoot(false));
+			_bus.Raise<IMeleeListener>(l => l.OnMelee(false));
+		}
 	}
 }

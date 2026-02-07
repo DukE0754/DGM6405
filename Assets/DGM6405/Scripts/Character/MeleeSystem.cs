@@ -1,21 +1,13 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles melee combat attacks.
 ///     Manages melee weapon visibility and attack animations.
 /// </summary>
-public class MeleeSystem : PausableBehaviour
+public class MeleeSystem : PausableBehaviour, IMeleeListener
 {
 	[Header("References")]
-	[Tooltip("CharacterAnimationSystem for updating melee animations. Required.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
-
-	[Tooltip("WeaponHandSlots for managing weapon visibility. If null, will use from CharacterContext.")]
-	[SerializeField] private WeaponHandSlots _weaponHandSlots;
-
-	[Tooltip("CharacterSoundSystem for playing melee sounds. Optional.")]
-	[SerializeField] private CharacterSoundSystem _soundSystem;
-
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
@@ -39,33 +31,6 @@ public class MeleeSystem : PausableBehaviour
 	{
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
-
-		// Get animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
-
-		// Validate animation system
-		if (_animationSystem == null)
-		{
-			Debug.LogError(
-				$"[{name}] MeleeSystem: CharacterAnimationSystem is required! " +
-				"Add CharacterAnimationSystem component or assign reference in inspector.",
-				this
-			);
-			enabled = false;
-			return;
-		}
-
-		// Get weapon hand slots from context or direct reference
-		if (_weaponHandSlots == null)
-		{
-			if (_context != null)
-				_weaponHandSlots = _context.WeaponHandSlots;
-			else
-				_weaponHandSlots = GetComponent<WeaponHandSlots>();
-		}
-
-		// Get sound system if not assigned
-		if (_soundSystem == null) _soundSystem = GetComponent<CharacterSoundSystem>();
 	}
 
 	private void OnDrawGizmosSelected()
@@ -101,71 +66,33 @@ public class MeleeSystem : PausableBehaviour
 
 	private void OnValidate()
 	{
-		// Warn if animation system not assigned
-		if (_animationSystem == null)
-			Debug.LogWarning(
-				$"[{name}] MeleeSystem: CharacterAnimationSystem reference not assigned in inspector.", this);
-
 		// Clamp values
 		_meleeRange = Mathf.Max(0f, _meleeRange);
 	}
 
-	/// <summary>
-	///     Attempts melee attack based on input command.
-	/// </summary>
-	/// <param name="isMeleeAttacking">Whether melee input is active.</param>
-	public void TryMelee(bool isMeleeAttacking)
+	public void OnMelee(bool isMeleeAttacking)
+	{
+		TryMelee(isMeleeAttacking);
+	}
+
+	private void TryMelee(bool isMeleeAttacking)
 	{
 		// Check game state
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 		{
 			// Cancel melee attack if game is not running
-			if (IsMeleeAttacking)
-			{
-				IsMeleeAttacking = false;
-				UpdateMeleeState();
-			}
+			if (IsMeleeAttacking) IsMeleeAttacking = false;
 
 			return;
 		}
 
 		// Update melee attack state
-		var wasMeleeAttacking = IsMeleeAttacking;
 		IsMeleeAttacking = isMeleeAttacking;
-
-		// // If just started attacking, play sound
-		// if (IsMeleeAttacking && !wasMeleeAttacking)
-		// 	if (_soundSystem != null)
-		// 		_soundSystem.PlayMelee();
-
-		// Update animation and weapon visibility
-		UpdateMeleeState();
-	}
-
-	/// <summary>
-	///     Updates animation and weapon slot visibility based on melee attack state.
-	/// </summary>
-	private void UpdateMeleeState()
-	{
-		// Update animation
-		if (_animationSystem != null) _animationSystem.SetMelee(IsMeleeAttacking);
-
-		// Update weapon slot visibility
-		if (_weaponHandSlots != null)
-		{
-			if (IsMeleeAttacking)
-				_weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.Melee);
-			// Coordination is now handled by PlayerCommandBrain.
-		}
 	}
 
 	protected override void OnPaused()
 	{
 		// Cancel melee attack when paused
-		if (IsMeleeAttacking)
-		{
-			IsMeleeAttacking = false;
-			UpdateMeleeState();
-		}
+		if (IsMeleeAttacking) IsMeleeAttacking = false;
 	}
 }

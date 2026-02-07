@@ -1,10 +1,11 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Manages weapon hand slot GameObjects for character animations.
 ///     Handles showing/hiding different weapon types (shield, melee, ranged).
 /// </summary>
-public class WeaponHandSlots : MonoBehaviour
+public class WeaponHandSlots : MonoBehaviour, IWeaponSlotListener
 {
 	/// <summary>
 	///     Enum representing different weapon slot types.
@@ -37,6 +38,11 @@ public class WeaponHandSlots : MonoBehaviour
 						$"[{name}] WeaponHandSlots: Slot at index {i} is null. Assign in inspector.",
 						this
 					);
+	}
+
+	public void OnWeaponSlotChanged(WeaponSlotType slotType)
+	{
+		SetActiveSlot(slotType);
 	}
 
 	/// <summary>

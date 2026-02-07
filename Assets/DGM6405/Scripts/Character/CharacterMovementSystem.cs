@@ -1,12 +1,16 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles horizontal movement and rotation for character.
 ///     Uses CharacterController for movement and rotates character to face movement direction.
 /// </summary>
-public class CharacterMovementSystem : PausableBehaviour
+public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 {
 	private const float THRESHOLD = 0.01f;
+
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
 
 	[Header("Movement Settings")]
 	[Tooltip("Move speed of the character in m/s")]
@@ -31,9 +35,6 @@ public class CharacterMovementSystem : PausableBehaviour
 
 	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
 	[SerializeField] private Transform _mainCamera;
-
-	[Tooltip("CharacterAnimationSystem for updating movement animations. Optional.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
 
 	[Tooltip("JumpGravitySystem for getting vertical velocity. Required for proper movement.")]
 	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
@@ -94,8 +95,7 @@ public class CharacterMovementSystem : PausableBehaviour
 				);
 		}
 
-		// Find animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 
 		// Find jump gravity system if not assigned
 		if (_jumpGravitySystem == null)
@@ -166,6 +166,16 @@ public class CharacterMovementSystem : PausableBehaviour
 		_speedChangeRate = Mathf.Max(0f, _speedChangeRate);
 	}
 
+	/// <summary>
+	///     Applies movement based on input direction and sprint state.
+	/// </summary>
+	/// <param name="moveInput">Normalized input direction (x, y).</param>
+	/// <param name="sprint">Whether sprint is active.</param>
+	public void OnMove(Vector2 moveInput, bool sprint)
+	{
+		ApplyMovement(moveInput, sprint);
+	}
+
 	protected override void PausableUpdate()
 	{
 		// Check game state
@@ -182,12 +192,7 @@ public class CharacterMovementSystem : PausableBehaviour
 		// This update loop can be used for continuous movement if needed
 	}
 
-	/// <summary>
-	///     Applies movement based on input direction and sprint state.
-	/// </summary>
-	/// <param name="moveInput">Normalized input direction (x, y).</param>
-	/// <param name="sprint">Whether sprint is active.</param>
-	public void ApplyMovement(Vector2 moveInput, bool sprint)
+	private void ApplyMovement(Vector2 moveInput, bool sprint)
 	{
 		// Validate controller
 		if (_controller == null)
@@ -254,9 +259,8 @@ public class CharacterMovementSystem : PausableBehaviour
 			targetDirection.normalized * (Speed * Time.deltaTime) +
 			new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
-		// Update animation system
-		if (_animationSystem != null)
-			_animationSystem.SetMovement(AnimationBlend, Speed, _moveSpeed, _sprintSpeed);
+		// Update systems via events
+		_bus?.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed));
 	}
 
 	protected override void OnPaused()
@@ -265,8 +269,7 @@ public class CharacterMovementSystem : PausableBehaviour
 		Speed = 0f;
 		AnimationBlend = 0f;
 
-		// Update animation to reflect stopped state
-		if (_animationSystem != null)
-			_animationSystem.SetMovement(0f, 0f, _moveSpeed, _sprintSpeed);
+		// Notify systems via events
+		_bus?.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed));
 	}
 }

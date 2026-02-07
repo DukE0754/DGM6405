@@ -1,11 +1,15 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles aiming direction calculation and IK for head/weapon alignment.
 ///     Computes aim point from camera (player) or target transform (AI).
 /// </summary>
-public class AimSystem : PausableBehaviour
+public class AimSystem : PausableBehaviour, IAimTargetListener
 {
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
+
 	[Header("Aim Settings")]
 	[Tooltip("Maximum aim distance. Targets beyond this distance will be clamped.")]
 	[SerializeField] private float _maxAimDistance = 100f;
@@ -75,6 +79,8 @@ public class AimSystem : PausableBehaviour
 				"Add Animator component or assign CharacterContext with animator reference.",
 				this
 			);
+
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 
 		// Find head bone if not assigned
 		if (_headBone == null && _animator != null)
@@ -212,6 +218,15 @@ public class AimSystem : PausableBehaviour
 		_aimSmoothing = Mathf.Max(0f, _aimSmoothing);
 	}
 
+	/// <summary>
+	///     Sets the aim target for AI characters.
+	/// </summary>
+	/// <param name="worldPosition">World position to aim at.</param>
+	public void OnSetAimTarget(Vector3 worldPosition)
+	{
+		SetAimTarget(worldPosition);
+	}
+
 	protected override void PausableLateUpdate()
 	{
 		// Check game state
@@ -236,6 +251,9 @@ public class AimSystem : PausableBehaviour
 				_smoothAimPoint, CurrentAimPoint, ref _smoothAimVelocity, _aimSmoothing);
 		else
 			_smoothAimPoint = CurrentAimPoint;
+
+		// Raise event
+		if (IsAiming) _bus?.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
 	}
 
 	/// <summary>
@@ -279,11 +297,7 @@ public class AimSystem : PausableBehaviour
 		return _smoothAimPoint;
 	}
 
-	/// <summary>
-	///     Sets the aim target for AI characters.
-	/// </summary>
-	/// <param name="worldPosition">World position to aim at.</param>
-	public void SetAimTarget(Vector3 worldPosition)
+	private void SetAimTarget(Vector3 worldPosition)
 	{
 		CurrentAimPoint = worldPosition;
 		IsAiming = true;

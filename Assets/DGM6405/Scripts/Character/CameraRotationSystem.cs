@@ -1,10 +1,11 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles camera rotation for character.
 ///     Updates Cinemachine camera target rotation based on look input.
 /// </summary>
-public class CameraRotationSystem : PausableBehaviour
+public class CameraRotationSystem : PausableBehaviour, ILookListener
 {
 	private const float THRESHOLD = 0.01f;
 
@@ -85,18 +86,23 @@ public class CameraRotationSystem : PausableBehaviour
 		Gizmos.DrawRay(_cameraTarget.position, downLimit * 3f);
 	}
 
+	/// <summary>
+	///     Applies look input to camera rotation.
+	/// </summary>
+	/// <param name="lookInput">Look input delta (x, y).</param>
+	/// <param name="isMouse">Whether input is from mouse (affects deltaTime multiplier).</param>
+	public void OnLook(Vector2 lookInput, bool isMouse)
+	{
+		ApplyLook(lookInput, isMouse);
+	}
+
 	protected override void PausableLateUpdate()
 	{
 		// Camera rotation is applied via ApplyLook() called by command brain
 		// This update loop can be used for continuous rotation if needed
 	}
 
-	/// <summary>
-	///     Applies look input to camera rotation.
-	/// </summary>
-	/// <param name="lookInput">Look input delta (x, y).</param>
-	/// <param name="isMouse">Whether input is from mouse (affects deltaTime multiplier).</param>
-	public void ApplyLook(Vector2 lookInput, bool isMouse)
+	private void ApplyLook(Vector2 lookInput, bool isMouse)
 	{
 		// Validate camera target
 		if (_cameraTarget == null)

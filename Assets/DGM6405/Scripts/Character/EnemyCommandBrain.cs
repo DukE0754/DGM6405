@@ -1,3 +1,4 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -6,31 +7,12 @@ using UnityEngine;
 /// </summary>
 public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 {
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
+
 	[Header("AI Settings")]
 	[Tooltip("Whether this enemy brain is currently active.")]
 	[SerializeField] private bool _isActive = true;
-
-	[Header("Systems")]
-	[Tooltip("CharacterMovementSystem for movement commands. Required.")]
-	[SerializeField] private CharacterMovementSystem _movementSystem;
-
-	[Tooltip("JumpGravitySystem for jump commands. Optional.")]
-	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
-
-	[Tooltip("CameraRotationSystem for look rotation. Optional.")]
-	[SerializeField] private CameraRotationSystem _cameraRotationSystem;
-
-	[Tooltip("BlockSystem for blocking commands. Optional.")]
-	[SerializeField] private BlockSystem _blockSystem;
-
-	[Tooltip("ShootSystem for shooting commands. Optional.")]
-	[SerializeField] private ShootSystem _shootSystem;
-
-	[Tooltip("MeleeSystem for melee attack commands. Optional.")]
-	[SerializeField] private MeleeSystem _meleeSystem;
-
-	[Tooltip("AimSystem for aim point updates. Optional.")]
-	[SerializeField] private AimSystem _aimSystem;
 
 	[Header("AI Target")]
 	[Tooltip("Target transform to move towards or attack. Can be set by AI behavior.")]
@@ -48,32 +30,31 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 
 	private void Awake()
 	{
-		// Get systems if not assigned (same pattern as PlayerCommandBrain)
-		if (_movementSystem == null) _movementSystem = GetComponent<CharacterMovementSystem>();
+		InitializeComponents();
+	}
 
-		if (_jumpGravitySystem == null) _jumpGravitySystem = GetComponent<JumpGravitySystem>();
-
-		if (_cameraRotationSystem == null) _cameraRotationSystem = GetComponent<CameraRotationSystem>();
-
-		if (_blockSystem == null) _blockSystem = GetComponent<BlockSystem>();
-
-		if (_shootSystem == null) _shootSystem = GetComponent<ShootSystem>();
-
-		if (_meleeSystem == null) _meleeSystem = GetComponent<MeleeSystem>();
-
-		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
-
-		// Validate at least movement system exists
-		if (_movementSystem == null)
-			Debug.LogWarning(
-				$"[{name}] EnemyCommandBrain: CharacterMovementSystem not found. " +
-				"Enemy will not be able to move. Add CharacterMovementSystem component.",
-				this
-			);
+	private void OnValidate()
+	{
+		// Auto-hookup in editor
+		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 	}
 
 	// ICharacterBrain implementation
 	public bool IsActive => _isActive && enabled;
+
+	private void InitializeComponents()
+	{
+		// Validate bus
+		if (_bus == null)
+		{
+			Debug.LogError(
+				$"[{name}] EnemyCommandBrain: LocalEventBus is required! " +
+				"Assign reference in inspector.",
+				this
+			);
+			enabled = false;
+		}
+	}
 
 	protected override void PausableUpdate()
 	{
@@ -128,8 +109,8 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 			_aiMoveInput = new Vector2(toTarget.normalized.x, toTarget.normalized.z);
 			_aiSprint = toTarget.magnitude > 5f; // Sprint if far away
 
-			// Update aim system if available
-			if (_aimSystem != null) _aimSystem.SetAimTarget(_targetTransform.position);
+			// Update aim system if available via event
+			_bus.Raise<IAimTargetListener>(l => l.OnSetAimTarget(_targetTransform.position));
 		}
 		else
 		{
@@ -150,10 +131,10 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	private void ProcessMovementCommands()
 	{
 		// Process movement
-		if (_movementSystem != null) _movementSystem.ApplyMovement(_aiMoveInput, _aiSprint);
+		_bus.Raise<IMovementListener>(l => l.OnMove(_aiMoveInput, _aiSprint));
 
 		// Process jump and gravity
-		if (_jumpGravitySystem != null) _jumpGravitySystem.TickVertical(_aiJump);
+		_bus.Raise<IJumpListener>(l => l.OnJump(_aiJump));
 	}
 
 	/// <summary>
@@ -162,8 +143,8 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	private void ProcessLookCommands()
 	{
 		// Process camera/look rotation if available
-		if (_cameraRotationSystem != null && _aiLookInput != Vector2.zero)
-			_cameraRotationSystem.ApplyLook(_aiLookInput, false);
+		if (_aiLookInput != Vector2.zero)
+			_bus.Raise<ILookListener>(l => l.OnLook(_aiLookInput, false));
 	}
 
 	/// <summary>
@@ -172,13 +153,13 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	private void ProcessCombatCommands()
 	{
 		// Process block
-		if (_blockSystem != null) _blockSystem.SetBlocking(_aiBlock);
+		_bus.Raise<IBlockListener>(l => l.OnBlock(_aiBlock));
 
 		// Process shoot
-		if (_shootSystem != null) _shootSystem.TryShoot(_aiShoot);
+		_bus.Raise<IShootListener>(l => l.OnShoot(_aiShoot));
 
 		// Process melee
-		if (_meleeSystem != null) _meleeSystem.TryMelee(_aiMelee);
+		_bus.Raise<IMeleeListener>(l => l.OnMelee(_aiMelee));
 	}
 
 	/// <summary>
@@ -224,13 +205,13 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 		_aiShoot = false;
 		_aiMelee = false;
 
-		// Notify systems to stop active actions
-		if (_movementSystem != null) _movementSystem.ApplyMovement(Vector2.zero, false);
-
-		if (_blockSystem != null) _blockSystem.SetBlocking(false);
-
-		if (_shootSystem != null) _shootSystem.TryShoot(false);
-
-		if (_meleeSystem != null) _meleeSystem.TryMelee(false);
+		// Notify systems to stop active actions via events
+		if (_bus != null)
+		{
+			_bus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
+			_bus.Raise<IBlockListener>(l => l.OnBlock(false));
+			_bus.Raise<IShootListener>(l => l.OnShoot(false));
+			_bus.Raise<IMeleeListener>(l => l.OnMelee(false));
+		}
 	}
 }
