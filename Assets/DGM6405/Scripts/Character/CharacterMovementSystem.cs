@@ -243,14 +243,18 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 		if (_jumpGravitySystem != null) verticalVelocity = _jumpGravitySystem.VerticalVelocity;
 
 		// Move the player
-		_controller.Move(
-			targetDirection.normalized * (Speed * Time.deltaTime) +
-			new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
+		var movement = targetDirection.normalized * (Speed * Time.deltaTime) +
+						new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime;
+		_controller.Move(movement);
+
+		// Calculate local velocity for animations (VelocityX and VelocityZ)
+		// We want the velocity relative to the character's orientation
+		var localVelocity = transform.InverseTransformDirection(_controller.velocity);
 
 		// Update systems via events
 		if (_context != null && _context.EventBus != null)
 			_context.EventBus.Raise<IMovementSpeedListener>(l =>
-				l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed));
+				l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed, localVelocity.x, localVelocity.z));
 	}
 
 	protected override void OnPaused()
@@ -261,6 +265,6 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 
 		// Notify systems via events
 		if (_context != null && _context.EventBus != null)
-			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed));
+			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed, 0f, 0f));
 	}
 }

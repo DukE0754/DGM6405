@@ -34,6 +34,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	private int _animIDMelee;
 	private int _animIDMotionSpeed;
 	private int _animIDShoot;
+	private int _animIDVelocityX;
+	private int _animIDVelocityZ;
 
 	// Animation parameter IDs (cached for performance)
 	private int _animIDSpeed;
@@ -151,9 +153,10 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <param name="currentSpeed">Current actual speed of the character.</param>
 	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
 	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
-	public void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed)
+	public void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
+		float velocityZ)
 	{
-		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed);
+		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
 	}
 
 	/// <summary>
@@ -179,9 +182,12 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animIDMelee = Animator.StringToHash("Melee");
 		_animIDShoot = Animator.StringToHash("Shoot");
 		_animIDDodge = Animator.StringToHash("Dodge");
+		_animIDVelocityX = Animator.StringToHash("VelocityX");
+		_animIDVelocityZ = Animator.StringToHash("VelocityZ");
 	}
 
-	private void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed)
+	private void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed, float velocityX,
+		float velocityZ)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -217,6 +223,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 
 		_animator.SetFloat(_animIDSpeed, speedBlend, _animSmoothingTime, Time.deltaTime);
 		_animator.SetFloat(_animIDMotionSpeed, motionSpeed, _animSmoothingTime, Time.deltaTime);
+		_animator.SetFloat(_animIDVelocityX, velocityX, _animSmoothingTime, Time.deltaTime);
+		_animator.SetFloat(_animIDVelocityZ, velocityZ, _animSmoothingTime, Time.deltaTime);
 	}
 
 	private void SetGrounded(bool grounded)

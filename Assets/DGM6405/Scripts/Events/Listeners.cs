@@ -157,7 +157,7 @@ namespace DGM6405.Events
 
 	public interface IMovementSpeedListener : IEntityListener
 	{
-		void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed)
+		void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX, float velocityZ)
 		{
 		}
 	}

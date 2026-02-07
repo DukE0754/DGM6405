@@ -42,13 +42,13 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	protected override void OnEnable()
 	{
 		base.OnEnable();
-		GlobalEventBus.Instance.Register<ILevelListener>(this);
+		GlobalEventBus.Instance?.Register<ILevelListener>(this);
 	}
 
 	protected override void OnDisable()
 	{
 		base.OnDisable();
-		GlobalEventBus.Instance.Unregister<ILevelListener>(this);
+		GlobalEventBus.Instance?.Unregister<ILevelListener>(this);
 	}
 
 	private void OnValidate()
