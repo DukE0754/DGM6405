@@ -10,10 +10,10 @@ using UnityEngine.InputSystem;
 /// </summary>
 public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 {
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("Input")]
+	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
+	[SerializeField] private CharacterContext _context;
+
 	[Tooltip("PlayerInputHandler component. Required.")]
 	[SerializeField] private PlayerInputHandler _inputHandler;
 
@@ -55,7 +55,7 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	{
 		// Auto-hookup in editor
 		if (_inputHandler == null) _inputHandler = GetComponent<PlayerInputHandler>();
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
+		if (_context == null) _context = GetComponent<CharacterContext>();
 #if ENABLE_INPUT_SYSTEM
 		if (_playerInput == null) _playerInput = GetComponent<PlayerInput>();
 #endif
@@ -81,6 +81,9 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 
 	private void InitializeComponents()
 	{
+		// Get context if not assigned
+		if (_context == null) _context = GetComponent<CharacterContext>();
+
 		// Validate input handler
 		if (_inputHandler == null)
 		{
@@ -93,12 +96,11 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 			return;
 		}
 
-		// Validate bus
-		if (_bus == null)
+		// Validate context
+		if (_context == null)
 		{
 			Debug.LogError(
-				$"[{name}] PlayerCommandBrain: LocalEventBus is required! " +
-				"Assign reference in inspector.",
+				$"[{name}] PlayerCommandBrain: CharacterContext is required!",
 				this
 			);
 			enabled = false;
@@ -172,15 +174,15 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	/// </summary>
 	private void ProcessMovementCommands()
 	{
-		// Validate input handler
-		if (_inputHandler == null || _bus == null)
+		// Validate input handler and context
+		if (_inputHandler == null || _context?.EventBus == null)
 			return;
 
 		// Process movement
-		_bus.Raise<IMovementListener>(l => l.OnMove(_inputHandler.move, _inputHandler.sprint));
+		_context.EventBus.Raise<IMovementListener>(l => l.OnMove(_inputHandler.move, _inputHandler.sprint));
 
 		// Process jump and gravity
-		_bus.Raise<IJumpListener>(l => l.OnJump(_inputHandler.jump));
+		_context.EventBus.Raise<IJumpListener>(l => l.OnJump(_inputHandler.jump));
 		_inputHandler.jump = false;
 	}
 
@@ -189,15 +191,12 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	/// </summary>
 	private void ProcessCameraCommands()
 	{
-		// Validate input handler and camera system
-		if (_inputHandler == null || _bus == null)
+		// Validate input handler and context
+		if (_inputHandler == null || _context?.EventBus == null)
 			return;
 
 		// Process camera rotation
-		// Note: CameraRotationSystem should implement a listener or we handle it differently.
-		// For now, let's assume it implements IAimListener or similar, but looking is slightly different.
-		// I'll add ILookListener.
-		_bus.Raise<ILookListener>(l => l.OnLook(_inputHandler.look, _isCurrentDeviceMouse));
+		_context.EventBus.Raise<ILookListener>(l => l.OnLook(_inputHandler.look, _isCurrentDeviceMouse));
 	}
 
 	/// <summary>
@@ -205,8 +204,8 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	/// </summary>
 	private void ProcessCombatCommands()
 	{
-		// Validate input handler
-		if (_inputHandler == null || _bus == null)
+		// Validate input handler and context
+		if (_inputHandler == null || _context?.EventBus == null)
 			return;
 
 		// Enforce exclusivity: Melee > Shoot > Block
@@ -225,23 +224,23 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		}
 
 		// Process melee
-		_bus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
+		_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
 		if (isMeleeInput)
-			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
+			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
 
 		// Process shoot
-		_bus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
+		_context.EventBus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
 		if (isShootInput)
-			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
+			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
 
 		// Process block
-		_bus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
+		_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
 		if (isBlockInput)
-			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
+			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
 
 		// If no combat action is active, clear weapon slots
 		if (!isMeleeInput && !isShootInput && !isBlockInput)
-			_bus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
+			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
 	}
 
 	protected override void OnPaused()
@@ -250,12 +249,12 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		if (_inputHandler != null) _inputHandler.ClearInputs();
 
 		// Notify systems to stop active actions via events
-		if (_bus != null)
+		if (_context?.EventBus != null)
 		{
-			_bus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
-			_bus.Raise<IBlockListener>(l => l.OnBlock(false));
-			_bus.Raise<IShootListener>(l => l.OnShoot(false));
-			_bus.Raise<IMeleeListener>(l => l.OnMelee(false));
+			_context.EventBus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
+			_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(false));
+			_context.EventBus.Raise<IShootListener>(l => l.OnShoot(false));
+			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(false));
 		}
 	}
 }

@@ -70,7 +70,7 @@ public class MeleeSystem : PausableBehaviour, IMeleeListener
 		_meleeRange = Mathf.Max(0f, _meleeRange);
 	}
 
-	public void OnMelee(bool isMeleeAttacking)
+	void IMeleeListener.OnMelee(bool isMeleeAttacking)
 	{
 		TryMelee(isMeleeAttacking);
 	}

@@ -91,7 +91,7 @@ public class CameraRotationSystem : PausableBehaviour, ILookListener
 	/// </summary>
 	/// <param name="lookInput">Look input delta (x, y).</param>
 	/// <param name="isMouse">Whether input is from mouse (affects deltaTime multiplier).</param>
-	public void OnLook(Vector2 lookInput, bool isMouse)
+	void ILookListener.OnLook(Vector2 lookInput, bool isMouse)
 	{
 		ApplyLook(lookInput, isMouse);
 	}

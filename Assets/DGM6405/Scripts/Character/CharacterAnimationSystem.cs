@@ -98,7 +98,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	///     Sets block animation state.
 	/// </summary>
 	/// <param name="isBlocking">Whether the character is blocking.</param>
-	public void OnBlock(bool blockInput)
+	void IBlockListener.OnBlock(bool blockInput)
 	{
 		SetBlock(blockInput);
 	}
@@ -139,7 +139,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	///     Sets melee attack animation state.
 	/// </summary>
 	/// <param name="isMeleeAttacking">Whether the character is performing melee attack.</param>
-	public void OnMelee(bool meleeInput)
+	void IMeleeListener.OnMelee(bool meleeInput)
 	{
 		SetMelee(meleeInput);
 	}
@@ -160,7 +160,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	///     Sets shoot animation state.
 	/// </summary>
 	/// <param name="isShooting">Whether the character is shooting.</param>
-	public void OnShoot(bool shootInput)
+	void IShootListener.OnShoot(bool shootInput)
 	{
 		SetShoot(shootInput);
 	}

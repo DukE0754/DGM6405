@@ -76,7 +76,7 @@ public class CharacterSoundSystem : PausableBehaviour,
 			Debug.LogWarning($"[{name}] CharacterSoundSystem: Landing audio clip not assigned.", this);
 	}
 
-	public void OnBlock(bool blockInput)
+	void IBlockListener.OnBlock(bool blockInput)
 	{
 		if (blockInput) PlayBlock();
 	}
@@ -91,12 +91,12 @@ public class CharacterSoundSystem : PausableBehaviour,
 		// We could play a jump sound here if we had one.
 	}
 
-	public void OnMelee(bool meleeInput)
+	void IMeleeListener.OnMelee(bool meleeInput)
 	{
 		if (meleeInput) PlayMelee();
 	}
 
-	public void OnShoot(bool shootInput)
+	void IShootListener.OnShoot(bool shootInput)
 	{
 		if (shootInput) PlayShoot();
 	}

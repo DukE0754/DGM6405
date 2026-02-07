@@ -121,4 +121,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f619c20bb18468458e9908de0e7c5d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameLoopManager
-  _playerPrefab: {fileID: 1673963651534146124, guid: b502d44f19c262549a5f17a746e9dc34, type: 3}
+  _playerPrefab: {fileID: 1673963651534146124, guid: 324c9516de859134d8c741af2a269a30, type: 3}
+  _spawnPoint: {fileID: 4035056521344048199}

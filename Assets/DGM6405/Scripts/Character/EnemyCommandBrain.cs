@@ -7,10 +7,10 @@ using UnityEngine;
 /// </summary>
 public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 {
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("AI Settings")]
+	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
+	[SerializeField] private CharacterContext _context;
+
 	[Tooltip("Whether this enemy brain is currently active.")]
 	[SerializeField] private bool _isActive = true;
 
@@ -36,7 +36,7 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	private void OnValidate()
 	{
 		// Auto-hookup in editor
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
+		if (_context == null) _context = GetComponent<CharacterContext>();
 	}
 
 	// ICharacterBrain implementation
@@ -44,12 +44,14 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 
 	private void InitializeComponents()
 	{
-		// Validate bus
-		if (_bus == null)
+		// Get context if not assigned
+		if (_context == null) _context = GetComponent<CharacterContext>();
+
+		// Validate context
+		if (_context == null)
 		{
 			Debug.LogError(
-				$"[{name}] EnemyCommandBrain: LocalEventBus is required! " +
-				"Assign reference in inspector.",
+				$"[{name}] EnemyCommandBrain: CharacterContext is required!",
 				this
 			);
 			enabled = false;
@@ -110,7 +112,7 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 			_aiSprint = toTarget.magnitude > 5f; // Sprint if far away
 
 			// Update aim system if available via event
-			_bus.Raise<IAimTargetListener>(l => l.OnSetAimTarget(_targetTransform.position));
+			_context?.EventBus?.Raise<IAimTargetListener>(l => l.OnSetAimTarget(_targetTransform.position));
 		}
 		else
 		{
@@ -130,11 +132,13 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	/// </summary>
 	private void ProcessMovementCommands()
 	{
+		if (_context?.EventBus == null) return;
+
 		// Process movement
-		_bus.Raise<IMovementListener>(l => l.OnMove(_aiMoveInput, _aiSprint));
+		_context.EventBus.Raise<IMovementListener>(l => l.OnMove(_aiMoveInput, _aiSprint));
 
 		// Process jump and gravity
-		_bus.Raise<IJumpListener>(l => l.OnJump(_aiJump));
+		_context.EventBus.Raise<IJumpListener>(l => l.OnJump(_aiJump));
 	}
 
 	/// <summary>
@@ -142,9 +146,18 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	/// </summary>
 	private void ProcessLookCommands()
 	{
-		// Process camera/look rotation if available
+		if (_context?.EventBus == null) return;
+
+		// AI character rotation (facing)
 		if (_aiLookInput != Vector2.zero)
-			_bus.Raise<ILookListener>(l => l.OnLook(_aiLookInput, false));
+		{
+			var worldDirection = new Vector3(_aiLookInput.x, 0f, _aiLookInput.y).normalized;
+			_context.EventBus.Raise<IRotationListener>(l => l.OnRotate(worldDirection));
+		}
+
+		// Process camera/look rotation if available (for rare cases where enemy has a camera)
+		if (_aiLookInput != Vector2.zero)
+			_context.EventBus.Raise<ILookListener>(l => l.OnLook(_aiLookInput, false));
 	}
 
 	/// <summary>
@@ -152,14 +165,16 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 	/// </summary>
 	private void ProcessCombatCommands()
 	{
+		if (_context?.EventBus == null) return;
+
 		// Process block
-		_bus.Raise<IBlockListener>(l => l.OnBlock(_aiBlock));
+		_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(_aiBlock));
 
 		// Process shoot
-		_bus.Raise<IShootListener>(l => l.OnShoot(_aiShoot));
+		_context.EventBus.Raise<IShootListener>(l => l.OnShoot(_aiShoot));
 
 		// Process melee
-		_bus.Raise<IMeleeListener>(l => l.OnMelee(_aiMelee));
+		_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(_aiMelee));
 	}
 
 	/// <summary>
@@ -206,12 +221,12 @@ public class EnemyCommandBrain : PausableBehaviour, ICharacterBrain
 		_aiMelee = false;
 
 		// Notify systems to stop active actions via events
-		if (_bus != null)
+		if (_context?.EventBus != null)
 		{
-			_bus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
-			_bus.Raise<IBlockListener>(l => l.OnBlock(false));
-			_bus.Raise<IShootListener>(l => l.OnShoot(false));
-			_bus.Raise<IMeleeListener>(l => l.OnMelee(false));
+			_context.EventBus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
+			_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(false));
+			_context.EventBus.Raise<IShootListener>(l => l.OnShoot(false));
+			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(false));
 		}
 	}
 }

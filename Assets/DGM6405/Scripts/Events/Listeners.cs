@@ -66,6 +66,27 @@ namespace DGM6405.Events
 		}
 	}
 
+	public interface IRotationListener : IEntityListener
+	{
+		void OnRotate(Vector3 direction)
+		{
+		}
+
+		/// <summary>
+		///     Sets whether the character should automatically rotate to face its movement direction.
+		/// </summary>
+		void SetRotateToMovement(bool enable)
+		{
+		}
+
+		/// <summary>
+		///     Sets whether the character should automatically rotate to face the camera forward.
+		/// </summary>
+		void SetRotateToCamera(bool enable)
+		{
+		}
+	}
+
 	public interface IJumpListener : IEntityListener
 	{
 		void OnJump(bool jumpInput)

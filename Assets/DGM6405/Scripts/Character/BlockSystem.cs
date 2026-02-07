@@ -71,7 +71,7 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		// No dependencies to validate here for now
 	}
 
-	public void OnBlock(bool blockInput)
+	void IBlockListener.OnBlock(bool blockInput)
 	{
 		SetBlocking(blockInput);
 	}
@@ -82,18 +82,40 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 		{
 			// Cancel blocking if game is not running
-			if (IsBlocking) IsBlocking = false;
+			if (IsBlocking)
+			{
+				IsBlocking = false;
+				UpdateRotationMode(false);
+			}
 
 			return;
 		}
 
 		// Update blocking state
-		IsBlocking = isBlocking;
+		if (IsBlocking != isBlocking)
+		{
+			IsBlocking = isBlocking;
+			UpdateRotationMode(isBlocking);
+		}
+	}
+
+	private void UpdateRotationMode(bool isBlocking)
+	{
+		if (_context != null && _context.EventBus != null)
+		{
+			// When blocking, face camera. Otherwise face movement.
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(isBlocking));
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(!isBlocking));
+		}
 	}
 
 	protected override void OnPaused()
 	{
 		// Cancel blocking when paused
-		if (IsBlocking) IsBlocking = false;
+		if (IsBlocking)
+		{
+			IsBlocking = false;
+			UpdateRotationMode(false);
+		}
 	}
 }

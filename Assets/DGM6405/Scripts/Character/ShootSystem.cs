@@ -7,9 +7,6 @@ using UnityEngine;
 /// </summary>
 public class ShootSystem : PausableBehaviour, IShootListener
 {
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("References")]
 	[Tooltip("ProjectileShooter component for spawning projectiles. Required.")]
 	[SerializeField] private ProjectileShooter _projectileShooter;
@@ -31,7 +28,14 @@ public class ShootSystem : PausableBehaviour, IShootListener
 
 	private void Awake()
 	{
+		InitializeComponents();
+	}
+
+	private void InitializeComponents()
+	{
 		// Validate context
+		if (_context == null) _context = GetComponent<CharacterContext>();
+
 		if (_context == null)
 		{
 			Debug.LogError($"[{name}] ShootSystem: CharacterContext is required!", this);
@@ -40,14 +44,14 @@ public class ShootSystem : PausableBehaviour, IShootListener
 		}
 
 		// Validate projectile shooter
+		if (_projectileShooter == null) _projectileShooter = GetComponent<ProjectileShooter>();
+
 		if (_projectileShooter == null)
 		{
 			Debug.LogError($"[{name}] ShootSystem: ProjectileShooter is required!", this);
 			enabled = false;
 			return;
 		}
-
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 
 		// Get aim system if not assigned
 		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
@@ -88,7 +92,6 @@ public class ShootSystem : PausableBehaviour, IShootListener
 		// Auto-hookup in editor
 		if (_context == null) _context = GetComponent<CharacterContext>();
 		if (_projectileShooter == null) _projectileShooter = GetComponent<ProjectileShooter>();
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 	}
 
@@ -96,7 +99,7 @@ public class ShootSystem : PausableBehaviour, IShootListener
 	///     Attempts to shoot based on input command.
 	/// </summary>
 	/// <param name="isShooting">Whether shoot input is active.</param>
-	public void OnShoot(bool shootInput)
+	void IShootListener.OnShoot(bool shootInput)
 	{
 		TryShoot(shootInput);
 	}

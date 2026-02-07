@@ -7,9 +7,6 @@ using UnityEngine;
 /// </summary>
 public class JumpGravitySystem : PausableBehaviour, IJumpListener
 {
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("Jump Settings")]
 	[Tooltip("The height the player can jump")]
 	[SerializeField] private float _jumpHeight = 1.2f;
@@ -41,8 +38,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
-	[Tooltip("CharacterController component. If null, will use from CharacterContext.")]
-	[SerializeField] private CharacterController _controller;
+	private CharacterController _controller;
 
 	private readonly float _terminalVelocity = 53.0f;
 
@@ -57,6 +53,15 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 	public float VerticalVelocity { get; private set; }
 
 	private void Awake()
+	{
+		InitializeComponents();
+
+		// Reset timeouts on start
+		_jumpTimeoutDelta = _jumpTimeout;
+		_fallTimeoutDelta = _fallTimeout;
+	}
+
+	private void InitializeComponents()
 	{
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
@@ -79,14 +84,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 				this
 			);
 			enabled = false;
-			return;
 		}
-
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
-
-		// Reset timeouts on start
-		_jumpTimeoutDelta = _jumpTimeout;
-		_fallTimeoutDelta = _fallTimeout;
 	}
 
 	private void OnDrawGizmosSelected()
@@ -143,7 +141,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 	///     Should be called once per frame by command brain.
 	/// </summary>
 	/// <param name="jumpRequested">Whether jump input is active.</param>
-	public void OnJump(bool jumpRequested)
+	void IJumpListener.OnJump(bool jumpRequested)
 	{
 		TickVertical(jumpRequested);
 	}
@@ -190,7 +188,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 			{
 				// The square root of H * -2 * G = how much velocity needed to reach desired height
 				VerticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-				_bus?.Raise<IJumpListener>(l => l.OnJumpPerformed());
+				_context?.EventBus?.Raise<IJumpListener>(l => l.OnJumpPerformed());
 			}
 
 			// Jump timeout
@@ -205,7 +203,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 			if (_fallTimeoutDelta >= 0.0f)
 				_fallTimeoutDelta -= Time.deltaTime;
 			else
-				_bus?.Raise<IGroundListener>(l => l.OnFall());
+				_context?.EventBus?.Raise<IGroundListener>(l => l.OnFall());
 		}
 
 		// Apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -227,7 +225,7 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 			spherePosition, _groundedRadius, _groundLayers,
 			QueryTriggerInteraction.Ignore);
 
-		if (wasGrounded != IsGrounded) _bus?.Raise<IGroundListener>(l => l.OnGroundedChanged(IsGrounded));
+		if (wasGrounded != IsGrounded) _context?.EventBus?.Raise<IGroundListener>(l => l.OnGroundedChanged(IsGrounded));
 	}
 
 	protected override void OnPaused()

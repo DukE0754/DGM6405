@@ -7,9 +7,6 @@ using UnityEngine;
 /// </summary>
 public class AimSystem : PausableBehaviour, IAimTargetListener
 {
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("Aim Settings")]
 	[Tooltip("Maximum aim distance. Targets beyond this distance will be clamped.")]
 	[SerializeField] private float _maxAimDistance = 100f;
@@ -80,7 +77,13 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 				this
 			);
 
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
+		// Use event bus from context if available
+		var bus = _context != null ? _context.EventBus : GetComponent<LocalEventBus>();
+		if (bus == null)
+			Debug.LogWarning(
+				$"[{name}] AimSystem: LocalEventBus not found. Event-based aiming will not work.",
+				this
+			);
 
 		// Find head bone if not assigned
 		if (_headBone == null && _animator != null)
@@ -253,7 +256,8 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 			_smoothAimPoint = CurrentAimPoint;
 
 		// Raise event
-		if (IsAiming) _bus?.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
+		if (IsAiming && _context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
 	}
 
 	/// <summary>

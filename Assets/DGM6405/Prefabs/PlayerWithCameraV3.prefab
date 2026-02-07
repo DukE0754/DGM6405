@@ -1059,6 +1059,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6759120296370236758}
+    - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2404582240872853105}
+    - targetCorrespondingSourceObject: {fileID: 8641187403093305734, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2193820825071173566}
   m_SourcePrefab: {fileID: 100100000, guid: 15d2875c44b4c5841b837a6720def158, type: 3}
 --- !u!114 &801648990460991969 stripped
 MonoBehaviour:
@@ -1098,6 +1104,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a64dc898bb8ce4c9494ffd712bfdbb19, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterContext
+  _eventBus: {fileID: 6759120296370236758}
   _controller: {fileID: 3825363562277663933}
   _animator: {fileID: 9140021228847955211}
   _cameraTarget: {fileID: 3046178234478159216}
@@ -1127,7 +1134,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1402a42d2e97246f7a6451f51caafe50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMovementSystem
-  _bus: {fileID: 6759120296370236758}
   _moveSpeed: 2
   _sprintSpeed: 5.335
   _rotationSmoothTime: 0.12
@@ -1290,7 +1296,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50ba777a61ddf4b44b1c93c4f92af8ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AimSystem
-  _bus: {fileID: 6759120296370236758}
   _maxAimDistance: 100
   _aimSmoothing: 0.1
   _headIKWeight: 1
@@ -1314,7 +1319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7058b90bb1288417cbb63c026c62bb85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerCommandBrain
-  _bus: {fileID: 6759120296370236758}
+  _context: {fileID: 4249173615142340639}
   _inputHandler: {fileID: 801648990460991969}
   _playerInput: {fileID: 3882600504524386002}
 --- !u!114 &7151520559642693165
@@ -1532,6 +1537,38 @@ MonoBehaviour:
   - {fileID: 7918557008553272049}
   - {fileID: 754705155157208819}
   - {fileID: 7151520559642693165}
+  - {fileID: 2404582240872853105}
+  - {fileID: 2193820825071173566}
+--- !u!114 &2404582240872853105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304878149290850212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2119314afdea4da2b63add644d9c7a19, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotateWithMoveDirectionSystem
+  _rotationSmoothTime: 0.12
+  _context: {fileID: 4249173615142340639}
+  _mainCamera: {fileID: 7939394029879557183}
+--- !u!114 &2193820825071173566
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1304878149290850212}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a731bab2acfd450ca9421f625cef3867, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RotateToFaceCameraForwardSystem
+  _rotationSmoothTime: 0.05
+  _context: {fileID: 4249173615142340639}
+  _mainCamera: {fileID: 7939394029879557183}
 --- !u!4 &1823970424633306398 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8980312366013264700, guid: 15d2875c44b4c5841b837a6720def158, type: 3}

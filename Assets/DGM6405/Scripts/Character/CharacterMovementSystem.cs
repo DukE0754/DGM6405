@@ -9,9 +9,6 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 {
 	private const float THRESHOLD = 0.01f;
 
-	[Header("Events")]
-	[SerializeField] private LocalEventBus _bus;
-
 	[Header("Movement Settings")]
 	[Tooltip("Move speed of the character in m/s")]
 	[SerializeField] private float _moveSpeed = 2.0f;
@@ -95,9 +92,6 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 				);
 		}
 
-		if (_bus == null) _bus = GetComponent<LocalEventBus>();
-
-		// Find jump gravity system if not assigned
 		if (_jumpGravitySystem == null)
 		{
 			_jumpGravitySystem = GetComponent<JumpGravitySystem>();
@@ -171,7 +165,7 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 	/// </summary>
 	/// <param name="moveInput">Normalized input direction (x, y).</param>
 	/// <param name="sprint">Whether sprint is active.</param>
-	public void OnMove(Vector2 moveInput, bool sprint)
+	void IMovementListener.OnMove(Vector2 moveInput, bool sprint)
 	{
 		ApplyMovement(moveInput, sprint);
 	}
@@ -235,17 +229,11 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 		// Normalize input direction
 		var inputDirection = new Vector3(moveInput.x, 0.0f, moveInput.y).normalized;
 
-		// If there is a move input rotate player when the player is moving
+		// Calculate target rotation relative to camera
 		if (moveInput != Vector2.zero && _mainCamera != null)
 		{
 			TargetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
 							_mainCamera.transform.eulerAngles.y;
-			var rotation = Mathf.SmoothDampAngle(
-				transform.eulerAngles.y, TargetRotation, ref _rotationVelocity,
-				_rotationSmoothTime);
-
-			// Rotate to face input direction relative to camera position
-			transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 		}
 
 		var targetDirection = Quaternion.Euler(0.0f, TargetRotation, 0.0f) * Vector3.forward;
@@ -260,7 +248,9 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 			new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
 
 		// Update systems via events
-		_bus?.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed));
+		if (_context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IMovementSpeedListener>(l =>
+				l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed));
 	}
 
 	protected override void OnPaused()
@@ -270,6 +260,7 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 		AnimationBlend = 0f;
 
 		// Notify systems via events
-		_bus?.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed));
+		if (_context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed));
 	}
 }
