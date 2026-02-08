@@ -725,7 +725,7 @@ MonoBehaviour:
       LocalPosition: {x: 5.2087756e-10, y: 0.096125245, z: -0.057499886}
       LocalRotation: {x: -0.000000016437719, y: 0.000000019798906, z: -0.7071068, w: 0.7071067}
       LocalScale: {x: 1, y: 1, z: 1}
-  _Tips_RootAndHipsMakeSureCounter: 24
+  _Tips_RootAndHipsMakeSureCounter: 27
   Export_SetAllOriginalBake: 1
   Export_CopyEvents: 1
   Export_CopyCurves: 0
@@ -25161,7 +25161,7 @@ MonoBehaviour:
     _hierarchyChanged: 0
   - Index: 3
     LimbName: Left Leg
-    GizmosBlend: 0
+    GizmosBlend: 1
     LimbType: 1
     Bones:
     - BoneName: LeftUpperLeg
@@ -25188,7 +25188,7 @@ MonoBehaviour:
     _hierarchyChanged: 0
   - Index: 4
     LimbName: Right Leg
-    GizmosBlend: 0
+    GizmosBlend: 1
     LimbType: 1
     Bones:
     - BoneName: RightUpperLeg

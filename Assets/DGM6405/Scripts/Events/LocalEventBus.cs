@@ -23,6 +23,17 @@ namespace DGM6405.Events
 				if (listener == null) continue;
 				RegisterAllInterfaces(listener);
 			}
+
+			// Failsafe: Register any IEntityListener components that might have been added at runtime 
+			// or weren't caught in the Editor's baked list.
+			var components = GetComponents<MonoBehaviour>();
+			foreach (var comp in components)
+			{
+				if (comp is IEntityListener && !_bakedListeners.Contains(comp))
+				{
+					RegisterAllInterfaces(comp);
+				}
+			}
 		}
 
 		private void OnValidate()

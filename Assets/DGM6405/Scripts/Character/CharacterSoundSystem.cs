@@ -78,7 +78,7 @@ public class CharacterSoundSystem : PausableBehaviour,
 
 	void IBlockListener.OnBlock(bool blockInput)
 	{
-		if (blockInput) PlayBlock();
+		//if (blockInput) PlayBlock();
 	}
 
 	public void OnGroundedChanged(bool isGrounded)
@@ -93,12 +93,12 @@ public class CharacterSoundSystem : PausableBehaviour,
 
 	void IMeleeListener.OnMelee(bool meleeInput)
 	{
-		if (meleeInput) PlayMelee();
+		//if (meleeInput) PlayMelee();
 	}
 
 	void IShootListener.OnShoot(bool shootInput)
 	{
-		if (shootInput) PlayShoot();
+		//if (shootInput) PlayShoot();
 	}
 
 	/// <summary>
