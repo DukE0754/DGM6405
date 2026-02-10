@@ -1,17 +1,15 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles blocking/defending with shield.
 ///     Manages shield visibility and blocking animation state.
 /// </summary>
-public class BlockSystem : PausableBehaviour
+public class BlockSystem : PausableBehaviour, IBlockListener
 {
 	[Header("References")]
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
-
-	[Tooltip("CharacterAnimationSystem for updating block animations. Required.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
 
 	[Header("Debug Gizmos")]
 	[Tooltip("Show block system gizmos in scene view when selected.")]
@@ -20,9 +18,6 @@ public class BlockSystem : PausableBehaviour
 	[Tooltip("Block coverage angle in degrees.")]
 	[Range(0f, 360f)]
 	[SerializeField] private float _blockArcAngle = 180f;
-
-	[Tooltip("WeaponHandSlots for managing shield visibility. If null, will use from CharacterContext.")]
-	[SerializeField] private WeaponHandSlots _weaponHandSlots;
 
 	// Internal state
 
@@ -33,37 +28,6 @@ public class BlockSystem : PausableBehaviour
 	{
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
-
-		// Get animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
-
-		// Validate animation system
-		if (_animationSystem == null)
-		{
-			Debug.LogError(
-				$"[{name}] BlockSystem: CharacterAnimationSystem is required! " +
-				"Add CharacterAnimationSystem component or assign reference in inspector.",
-				this
-			);
-			enabled = false;
-			return;
-		}
-
-		// Get weapon hand slots from context or direct reference
-		if (_weaponHandSlots == null)
-		{
-			if (_context != null)
-				_weaponHandSlots = _context.WeaponHandSlots;
-			else
-				_weaponHandSlots = GetComponent<WeaponHandSlots>();
-		}
-
-		// Warn if weapon hand slots not found
-		if (_weaponHandSlots == null)
-			Debug.LogWarning(
-				$"[{name}] BlockSystem: WeaponHandSlots not found. Shield visibility will not be managed.",
-				this
-			);
 	}
 
 	private void OnDrawGizmosSelected()
@@ -104,17 +68,15 @@ public class BlockSystem : PausableBehaviour
 
 	private void OnValidate()
 	{
-		// Warn if animation system not assigned
-		if (_animationSystem == null)
-			Debug.LogWarning(
-				$"[{name}] BlockSystem: CharacterAnimationSystem reference not assigned in inspector.", this);
+		// No dependencies to validate here for now
 	}
 
-	/// <summary>
-	///     Sets blocking state based on input command.
-	/// </summary>
-	/// <param name="isBlocking">Whether blocking input is active.</param>
-	public void SetBlocking(bool isBlocking)
+	void IBlockListener.OnBlock(bool blockInput)
+	{
+		SetBlocking(blockInput);
+	}
+
+	private void SetBlocking(bool isBlocking)
 	{
 		// Check game state
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
@@ -123,7 +85,7 @@ public class BlockSystem : PausableBehaviour
 			if (IsBlocking)
 			{
 				IsBlocking = false;
-				UpdateBlockState();
+				UpdateRotationMode(false);
 			}
 
 			return;
@@ -133,26 +95,17 @@ public class BlockSystem : PausableBehaviour
 		if (IsBlocking != isBlocking)
 		{
 			IsBlocking = isBlocking;
-			UpdateBlockState();
+			UpdateRotationMode(isBlocking);
 		}
 	}
 
-	/// <summary>
-	///     Updates animation and weapon slot visibility based on blocking state.
-	/// </summary>
-	private void UpdateBlockState()
+	private void UpdateRotationMode(bool isBlocking)
 	{
-		// Update animation
-		if (_animationSystem != null) _animationSystem.SetBlock(IsBlocking);
-
-		// Update weapon slot visibility
-		if (_weaponHandSlots != null)
+		if (_context != null && _context.EventBus != null)
 		{
-			if (IsBlocking)
-				_weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.Shield);
-			// Removing the else { _weaponHandSlots.SetActiveSlot(WeaponHandSlots.WeaponSlotType.None); }
-			// to avoid clearing slots that might be set by other systems during state transitions.
-			// Coordination is now handled by PlayerCommandBrain.
+			// When blocking, face camera. Otherwise face movement.
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(isBlocking));
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(!isBlocking));
 		}
 	}
 
@@ -162,7 +115,7 @@ public class BlockSystem : PausableBehaviour
 		if (IsBlocking)
 		{
 			IsBlocking = false;
-			UpdateBlockState();
+			UpdateRotationMode(false);
 		}
 	}
 }

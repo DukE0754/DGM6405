@@ -1,10 +1,11 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles aiming direction calculation and IK for head/weapon alignment.
 ///     Computes aim point from camera (player) or target transform (AI).
 /// </summary>
-public class AimSystem : PausableBehaviour
+public class AimSystem : PausableBehaviour, IAimTargetListener
 {
 	[Header("Aim Settings")]
 	[Tooltip("Maximum aim distance. Targets beyond this distance will be clamped.")]
@@ -73,6 +74,14 @@ public class AimSystem : PausableBehaviour
 			Debug.LogWarning(
 				$"[{name}] AimSystem: Animator not found. IK will not work. " +
 				"Add Animator component or assign CharacterContext with animator reference.",
+				this
+			);
+
+		// Use event bus from context if available
+		var bus = _context != null ? _context.EventBus : GetComponent<LocalEventBus>();
+		if (bus == null)
+			Debug.LogWarning(
+				$"[{name}] AimSystem: LocalEventBus not found. Event-based aiming will not work.",
 				this
 			);
 
@@ -212,6 +221,15 @@ public class AimSystem : PausableBehaviour
 		_aimSmoothing = Mathf.Max(0f, _aimSmoothing);
 	}
 
+	/// <summary>
+	///     Sets the aim target for AI characters.
+	/// </summary>
+	/// <param name="worldPosition">World position to aim at.</param>
+	public void OnSetAimTarget(Vector3 worldPosition)
+	{
+		SetAimTarget(worldPosition);
+	}
+
 	protected override void PausableLateUpdate()
 	{
 		// Check game state
@@ -236,6 +254,10 @@ public class AimSystem : PausableBehaviour
 				_smoothAimPoint, CurrentAimPoint, ref _smoothAimVelocity, _aimSmoothing);
 		else
 			_smoothAimPoint = CurrentAimPoint;
+
+		// Raise event
+		if (IsAiming && _context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
 	}
 
 	/// <summary>
@@ -279,11 +301,7 @@ public class AimSystem : PausableBehaviour
 		return _smoothAimPoint;
 	}
 
-	/// <summary>
-	///     Sets the aim target for AI characters.
-	/// </summary>
-	/// <param name="worldPosition">World position to aim at.</param>
-	public void SetAimTarget(Vector3 worldPosition)
+	private void SetAimTarget(Vector3 worldPosition)
 	{
 		CurrentAimPoint = worldPosition;
 		IsAiming = true;

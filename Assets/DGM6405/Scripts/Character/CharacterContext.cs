@@ -1,3 +1,4 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -6,6 +7,10 @@ using UnityEngine;
 /// </summary>
 public class CharacterContext : PausableBehaviour
 {
+	[Header("Events")]
+	[Tooltip("LocalEventBus for entity-specific events. If null, will try to find on same GameObject.")]
+	[SerializeField] private LocalEventBus _eventBus;
+
 	[Header("Core Components")]
 	[Tooltip("CharacterController component for movement. Required.")]
 	[SerializeField] private CharacterController _controller;
@@ -35,6 +40,7 @@ public class CharacterContext : PausableBehaviour
 	// Public properties for O(1) access
 	public CharacterController Controller => _controller;
 	public Animator Animator => _animator;
+	public LocalEventBus EventBus => _eventBus;
 	public Transform CameraTarget => _cameraTarget;
 	public WeaponHandSlots WeaponHandSlots => _weaponHandSlots;
 	public AudioClip[] FootstepAudioClips => _footstepAudioClips;
@@ -43,6 +49,18 @@ public class CharacterContext : PausableBehaviour
 
 	private void Awake()
 	{
+		// Try to find event bus if not assigned
+		if (_eventBus == null)
+		{
+			_eventBus = GetComponent<LocalEventBus>();
+			if (_eventBus == null)
+				Debug.LogWarning(
+					$"[{name}] CharacterContext: LocalEventBus not found. Event-based systems will not work. " +
+					"Assign LocalEventBus reference in inspector or add LocalEventBus component.",
+					this
+				);
+		}
+
 		// Validate required components
 		if (_controller == null)
 		{

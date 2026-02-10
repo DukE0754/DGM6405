@@ -1,10 +1,11 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles vertical movement including jumping and gravity.
 ///     Manages ground detection and vertical velocity.
 /// </summary>
-public class JumpGravitySystem : PausableBehaviour
+public class JumpGravitySystem : PausableBehaviour, IJumpListener
 {
 	[Header("Jump Settings")]
 	[Tooltip("The height the player can jump")]
@@ -37,15 +38,12 @@ public class JumpGravitySystem : PausableBehaviour
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
-	[Tooltip("CharacterController component. If null, will use from CharacterContext.")]
-	[SerializeField] private CharacterController _controller;
+	private CharacterController _controller;
 
-	[Tooltip("CharacterAnimationSystem for updating jump/fall animations. Optional.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
+	private readonly float _terminalVelocity = 53.0f;
 
 	private float _fallTimeoutDelta;
 	private float _jumpTimeoutDelta;
-	private readonly float _terminalVelocity = 53.0f;
 
 	// Internal state
 
@@ -55,6 +53,15 @@ public class JumpGravitySystem : PausableBehaviour
 	public float VerticalVelocity { get; private set; }
 
 	private void Awake()
+	{
+		InitializeComponents();
+
+		// Reset timeouts on start
+		_jumpTimeoutDelta = _jumpTimeout;
+		_fallTimeoutDelta = _fallTimeout;
+	}
+
+	private void InitializeComponents()
 	{
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
@@ -77,15 +84,7 @@ public class JumpGravitySystem : PausableBehaviour
 				this
 			);
 			enabled = false;
-			return;
 		}
-
-		// Find animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
-
-		// Reset timeouts on start
-		_jumpTimeoutDelta = _jumpTimeout;
-		_fallTimeoutDelta = _fallTimeout;
 	}
 
 	private void OnDrawGizmosSelected()
@@ -137,6 +136,16 @@ public class JumpGravitySystem : PausableBehaviour
 		_groundedRadius = Mathf.Max(0f, _groundedRadius);
 	}
 
+	/// <summary>
+	///     Updates vertical movement including ground check, jump, and gravity.
+	///     Should be called once per frame by command brain.
+	/// </summary>
+	/// <param name="jumpRequested">Whether jump input is active.</param>
+	void IJumpListener.OnJump(bool jumpRequested)
+	{
+		TickVertical(jumpRequested);
+	}
+
 	protected override void PausableUpdate()
 	{
 		// Check game state
@@ -153,12 +162,7 @@ public class JumpGravitySystem : PausableBehaviour
 		// This update loop can be used for continuous updates if needed
 	}
 
-	/// <summary>
-	///     Updates vertical movement including ground check, jump, and gravity.
-	///     Should be called once per frame by command brain.
-	/// </summary>
-	/// <param name="jumpRequested">Whether jump input is active.</param>
-	public void TickVertical(bool jumpRequested)
+	private void TickVertical(bool jumpRequested)
 	{
 		// Validate controller
 		if (_controller == null)
@@ -176,13 +180,6 @@ public class JumpGravitySystem : PausableBehaviour
 			// Reset the fall timeout timer
 			_fallTimeoutDelta = _fallTimeout;
 
-			// Update animator if using character
-			if (_animationSystem != null)
-			{
-				_animationSystem.SetJumping(false);
-				_animationSystem.SetFreeFall(false);
-			}
-
 			// Stop our velocity dropping infinitely when grounded
 			if (VerticalVelocity < 0.0f) VerticalVelocity = -2f;
 
@@ -191,9 +188,7 @@ public class JumpGravitySystem : PausableBehaviour
 			{
 				// The square root of H * -2 * G = how much velocity needed to reach desired height
 				VerticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-
-				// Update animator if using character
-				if (_animationSystem != null) _animationSystem.SetJumping(true);
+				_context?.EventBus?.Raise<IJumpListener>(l => l.OnJumpPerformed());
 			}
 
 			// Jump timeout
@@ -206,14 +201,9 @@ public class JumpGravitySystem : PausableBehaviour
 
 			// Fall timeout
 			if (_fallTimeoutDelta >= 0.0f)
-			{
 				_fallTimeoutDelta -= Time.deltaTime;
-			}
 			else
-			{
-				// Update animator if using character
-				if (_animationSystem != null) _animationSystem.SetFreeFall(true);
-			}
+				_context?.EventBus?.Raise<IGroundListener>(l => l.OnFall());
 		}
 
 		// Apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
@@ -229,12 +219,13 @@ public class JumpGravitySystem : PausableBehaviour
 		var spherePosition = new Vector3(
 			transform.position.x, transform.position.y - _groundedOffset,
 			transform.position.z);
+
+		var wasGrounded = IsGrounded;
 		IsGrounded = Physics.CheckSphere(
 			spherePosition, _groundedRadius, _groundLayers,
 			QueryTriggerInteraction.Ignore);
 
-		// Update animator if using character
-		if (_animationSystem != null) _animationSystem.SetGrounded(IsGrounded);
+		if (wasGrounded != IsGrounded) _context?.EventBus?.Raise<IGroundListener>(l => l.OnGroundedChanged(IsGrounded));
 	}
 
 	protected override void OnPaused()

@@ -1,8 +1,11 @@
-using System;
+using DGM6405.Events;
 using UnityEngine;
 
 public class CombatStats : MonoBehaviour
 {
+	[Header("Events")]
+	[SerializeField] private LocalEventBus _bus;
+
 	[Header("Health")]
 	[SerializeField] private float maxHP = 100f;
 
@@ -14,17 +17,13 @@ public class CombatStats : MonoBehaviour
 	private void Awake()
 	{
 		CurrentHP = maxHP;
-		OnHealthChanged?.Invoke(CurrentHP, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
 	}
 
 	private void Update()
 	{
 		if (IsDead) return;
 	}
-
-	// Events (optional, for UI / effects)
-	public event Action<float, float> OnHealthChanged; // (current, max)
-	public event Action OnDied;
 
 	/// <summary>
 	///     Apply damage to this entity. Returns true if damage was applied (not ignored).
@@ -42,7 +41,7 @@ public class CombatStats : MonoBehaviour
 		if (dmg <= 0f) return false;
 
 		CurrentHP = Mathf.Clamp(CurrentHP - dmg, 0f, maxHP);
-		OnHealthChanged?.Invoke(CurrentHP, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
 
 		if (CurrentHP <= 0f) Die(source);
 
@@ -55,7 +54,7 @@ public class CombatStats : MonoBehaviour
 		if (amount <= 0f) return;
 
 		CurrentHP = Mathf.Clamp(CurrentHP + amount, 0f, maxHP);
-		OnHealthChanged?.Invoke(CurrentHP, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
 	}
 
 	public void SetMaxHP(float newMaxHP, bool fillToMax = false)
@@ -65,7 +64,7 @@ public class CombatStats : MonoBehaviour
 		if (fillToMax) CurrentHP = maxHP;
 		else CurrentHP = Mathf.Clamp(CurrentHP, 0f, maxHP);
 
-		OnHealthChanged?.Invoke(CurrentHP, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
 	}
 
 	private void Die(GameObject killer)
@@ -76,6 +75,6 @@ public class CombatStats : MonoBehaviour
 		// Optional: disable collider / movement / AI here
 		// GetComponent<Collider>()?.enabled = false;
 
-		OnDied?.Invoke();
+		_bus?.Raise<IHealthListener>(l => l.OnDied());
 	}
 }

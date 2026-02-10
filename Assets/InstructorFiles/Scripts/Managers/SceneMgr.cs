@@ -39,10 +39,7 @@ public class SceneMgr : Singleton<SceneMgr>
 			yield break;
 		}
 
-		while (!asyncOperation.isDone)
-		{
-			yield return null;
-		}
+		while (!asyncOperation.isDone) yield return null;
 
 		UIMgr.Instance.HideMenu(GameMenus.Fader);
 

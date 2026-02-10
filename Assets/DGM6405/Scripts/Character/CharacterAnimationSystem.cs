@@ -1,10 +1,12 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Centralized animation system that handles all animator parameter updates.
 ///     Separates animation logic from other systems for better maintainability.
 /// </summary>
-public class CharacterAnimationSystem : PausableBehaviour
+public class CharacterAnimationSystem : PausableBehaviour,
+	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener
 {
 	[Header("Animation Settings")]
 	[Tooltip("Smoothing time for animation parameter changes")]
@@ -32,6 +34,8 @@ public class CharacterAnimationSystem : PausableBehaviour
 	private int _animIDMelee;
 	private int _animIDMotionSpeed;
 	private int _animIDShoot;
+	private int _animIDVelocityX;
+	private int _animIDVelocityZ;
 
 	// Animation parameter IDs (cached for performance)
 	private int _animIDSpeed;
@@ -93,6 +97,78 @@ public class CharacterAnimationSystem : PausableBehaviour
 	}
 
 	/// <summary>
+	///     Sets block animation state.
+	/// </summary>
+	/// <param name="isBlocking">Whether the character is blocking.</param>
+	void IBlockListener.OnBlock(bool blockInput)
+	{
+		SetBlock(blockInput);
+	}
+
+	/// <summary>
+	///     Updates grounded state animation parameter.
+	/// </summary>
+	/// <param name="grounded">Whether the character is grounded.</param>
+	public void OnGroundedChanged(bool grounded)
+	{
+		SetGrounded(grounded);
+		if (grounded)
+		{
+			SetJumping(false);
+			SetFreeFall(false);
+		}
+	}
+
+	/// <summary>
+	///     Sets free fall animation state.
+	/// </summary>
+	/// <param name="isFreeFalling">Whether the character is in free fall.</param>
+	public void OnFall()
+	{
+		SetFreeFall(true);
+	}
+
+	/// <summary>
+	///     Sets jump animation state.
+	/// </summary>
+	/// <param name="isJumping">Whether the character is jumping.</param>
+	public void OnJumpPerformed()
+	{
+		SetJumping(true);
+	}
+
+	/// <summary>
+	///     Sets melee attack animation state.
+	/// </summary>
+	/// <param name="isMeleeAttacking">Whether the character is performing melee attack.</param>
+	void IMeleeListener.OnMelee(bool meleeInput)
+	{
+		SetMelee(meleeInput);
+	}
+
+	/// <summary>
+	///     Updates movement animation parameters.
+	/// </summary>
+	/// <param name="speedBlend">Blended speed value for animation.</param>
+	/// <param name="currentSpeed">Current actual speed of the character.</param>
+	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
+	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
+	public void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
+		float velocityZ)
+	{
+		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
+	}
+
+	/// <summary>
+	///     Sets shoot animation state.
+	/// </summary>
+	/// <param name="isShooting">Whether the character is shooting.</param>
+	void IShootListener.OnShoot(bool shootInput)
+	{
+		SetShoot(shootInput);
+	}
+
+	/// <summary>
 	///     Assigns animation parameter IDs using StringToHash for performance.
 	/// </summary>
 	private void AssignAnimationIDs()
@@ -106,16 +182,12 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animIDMelee = Animator.StringToHash("Melee");
 		_animIDShoot = Animator.StringToHash("Shoot");
 		_animIDDodge = Animator.StringToHash("Dodge");
+		_animIDVelocityX = Animator.StringToHash("VelocityX");
+		_animIDVelocityZ = Animator.StringToHash("VelocityZ");
 	}
 
-	/// <summary>
-	///     Updates movement animation parameters.
-	/// </summary>
-	/// <param name="speedBlend">Blended speed value for animation.</param>
-	/// <param name="currentSpeed">Current actual speed of the character.</param>
-	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
-	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
-	public void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed)
+	private void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed, float velocityX,
+		float velocityZ)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -131,23 +203,17 @@ public class CharacterAnimationSystem : PausableBehaviour
 			// Reference speeds are _animationWalkSpeed and _animationRunSpeed
 			float expectedSpeed;
 			if (speedBlend <= walkSpeed)
-			{
 				// For the idle-to-walk transition, the Walk animation's playback speed 
 				// should be proportional to the actual movement speed to avoid sliding.
 				// We use the Walk reference speed as the baseline for this entire range.
 				expectedSpeed = _animationWalkSpeed;
-			}
 			else
-			{
-				expectedSpeed = Mathf.Lerp(_animationWalkSpeed, _animationRunSpeed,
+				expectedSpeed = Mathf.Lerp(
+					_animationWalkSpeed, _animationRunSpeed,
 					(speedBlend - walkSpeed) / (sprintSpeed - walkSpeed));
-			}
 
 			// Motion speed is actual speed / expected speed to align animation playback
-			if (expectedSpeed > threshold)
-			{
-				motionSpeed = currentSpeed / expectedSpeed;
-			}
+			if (expectedSpeed > threshold) motionSpeed = currentSpeed / expectedSpeed;
 		}
 		else
 		{
@@ -157,13 +223,11 @@ public class CharacterAnimationSystem : PausableBehaviour
 
 		_animator.SetFloat(_animIDSpeed, speedBlend, _animSmoothingTime, Time.deltaTime);
 		_animator.SetFloat(_animIDMotionSpeed, motionSpeed, _animSmoothingTime, Time.deltaTime);
+		_animator.SetFloat(_animIDVelocityX, velocityX, _animSmoothingTime, Time.deltaTime);
+		_animator.SetFloat(_animIDVelocityZ, velocityZ, _animSmoothingTime, Time.deltaTime);
 	}
 
-	/// <summary>
-	///     Updates grounded state animation parameter.
-	/// </summary>
-	/// <param name="grounded">Whether the character is grounded.</param>
-	public void SetGrounded(bool grounded)
+	private void SetGrounded(bool grounded)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -171,11 +235,7 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animator.SetBool(_animIDGrounded, grounded);
 	}
 
-	/// <summary>
-	///     Sets jump animation state.
-	/// </summary>
-	/// <param name="isJumping">Whether the character is jumping.</param>
-	public void SetJumping(bool isJumping)
+	private void SetJumping(bool isJumping)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -183,11 +243,7 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animator.SetBool(_animIDJump, isJumping);
 	}
 
-	/// <summary>
-	///     Sets free fall animation state.
-	/// </summary>
-	/// <param name="isFreeFalling">Whether the character is in free fall.</param>
-	public void SetFreeFall(bool isFreeFalling)
+	private void SetFreeFall(bool isFreeFalling)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -195,11 +251,7 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animator.SetBool(_animIDFreeFall, isFreeFalling);
 	}
 
-	/// <summary>
-	///     Sets block animation state.
-	/// </summary>
-	/// <param name="isBlocking">Whether the character is blocking.</param>
-	public void SetBlock(bool isBlocking)
+	private void SetBlock(bool isBlocking)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -207,11 +259,7 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animator.SetBool(_animIDBlock, isBlocking);
 	}
 
-	/// <summary>
-	///     Sets melee attack animation state.
-	/// </summary>
-	/// <param name="isMeleeAttacking">Whether the character is performing melee attack.</param>
-	public void SetMelee(bool isMeleeAttacking)
+	private void SetMelee(bool isMeleeAttacking)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
@@ -219,11 +267,7 @@ public class CharacterAnimationSystem : PausableBehaviour
 		_animator.SetBool(_animIDMelee, isMeleeAttacking);
 	}
 
-	/// <summary>
-	///     Sets shoot animation state.
-	/// </summary>
-	/// <param name="isShooting">Whether the character is shooting.</param>
-	public void SetShoot(bool isShooting)
+	private void SetShoot(bool isShooting)
 	{
 		if (!_hasAnimator || _animator == null)
 			return;

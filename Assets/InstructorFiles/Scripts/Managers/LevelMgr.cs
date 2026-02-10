@@ -1,6 +1,7 @@
 // LevelMgr.cs : lines 1–118
 
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 ///     Manages level ordering, progression, and save coordination.
@@ -40,8 +41,8 @@ public class LevelMgr : Singleton<LevelMgr>
 		CurrentLevelIndex == LevelCount - 1;
 
 	/// <summary>
-	/// Gets the level info for the current level.
-	/// Returns true if level info was found, false otherwise (e.g. test scenes).
+	///     Gets the level info for the current level.
+	///     Returns true if level info was found, false otherwise (e.g. test scenes).
 	/// </summary>
 	public bool TryGetCurrentLevelInfo(out LevelData.LevelInfo info)
 	{
@@ -51,16 +52,15 @@ public class LevelMgr : Singleton<LevelMgr>
 		if (CurrentLevelIndex < 0 || CurrentLevelIndex >= LevelCount)
 		{
 			// Fallback scenario: Check current level name and if it exists in _levelData.Levels
-			var currentSceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
+			var currentSceneName = SceneManager.GetActiveScene().name;
 			for (var i = 0; i < _levelData.Levels.Length; i++)
-			{
 				if (_levelData.Levels[i].SceneName == currentSceneName)
 				{
 					CurrentLevelIndex = i;
 					info = _levelData.Levels[i];
 					return true;
 				}
-			}
+
 			return false;
 		}
 

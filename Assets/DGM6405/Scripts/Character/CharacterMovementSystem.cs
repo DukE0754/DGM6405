@@ -1,10 +1,11 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles horizontal movement and rotation for character.
 ///     Uses CharacterController for movement and rotates character to face movement direction.
 /// </summary>
-public class CharacterMovementSystem : PausableBehaviour
+public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 {
 	private const float THRESHOLD = 0.01f;
 
@@ -31,9 +32,6 @@ public class CharacterMovementSystem : PausableBehaviour
 
 	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
 	[SerializeField] private Transform _mainCamera;
-
-	[Tooltip("CharacterAnimationSystem for updating movement animations. Optional.")]
-	[SerializeField] private CharacterAnimationSystem _animationSystem;
 
 	[Tooltip("JumpGravitySystem for getting vertical velocity. Required for proper movement.")]
 	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
@@ -94,10 +92,6 @@ public class CharacterMovementSystem : PausableBehaviour
 				);
 		}
 
-		// Find animation system if not assigned
-		if (_animationSystem == null) _animationSystem = GetComponent<CharacterAnimationSystem>();
-
-		// Find jump gravity system if not assigned
 		if (_jumpGravitySystem == null)
 		{
 			_jumpGravitySystem = GetComponent<JumpGravitySystem>();
@@ -166,6 +160,16 @@ public class CharacterMovementSystem : PausableBehaviour
 		_speedChangeRate = Mathf.Max(0f, _speedChangeRate);
 	}
 
+	/// <summary>
+	///     Applies movement based on input direction and sprint state.
+	/// </summary>
+	/// <param name="moveInput">Normalized input direction (x, y).</param>
+	/// <param name="sprint">Whether sprint is active.</param>
+	void IMovementListener.OnMove(Vector2 moveInput, bool sprint)
+	{
+		ApplyMovement(moveInput, sprint);
+	}
+
 	protected override void PausableUpdate()
 	{
 		// Check game state
@@ -182,12 +186,7 @@ public class CharacterMovementSystem : PausableBehaviour
 		// This update loop can be used for continuous movement if needed
 	}
 
-	/// <summary>
-	///     Applies movement based on input direction and sprint state.
-	/// </summary>
-	/// <param name="moveInput">Normalized input direction (x, y).</param>
-	/// <param name="sprint">Whether sprint is active.</param>
-	public void ApplyMovement(Vector2 moveInput, bool sprint)
+	private void ApplyMovement(Vector2 moveInput, bool sprint)
 	{
 		// Validate controller
 		if (_controller == null)
@@ -230,17 +229,11 @@ public class CharacterMovementSystem : PausableBehaviour
 		// Normalize input direction
 		var inputDirection = new Vector3(moveInput.x, 0.0f, moveInput.y).normalized;
 
-		// If there is a move input rotate player when the player is moving
+		// Calculate target rotation relative to camera
 		if (moveInput != Vector2.zero && _mainCamera != null)
 		{
 			TargetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
 							_mainCamera.transform.eulerAngles.y;
-			var rotation = Mathf.SmoothDampAngle(
-				transform.eulerAngles.y, TargetRotation, ref _rotationVelocity,
-				_rotationSmoothTime);
-
-			// Rotate to face input direction relative to camera position
-			transform.rotation = Quaternion.Euler(0.0f, rotation, 0.0f);
 		}
 
 		var targetDirection = Quaternion.Euler(0.0f, TargetRotation, 0.0f) * Vector3.forward;
@@ -250,13 +243,18 @@ public class CharacterMovementSystem : PausableBehaviour
 		if (_jumpGravitySystem != null) verticalVelocity = _jumpGravitySystem.VerticalVelocity;
 
 		// Move the player
-		_controller.Move(
-			targetDirection.normalized * (Speed * Time.deltaTime) +
-			new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime);
+		var movement = targetDirection.normalized * (Speed * Time.deltaTime) +
+						new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime;
+		_controller.Move(movement);
 
-		// Update animation system
-		if (_animationSystem != null)
-			_animationSystem.SetMovement(AnimationBlend, Speed, _moveSpeed, _sprintSpeed);
+		// Calculate local velocity for animations (VelocityX and VelocityZ)
+		// We want the velocity relative to the character's orientation
+		var localVelocity = transform.InverseTransformDirection(_controller.velocity);
+
+		// Update systems via events
+		if (_context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IMovementSpeedListener>(l =>
+				l.OnSpeedChanged(Speed, AnimationBlend, _moveSpeed, _sprintSpeed, localVelocity.x, localVelocity.z));
 	}
 
 	protected override void OnPaused()
@@ -265,8 +263,8 @@ public class CharacterMovementSystem : PausableBehaviour
 		Speed = 0f;
 		AnimationBlend = 0f;
 
-		// Update animation to reflect stopped state
-		if (_animationSystem != null)
-			_animationSystem.SetMovement(0f, 0f, _moveSpeed, _sprintSpeed);
+		// Notify systems via events
+		if (_context != null && _context.EventBus != null)
+			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed, 0f, 0f));
 	}
 }

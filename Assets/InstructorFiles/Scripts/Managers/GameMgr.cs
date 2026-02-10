@@ -1,4 +1,4 @@
-using System;
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -34,8 +34,6 @@ public class GameMgr : Singleton<GameMgr>
 
 	public bool IsPaused => _gameState == GameStates.Paused;
 
-	public event Action<bool> PauseStateChanged;
-
 	public int LastRunTimeMs { get; private set; }
 
 	/// <summary>
@@ -49,6 +47,7 @@ public class GameMgr : Singleton<GameMgr>
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.Locked;
 		LastRunTimeMs = 0;
+		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnGameStarted());
 	}
 
 	/// <summary>
@@ -60,6 +59,7 @@ public class GameMgr : Singleton<GameMgr>
 		Cursor.lockState = CursorLockMode.None;
 		_gameState = GameStates.GameOver;
 		SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.GameOverMenu, () => GameState = GameStates.GameOver);
+		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnGameOver());
 	}
 
 	public void NextLevel(int timeMs)
@@ -89,17 +89,15 @@ public class GameMgr : Singleton<GameMgr>
 				return;
 
 			if (!IsGameRunning)
-			{
 				//Debug.Log("Game is not running, cannot toggle pause");
 				return;
-			}
 
 			Time.timeScale = 0f;
 			Cursor.lockState = CursorLockMode.None;
 			_gameState = GameStates.Paused;
 			Debug.Log("Pause state enabled");
 			UIMgr.Instance.ShowMenu(GameMenus.PauseMenu);
-			PauseStateChanged?.Invoke(true);
+			GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnPauseStateChanged(true));
 			return;
 		}
 
@@ -112,7 +110,7 @@ public class GameMgr : Singleton<GameMgr>
 		Debug.Log("Pause state disabled");
 		UIMgr.Instance.CloseAllMenus();
 		UIMgr.Instance.ShowMenu(GameMenus.InGameUI, null, false);
-		PauseStateChanged?.Invoke(false);
+		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnPauseStateChanged(false));
 	}
 
 #region Score

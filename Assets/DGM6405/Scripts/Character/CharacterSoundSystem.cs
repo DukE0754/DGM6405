@@ -1,10 +1,12 @@
+using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
 ///     Handles character sound effects including footsteps, landing, and combat sounds.
 ///     Called via animation events or directly from other systems.
 /// </summary>
-public class CharacterSoundSystem : PausableBehaviour
+public class CharacterSoundSystem : PausableBehaviour,
+	IShootListener, IMeleeListener, IBlockListener, IGroundListener, IJumpListener
 {
 	[Header("Audio Clips")]
 	[Tooltip("Audio clips for footstep sounds. Randomly selected when playing footstep.")]
@@ -72,6 +74,31 @@ public class CharacterSoundSystem : PausableBehaviour
 
 		if (_landingAudioClip == null)
 			Debug.LogWarning($"[{name}] CharacterSoundSystem: Landing audio clip not assigned.", this);
+	}
+
+	void IBlockListener.OnBlock(bool blockInput)
+	{
+		//if (blockInput) PlayBlock();
+	}
+
+	public void OnGroundedChanged(bool isGrounded)
+	{
+		if (isGrounded) PlayLanding();
+	}
+
+	public void OnJumpPerformed()
+	{
+		// We could play a jump sound here if we had one.
+	}
+
+	void IMeleeListener.OnMelee(bool meleeInput)
+	{
+		//if (meleeInput) PlayMelee();
+	}
+
+	void IShootListener.OnShoot(bool shootInput)
+	{
+		//if (shootInput) PlayShoot();
 	}
 
 	/// <summary>

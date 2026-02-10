@@ -1,8 +1,6 @@
-using System;
-using System.ComponentModel;
+using DGM6405.Events;
 using JetBrains.Annotations;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 /// <summary>
 ///     This manages the main game loop,
@@ -15,36 +13,39 @@ public class GameLoopManager : MonoBehaviour
 	[Header("Spawning")]
 	[SerializeField] private GameObject _playerPrefab;
 
+	[SerializeField] private LevelSpawnPoint _spawnPoint;
+
 	/// <summary>
 	///     Timer for use with the <see cref="_isCountdownTimer" />
 	/// </summary>
 	[UsedImplicitly] // Accessible in case UI wants to show value
 	public float GameTimer { get; private set; }
 
-	public static event Action OnLevelReady;
-
 	private void Start()
 	{
 		// Only auto-start and show UI if we are in a proper game flow or if configured to do so
 		if (GameMgr.Instance.GameState != GameMgr.GameStates.Loading)
-		{
 			UIMgr.Instance.ShowMenu(GameMenus.InGameUI, StartGame);
-		}
-		
+
 		SpawnPlayer();
-		OnLevelReady?.Invoke();
+		GlobalEventBus.Instance.Raise<ILevelListener>(l => l.OnLevelReady());
+	}
+
+	private void Update()
+	{
+		if (GameMgr.Instance.IsGameRunning)
+			GameTimer += Time.timeScale * Time.deltaTime; // Count up for now, may change later.
 	}
 
 	private void SpawnPlayer()
 	{
-		var spawnPoint = FindFirstObjectByType<LevelSpawnPoint>();
-		Vector3 spawnPos = Vector3.zero;
-		Quaternion spawnRot = Quaternion.identity;
+		var spawnPos = Vector3.zero;
+		var spawnRot = Quaternion.identity;
 
-		if (spawnPoint != null)
+		if (_spawnPoint != null)
 		{
-			spawnPos = spawnPoint.transform.position;
-			spawnRot = spawnPoint.transform.rotation;
+			spawnPos = _spawnPoint.transform.position;
+			spawnRot = _spawnPoint.transform.rotation;
 		}
 
 		// If player already exists (test scene), just move them
@@ -64,14 +65,6 @@ public class GameLoopManager : MonoBehaviour
 		else
 		{
 			Debug.LogWarning("GameLoopManager: No Player Prefab assigned and no player in scene.");
-		}
-	}
-
-	private void Update()
-	{
-		if (GameMgr.Instance.IsGameRunning)
-		{
-			GameTimer += Time.timeScale * Time.deltaTime; // Count up for now, may change later.
 		}
 	}
 
