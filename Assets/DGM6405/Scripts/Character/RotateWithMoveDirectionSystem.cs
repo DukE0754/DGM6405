@@ -1,5 +1,4 @@
-﻿using DGM6405.Events;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 ///     Rotates character to face movement direction.

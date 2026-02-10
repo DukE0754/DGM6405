@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -25,7 +24,7 @@ public class ShootSystem : PausableBehaviour, IShootListener
 
 	// Public properties
 	public bool IsShooting { get; private set; }
-
+	
 	private void Awake()
 	{
 		InitializeComponents();

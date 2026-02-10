@@ -62,7 +62,7 @@ public class Settings : MenuBase
 		if (_isMuted)
 			AudioMgr.Instance.GlobalVolume = value;
 		else
-			AudioMgr.Instance.SetMasterVolume(value, true);
+			AudioMgr.Instance.SetMasterVolume(value);
 	}
 
 	private void OnSfxChanged(float value)
@@ -71,7 +71,7 @@ public class Settings : MenuBase
 		if (_isMuted)
 			AudioMgr.Instance.SfxVolume = value;
 		else
-			AudioMgr.Instance.SetSfxVolume(value, true);
+			AudioMgr.Instance.SetSfxVolume(value);
 	}
 
 	private void OnMusicChanged(float value)
@@ -80,7 +80,7 @@ public class Settings : MenuBase
 		if (_isMuted)
 			AudioMgr.Instance.MusicVolume = value;
 		else
-			AudioMgr.Instance.SetMusicVolume(value, true);
+			AudioMgr.Instance.SetMusicVolume(value);
 	}
 
 	private void OnMuteAllChanged(bool isMuted)
@@ -96,9 +96,9 @@ public class Settings : MenuBase
 		}
 		else
 		{
-			if (_masterSlider) AudioMgr.Instance.SetMasterVolume(_masterSlider.value, true);
-			if (_musicSlider) AudioMgr.Instance.SetMusicVolume(_musicSlider.value, true);
-			if (_sfxSlider) AudioMgr.Instance.SetSfxVolume(_sfxSlider.value, true);
+			if (_masterSlider) AudioMgr.Instance.SetMasterVolume(_masterSlider.value);
+			if (_musicSlider) AudioMgr.Instance.SetMusicVolume(_musicSlider.value);
+			if (_sfxSlider) AudioMgr.Instance.SetSfxVolume(_sfxSlider.value);
 		}
 	}
 

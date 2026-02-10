@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -7,20 +6,28 @@ using UnityEngine;
 /// </summary>
 public class PlayerMgr : Singleton<PlayerMgr>
 {
+	[SerializeField] private GameObject _playerPrefab;
+	
 	/// <summary>
 	///     The current player object in the scene.
 	///     Returns null if no player exists.
 	/// </summary>
 	public GameObject PlayerObject { get; private set; }
 
-	public override void Awake()
+	public bool HasSpawnedPlayer => PlayerObject != null;
+	
+	public void SpawnPlayer(Vector3 position, Quaternion rotation)
 	{
-		base.Awake();
+		if (PlayerObject)
+		{
+			Debug.LogError("Player already spawned!");
+			return;
+		}
 
-		// If we are the instance, we can try to find the player immediately
-		if (Instance == this && PlayerObject == null) PlayerObject = PlayerObject;
+		PlayerObject = Instantiate(_playerPrefab, position, rotation);
+		Debug.Log("Player spawned");
 	}
-
+	
 	/// <summary>
 	///     Registers the player object with the manager.
 	///     Called when a player is spawned or initialized.
@@ -38,5 +45,10 @@ public class PlayerMgr : Singleton<PlayerMgr>
 	{
 		// Run pause from game manager
 		GameMgr.Instance.PauseGameToggle();
+	}
+
+	public void DebugAssignAsPlayer(GameObject player)
+	{
+		PlayerObject = player;
 	}
 }

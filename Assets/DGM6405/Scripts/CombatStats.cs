@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 public class CombatStats : MonoBehaviour
@@ -10,14 +9,14 @@ public class CombatStats : MonoBehaviour
 	[SerializeField] private float maxHP = 100f;
 
 	// Runtime
-	public float CurrentHP { get; private set; }
-	public float MaxHP => maxHP;
+	public float CurrentHp { get; private set; }
+	public float MaxHp => maxHP;
 	public bool IsDead { get; private set; }
 
 	private void Awake()
 	{
-		CurrentHP = maxHP;
-		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
+		CurrentHp = maxHP;
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHp, maxHP));
 	}
 
 	private void Update()
@@ -40,10 +39,10 @@ public class CombatStats : MonoBehaviour
 
 		if (dmg <= 0f) return false;
 
-		CurrentHP = Mathf.Clamp(CurrentHP - dmg, 0f, maxHP);
-		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
+		CurrentHp = Mathf.Clamp(CurrentHp - dmg, 0f, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHp, maxHP));
 
-		if (CurrentHP <= 0f) Die(source);
+		if (CurrentHp <= 0f) Die(source);
 
 		return true;
 	}
@@ -53,18 +52,18 @@ public class CombatStats : MonoBehaviour
 		if (IsDead) return;
 		if (amount <= 0f) return;
 
-		CurrentHP = Mathf.Clamp(CurrentHP + amount, 0f, maxHP);
-		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
+		CurrentHp = Mathf.Clamp(CurrentHp + amount, 0f, maxHP);
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHp, maxHP));
 	}
 
-	public void SetMaxHP(float newMaxHP, bool fillToMax = false)
+	public void SetMaxHp(float newMaxHp, bool fillToMax = false)
 	{
-		maxHP = Mathf.Max(1f, newMaxHP);
+		maxHP = Mathf.Max(1f, newMaxHp);
 
-		if (fillToMax) CurrentHP = maxHP;
-		else CurrentHP = Mathf.Clamp(CurrentHP, 0f, maxHP);
+		if (fillToMax) CurrentHp = maxHP;
+		else CurrentHp = Mathf.Clamp(CurrentHp, 0f, maxHP);
 
-		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHP, maxHP));
+		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHp, maxHP));
 	}
 
 	private void Die(GameObject killer)

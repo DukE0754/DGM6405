@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -34,11 +33,11 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	private int _animIDMelee;
 	private int _animIDMotionSpeed;
 	private int _animIDShoot;
-	private int _animIDVelocityX;
-	private int _animIDVelocityZ;
 
 	// Animation parameter IDs (cached for performance)
 	private int _animIDSpeed;
+	private int _animIDVelocityX;
+	private int _animIDVelocityZ;
 
 	// Cached animator state
 	private bool _hasAnimator;
@@ -153,7 +152,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <param name="currentSpeed">Current actual speed of the character.</param>
 	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
 	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
-	public void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
+	public void OnSpeedChanged(
+		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
 		float velocityZ)
 	{
 		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
@@ -186,7 +186,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animIDVelocityZ = Animator.StringToHash("VelocityZ");
 	}
 
-	private void SetMovement(float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed, float velocityX,
+	private void SetMovement(
+		float speedBlend, float currentSpeed, float walkSpeed, float sprintSpeed, float velocityX,
 		float velocityZ)
 	{
 		if (!_hasAnimator || _animator == null)

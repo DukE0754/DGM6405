@@ -10,13 +10,13 @@ public class ProjectileShooter : MonoBehaviour
     [SerializeField] private float projectileSpeed = 15f;
     [SerializeField] private float fireCooldown = 0.5f;
 
-    private float nextFireTime;
+    private float _nextFireTime;
 
     private Transform Origin => firePoint != null ? firePoint : transform;
 
     public bool CanShoot()
     {
-        return Time.time >= nextFireTime && projectilePrefab != null;
+        return Time.time >= _nextFireTime && projectilePrefab != null;
     }
 
     public void ShootForward()
@@ -35,7 +35,7 @@ public class ProjectileShooter : MonoBehaviour
         if (!CanShoot()) return;
         if (direction.sqrMagnitude < 0.0001f) return;
 
-        nextFireTime = Time.time + fireCooldown;
+        _nextFireTime = Time.time + fireCooldown;
         direction.Normalize();
 
         Transform origin = Origin;

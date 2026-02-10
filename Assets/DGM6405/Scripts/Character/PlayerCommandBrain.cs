@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 #if ENABLE_INPUT_SYSTEM
 using UnityEngine.InputSystem;
@@ -34,9 +33,9 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 
 	private void Start()
 	{
-		// Fallback for test scenes where GameLoopManager might not exist or already fired event
-		// Wait a frame to ensure GameLoopManager has a chance to run its Start
-		Invoke(nameof(CheckInitialisationFallback), 0.1f);
+		// Fallback for test scenes where level might not exist or already fired event
+		if (!LevelMgr.Instance.IsLevelLoaded)
+			CheckInitialisationFallback();
 	}
 
 	protected override void OnEnable()
@@ -61,10 +60,9 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 #endif
 	}
 
-	private void OnLevelReady()
+	public void OnLevelReady()
 	{
 		if (_isInitialised) return;
-		ApplyLevelRestrictions();
 		_isInitialised = true;
 	}
 
@@ -105,21 +103,6 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 			);
 			enabled = false;
 		}
-	}
-
-	private void ApplyLevelRestrictions()
-	{
-		// With events, we might need a different way to handle restrictions.
-		// For now, we'll keep it simple and just enable/disable the brain's processing.
-		if (LevelMgr.Instance.TryGetCurrentLevelInfo(out var levelInfo))
-			Debug.Log($"[{name}] PlayerCommandBrain: Level restrictions applied (via LevelInfo).", this);
-		else
-			EnableAllSystems();
-	}
-
-	private void EnableAllSystems()
-	{
-		// This might be handled by the systems themselves now.
 	}
 
 	protected override void PausableUpdate()
@@ -226,21 +209,25 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		// Process melee
 		_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
 		if (isMeleeInput)
-			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
+			_context.EventBus.Raise<IWeaponSlotListener>(l =>
+				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
 
 		// Process shoot
 		_context.EventBus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
 		if (isShootInput)
-			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
+			_context.EventBus.Raise<IWeaponSlotListener>(l =>
+				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
 
 		// Process block
 		_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
 		if (isBlockInput)
-			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
+			_context.EventBus.Raise<IWeaponSlotListener>(l =>
+				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
 
 		// If no combat action is active, clear weapon slots
 		if (!isMeleeInput && !isShootInput && !isBlockInput)
-			_context.EventBus.Raise<IWeaponSlotListener>(l => l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
+			_context.EventBus.Raise<IWeaponSlotListener>(l =>
+				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
 	}
 
 	protected override void OnPaused()

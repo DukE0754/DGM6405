@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -231,10 +230,8 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 
 		// Calculate target rotation relative to camera
 		if (moveInput != Vector2.zero && _mainCamera != null)
-		{
 			TargetRotation = Mathf.Atan2(inputDirection.x, inputDirection.z) * Mathf.Rad2Deg +
 							_mainCamera.transform.eulerAngles.y;
-		}
 
 		var targetDirection = Quaternion.Euler(0.0f, TargetRotation, 0.0f) * Vector3.forward;
 
@@ -265,6 +262,7 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 
 		// Notify systems via events
 		if (_context != null && _context.EventBus != null)
-			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(0f, 0f, _moveSpeed, _sprintSpeed, 0f, 0f));
+			_context.EventBus.Raise<IMovementSpeedListener>(l => l.OnSpeedChanged(
+				0f, 0f, _moveSpeed, _sprintSpeed, 0f, 0f));
 	}
 }

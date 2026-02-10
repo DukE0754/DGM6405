@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 
 /// <summary>
@@ -12,34 +11,34 @@ using UnityEngine;
 [RequireComponent(typeof(CanvasGroup))] // Ensures Canvas has a CanvasGroup
 public abstract class MenuBase : MonoBehaviour
 {
-    /// <summary>
-    /// Menus should not be interactable while fading.
-    /// Use to prevent double-click issues.
-    /// </summary>
-    [SerializeField] protected bool Interactable = false;
+	/// <summary>
+	///     Menus should not be interactable while fading.
+	///     Use to prevent double-click issues.
+	/// </summary>
+	[SerializeField] protected bool Interactable;
 
-    /// <summary>
-    /// Canvas of the menu
-    /// We could alternatively have these menus as children of a single canvas
-    /// but then fading the canvas is trickier.
-    /// </summary>
-    private Canvas _canvas;
+	/// <summary>
+	///     Canvas of the menu
+	///     We could alternatively have these menus as children of a single canvas
+	///     but then fading the canvas is trickier.
+	/// </summary>
+	private Canvas _canvas;
 
-    /// <summary>
-    /// Canvas group allows us to fade the alpha
-    /// </summary>
-    private CanvasGroup _canvasGroup;
+	/// <summary>
+	///     Canvas group allows us to fade the alpha
+	/// </summary>
+	private CanvasGroup _canvasGroup;
 
-    /// <summary>
-    /// Track the currently running coroutine so we can cancel if needed
-    /// </summary>
-    private Coroutine _fadeRoutine;
+	/// <summary>
+	///     Track the currently running coroutine so we can cancel if needed
+	/// </summary>
+	private Coroutine _fadeRoutine;
 
-    public int SortOrder
-    {
-        get => _canvas.sortingOrder;
-        set => _canvas.sortingOrder = value;
-    }
+	public int SortOrder
+	{
+		get => _canvas.sortingOrder;
+		set => _canvas.sortingOrder = value;
+	}
 
 	/// <summary>
 	///     References <see cref="GameMenus" /> to know what type this menu is
@@ -48,93 +47,95 @@ public abstract class MenuBase : MonoBehaviour
 	/// <returns></returns>
 	public abstract GameMenus MenuType();
 
-    public void OnInstantiate()
-    {
-        _canvas = GetComponent<Canvas>();
-        _canvas.overrideSorting = true;
-        _canvasGroup = GetComponent<CanvasGroup>();
-        
-        _canvasGroup.alpha = 0;
-    }
+	public void OnInstantiate()
+	{
+		_canvas = GetComponent<Canvas>();
+		_canvas.overrideSorting = true;
+		_canvasGroup = GetComponent<CanvasGroup>();
 
-    private void RevealFader()
-    {
-        _canvasGroup.alpha = 0;
-        _canvasGroup.gameObject.SetActive(true);
-    }
+		_canvasGroup.alpha = 0;
+	}
 
-    private void HideFader()
-    {
-        _canvasGroup.alpha = 0;
-        _canvasGroup.gameObject.SetActive(false);
-    }
+	private void RevealFader()
+	{
+		_canvasGroup.alpha = 0;
+		_canvasGroup.gameObject.SetActive(true);
+	}
 
-    public void PerformFullFadeIn(float duration, Action onFadeInComplete = null)
-    {
-        Interactable = false;
-        // Turn the object on (or the coroutine can't run)
-        RevealFader();
-        Fade(1.0f, duration, () =>
-        {
-            // Override the callback so we can set the menu as interactable
-            Interactable = true;
-            onFadeInComplete?.Invoke();
-        });
-    }
+	private void HideFader()
+	{
+		_canvasGroup.alpha = 0;
+		_canvasGroup.gameObject.SetActive(false);
+	}
 
-    public void PerformHalfFadeIn(float duration, Action onFadeInComplete = null)
-    {
-        Interactable = false;
-        RevealFader();
-        Fade(0.5f, duration, onFadeInComplete);
-    }
+	public void PerformFullFadeIn(float duration, Action onFadeInComplete = null)
+	{
+		Interactable = false;
+		// Turn the object on (or the coroutine can't run)
+		RevealFader();
+		Fade(
+			1.0f, duration, () =>
+			{
+				// Override the callback so we can set the menu as interactable
+				Interactable = true;
+				onFadeInComplete?.Invoke();
+			});
+	}
 
-    public void PerformFullFadeOut(float duration, Action onFadeOutComplete = null)
-    {
-        Interactable = false;
-        Fade(0.0f, duration, ()=>
-        {
-            // Override the callback so we can fully turn the object off.
-            HideFader();
-            onFadeOutComplete?.Invoke();
-        });
-    }
+	public void PerformHalfFadeIn(float duration, Action onFadeInComplete = null)
+	{
+		Interactable = false;
+		RevealFader();
+		Fade(0.5f, duration, onFadeInComplete);
+	}
 
-    public void Fade(float targetAlpha, float duration, Action onComplete = null)
-    {
-        if (_fadeRoutine != null)
-            StopCoroutine(_fadeRoutine);
+	public void PerformFullFadeOut(float duration, Action onFadeOutComplete = null)
+	{
+		Interactable = false;
+		Fade(
+			0.0f, duration, () =>
+			{
+				// Override the callback so we can fully turn the object off.
+				HideFader();
+				onFadeOutComplete?.Invoke();
+			});
+	}
 
-        _fadeRoutine = StartCoroutine(
-            FadeRoutine(targetAlpha, duration, onComplete)
-        );
-    }
+	public void Fade(float targetAlpha, float duration, Action onComplete = null)
+	{
+		if (_fadeRoutine != null)
+			StopCoroutine(_fadeRoutine);
 
-    private IEnumerator FadeRoutine(
-        float endAlpha,
-        float duration,
-        Action onComplete)
-    {
-        var startAlpha = _canvasGroup.alpha;
-        var elapsed = 0f;
+		_fadeRoutine = StartCoroutine(
+			FadeRoutine(targetAlpha, duration, onComplete)
+		);
+	}
 
-        // Edge case: instant fade
-        if (duration <= 0f)
-        {
-            _canvasGroup.alpha = endAlpha;
-            onComplete?.Invoke();
-            yield break;
-        }
+	private IEnumerator FadeRoutine(
+		float endAlpha,
+		float duration,
+		Action onComplete)
+	{
+		var startAlpha = _canvasGroup.alpha;
+		var elapsed = 0f;
 
-        while (elapsed < duration)
-        {
-            elapsed += Time.unscaledDeltaTime;
-            var t = Mathf.Clamp01(elapsed / duration);
-            _canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
-            yield return null;
-        }
+		// Edge case: instant fade
+		if (duration <= 0f)
+		{
+			_canvasGroup.alpha = endAlpha;
+			onComplete?.Invoke();
+			yield break;
+		}
 
-        _canvasGroup.alpha = endAlpha;
-        onComplete?.Invoke();
-    }
+		while (elapsed < duration)
+		{
+			elapsed += Time.unscaledDeltaTime;
+			var t = Mathf.Clamp01(elapsed / duration);
+			_canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, t);
+			yield return null;
+		}
+
+		_canvasGroup.alpha = endAlpha;
+		onComplete?.Invoke();
+	}
 }

@@ -1,5 +1,4 @@
-﻿using DGM6405.Events;
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 ///     Defines a spawn point for the player in a level.

@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -110,7 +109,7 @@ public class GameMgr : Singleton<GameMgr>
 		Debug.Log("Pause state disabled");
 		UIMgr.Instance.CloseAllMenus();
 		UIMgr.Instance.ShowMenu(GameMenus.InGameUI, null, false);
-		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnPauseStateChanged(false));
+		GlobalEventBus.Instance?.Raise<IGameStateListener>(l => l?.OnPauseStateChanged(false));
 	}
 
 #region Score

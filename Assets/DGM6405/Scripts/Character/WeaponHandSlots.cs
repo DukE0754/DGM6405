@@ -1,4 +1,4 @@
-using DGM6405.Events;
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -38,6 +38,11 @@ public class WeaponHandSlots : MonoBehaviour, IWeaponSlotListener
 						$"[{name}] WeaponHandSlots: Slot at index {i} is null. Assign in inspector.",
 						this
 					);
+	}
+
+	private void Awake()
+	{
+		SetActiveSlot(WeaponSlotType.None);
 	}
 
 	public void OnWeaponSlotChanged(WeaponSlotType slotType)

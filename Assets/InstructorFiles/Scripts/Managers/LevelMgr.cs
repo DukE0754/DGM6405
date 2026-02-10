@@ -1,5 +1,6 @@
 // LevelMgr.cs : lines 1–118
 
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -18,6 +19,8 @@ public class LevelMgr : Singleton<LevelMgr>
 #region Runtime State
 
 	public int CurrentLevelIndex { get; private set; } = -1;
+	
+	public bool IsLevelLoaded { get; private set; }
 
 #endregion
 
@@ -69,8 +72,7 @@ public class LevelMgr : Singleton<LevelMgr>
 	}
 
 #endregion
-
-
+	
 #region Level Resolution
 
 	public int GetNewGameLevelIndex()
@@ -115,10 +117,26 @@ public class LevelMgr : Singleton<LevelMgr>
 
 		CurrentLevelIndex = levelIndex;
 
-		var sceneName = _levelData.Levels[levelIndex].SceneName;
-
 		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
-		SceneMgr.Instance.LoadScene(sceneName, GameMenus.InGameUI, GameMgr.Instance.StartGame);
+		SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, 
+			() => StartCoroutine(LoadLevelRoutine()));
+	}
+	
+	private IEnumerator LoadLevelRoutine()
+	{
+		var levelName = _levelData.Levels[CurrentLevelIndex].SceneName;
+
+		Debug.Log($"LevelMgr: Loading {levelName} additively");
+
+		var asyncOperation =
+			SceneManager.LoadSceneAsync(
+				levelName, LoadSceneMode.Additive);
+
+		while (asyncOperation is {isDone: false}) yield return null;
+
+		Debug.Log("LevelMgr: Level loaded");
+
+		IsLevelLoaded = true;
 	}
 
 	public void ReloadCurrentLevel()

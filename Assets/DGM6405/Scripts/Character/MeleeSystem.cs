@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -26,6 +25,8 @@ public class MeleeSystem : PausableBehaviour, IMeleeListener
 
 	// Public properties
 	public bool IsMeleeAttacking { get; private set; }
+	
+	public bool CanMelee { get; private set; }
 
 	private void Awake()
 	{
@@ -77,6 +78,7 @@ public class MeleeSystem : PausableBehaviour, IMeleeListener
 
 	private void TryMelee(bool isMeleeAttacking)
 	{
+		if (!CanMelee) return;
 		// Check game state
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 		{

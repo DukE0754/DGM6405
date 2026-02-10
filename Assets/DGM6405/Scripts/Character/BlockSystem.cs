@@ -1,4 +1,3 @@
-using DGM6405.Events;
 using UnityEngine;
 
 /// <summary>
@@ -29,7 +28,7 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
 	}
-
+	
 	private void OnDrawGizmosSelected()
 	{
 		if (!_showGizmos)
@@ -64,11 +63,6 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		// Draw forward direction
 		Gizmos.color = Color.blue;
 		Gizmos.DrawRay(transform.position, forward * 1.5f);
-	}
-
-	private void OnValidate()
-	{
-		// No dependencies to validate here for now
 	}
 
 	void IBlockListener.OnBlock(bool blockInput)
