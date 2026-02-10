@@ -1,249 +1,328 @@
 fileFormatVersion: 2
-guid: 57d6acb7c5e135d4e838f00790b786ff
+guid: c6d2bfd0f8388dd48ade6342cb976200
 AssetOrigin:
   serializedVersion: 1
   productId: 179083
   packageName: Monsters Ultimate Pack 02 Cute Series
   packageVersion: 1.0
-  assetPath: Assets/Monsters Ultimate Pack 02 Cute Series/Spike Cute Series/FBX/Spike.FBX
+  assetPath: Assets/Monsters Ultimate Pack 02 Cute Series/Practice Dummy Cute Series/FBX/Practice
+    Dummy.FBX
   uploadId: 763632
 ModelImporter:
-  serializedVersion: 24200
+  serializedVersion: 22200
   internalIDToNameTable:
   - first:
       1: 100000
-    second: //RootNode
+    second: Cylinder002
   - first:
       1: 100002
-    second: Rig
+    second: Cylinder003
   - first:
       1: 100004
-    second: RigHub
+    second: Cylinder004
   - first:
       1: 100006
-    second: RigHubGizmo
+    second: Cylinder005
   - first:
       1: 100008
-    second: RigLArm1
+    second: Object001
   - first:
       1: 100010
-    second: RigLArm2
+    second: //RootNode
   - first:
       1: 100012
-    second: RigLArmPalm
+    second: Cylinder001
   - first:
       1: 100014
-    second: RigLBLeg1
+    second: Practice Dummy
   - first:
       1: 100016
-    second: RigLBLeg2
+    second: fw
   - first:
       1: 100018
-    second: RigLBLegAnkle
+    second: fwBulleye
   - first:
       1: 100020
-    second: RigLBLegPlatform
+    second: fwHead
   - first:
       1: 100022
-    second: RigLEye01
+    second: fwLArm1
   - first:
       1: 100024
-    second: RigLEye02
+    second: fwLLeg1
   - first:
       1: 100026
-    second: RigLEye03
+    second: fwLLegPlatform
   - first:
       1: 100028
-    second: RigLFLeg1
+    second: fwNeck
   - first:
       1: 100030
-    second: RigLFLeg2
+    second: fwPelvis
   - first:
       1: 100032
-    second: RigLFLegAnkle
+    second: fwRArm1
   - first:
       1: 100034
-    second: RigLFLegPlatform
+    second: fwRibcage
   - first:
       1: 100036
-    second: RigRArm1
+    second: fwSpine1
   - first:
       1: 100038
-    second: RigRArm2
+    second: fwSpine2
   - first:
       1: 100040
-    second: RigRArmPalm
+    second: RigBulleyeGizmo
   - first:
       1: 100042
-    second: RigRBLeg1
+    second: RigHeadGizmo
   - first:
       1: 100044
-    second: RigRBLeg2
+    second: RigLArm1Gizmo
   - first:
       1: 100046
-    second: RigRBLegAnkle
+    second: RigPelvisGizmo
   - first:
       1: 100048
-    second: RigRBLegPlatform
+    second: RigRArm1Gizmo
   - first:
       1: 100050
-    second: RigREye01
+    second: RigRibcageGizmo
   - first:
       1: 100052
-    second: RigREye02
-  - first:
-      1: 100054
-    second: RigREye03
-  - first:
-      1: 100056
-    second: RigRFLeg1
-  - first:
-      1: 100058
-    second: RigRFLeg2
-  - first:
-      1: 100060
-    second: RigRFLegAnkle
-  - first:
-      1: 100062
-    second: RigRFLegPlatform
-  - first:
-      1: 100064
-    second: RigShell
-  - first:
-      1: 100066
-    second: RigShellGizmo
-  - first:
-      1: 100068
-    second: Spike
-  - first:
-      4: 400000
-    second: //RootNode
-  - first:
-      4: 400002
     second: Rig
   - first:
-      4: 400004
-    second: RigHub
+      1: 100054
+    second: RigBulleye
   - first:
-      4: 400006
-    second: RigHubGizmo
+      1: 100056
+    second: RigHead
   - first:
-      4: 400008
+      1: 100058
     second: RigLArm1
   - first:
-      4: 400010
-    second: RigLArm2
+      1: 100060
+    second: RigLLeg1
   - first:
-      4: 400012
-    second: RigLArmPalm
+      1: 100062
+    second: RigLLegPlatform
   - first:
-      4: 400014
-    second: RigLBLeg1
+      1: 100064
+    second: RigNeck
   - first:
-      4: 400016
-    second: RigLBLeg2
+      1: 100066
+    second: RigPelvis
   - first:
-      4: 400018
-    second: RigLBLegAnkle
-  - first:
-      4: 400020
-    second: RigLBLegPlatform
-  - first:
-      4: 400022
-    second: RigLEye01
-  - first:
-      4: 400024
-    second: RigLEye02
-  - first:
-      4: 400026
-    second: RigLEye03
-  - first:
-      4: 400028
-    second: RigLFLeg1
-  - first:
-      4: 400030
-    second: RigLFLeg2
-  - first:
-      4: 400032
-    second: RigLFLegAnkle
-  - first:
-      4: 400034
-    second: RigLFLegPlatform
-  - first:
-      4: 400036
+      1: 100068
     second: RigRArm1
   - first:
+      1: 100070
+    second: RigRibcage
+  - first:
+      1: 100072
+    second: RigSpine1
+  - first:
+      1: 100074
+    second: RigSpine2
+  - first:
+      4: 400000
+    second: Cylinder002
+  - first:
+      4: 400002
+    second: Cylinder003
+  - first:
+      4: 400004
+    second: Cylinder004
+  - first:
+      4: 400006
+    second: Cylinder005
+  - first:
+      4: 400008
+    second: Object001
+  - first:
+      4: 400010
+    second: //RootNode
+  - first:
+      4: 400012
+    second: Cylinder001
+  - first:
+      4: 400014
+    second: Practice Dummy
+  - first:
+      4: 400016
+    second: fw
+  - first:
+      4: 400018
+    second: fwBulleye
+  - first:
+      4: 400020
+    second: fwHead
+  - first:
+      4: 400022
+    second: fwLArm1
+  - first:
+      4: 400024
+    second: fwLLeg1
+  - first:
+      4: 400026
+    second: fwLLegPlatform
+  - first:
+      4: 400028
+    second: fwNeck
+  - first:
+      4: 400030
+    second: fwPelvis
+  - first:
+      4: 400032
+    second: fwRArm1
+  - first:
+      4: 400034
+    second: fwRibcage
+  - first:
+      4: 400036
+    second: fwSpine1
+  - first:
       4: 400038
-    second: RigRArm2
+    second: fwSpine2
   - first:
       4: 400040
-    second: RigRArmPalm
+    second: RigBulleyeGizmo
   - first:
       4: 400042
-    second: RigRBLeg1
+    second: RigHeadGizmo
   - first:
       4: 400044
-    second: RigRBLeg2
+    second: RigLArm1Gizmo
   - first:
       4: 400046
-    second: RigRBLegAnkle
+    second: RigPelvisGizmo
   - first:
       4: 400048
-    second: RigRBLegPlatform
+    second: RigRArm1Gizmo
   - first:
       4: 400050
-    second: RigREye01
+    second: RigRibcageGizmo
   - first:
       4: 400052
-    second: RigREye02
+    second: Rig
   - first:
       4: 400054
-    second: RigREye03
+    second: RigBulleye
   - first:
       4: 400056
-    second: RigRFLeg1
+    second: RigHead
   - first:
       4: 400058
-    second: RigRFLeg2
+    second: RigLArm1
   - first:
       4: 400060
-    second: RigRFLegAnkle
+    second: RigLLeg1
   - first:
       4: 400062
-    second: RigRFLegPlatform
+    second: RigLLegPlatform
   - first:
       4: 400064
-    second: RigShell
+    second: RigNeck
   - first:
       4: 400066
-    second: RigShellGizmo
+    second: RigPelvis
   - first:
       4: 400068
-    second: Spike
+    second: RigRArm1
+  - first:
+      4: 400070
+    second: RigRibcage
+  - first:
+      4: 400072
+    second: RigSpine1
+  - first:
+      4: 400074
+    second: RigSpine2
   - first:
       21: 2100000
-    second: 01 - Default
+    second: Material #25
+  - first:
+      21: 2100002
+    second: No Name
+  - first:
+      21: 2100004
+    second: Material #26
   - first:
       23: 2300000
-    second: //RootNode
+    second: Cylinder002
   - first:
       23: 2300002
-    second: Spike
+    second: Cylinder003
   - first:
-      33: 3300000
+      23: 2300004
+    second: Cylinder004
+  - first:
+      23: 2300006
+    second: Cylinder005
+  - first:
+      23: 2300008
+    second: Object001
+  - first:
+      23: 2300010
+    second: Cylinder001
+  - first:
+      23: 2300012
+    second: Practice Dummy
+  - first:
+      23: 2300014
     second: //RootNode
   - first:
+      33: 3300000
+    second: Cylinder002
+  - first:
       33: 3300002
-    second: Spike
+    second: Cylinder003
+  - first:
+      33: 3300004
+    second: Cylinder004
+  - first:
+      33: 3300006
+    second: Cylinder005
+  - first:
+      33: 3300008
+    second: Object001
+  - first:
+      33: 3300010
+    second: Cylinder001
+  - first:
+      33: 3300012
+    second: Practice Dummy
+  - first:
+      33: 3300014
+    second: //RootNode
   - first:
       43: 4300000
-    second: Spike
+    second: Object001
+  - first:
+      43: 4300002
+    second: Cylinder002
+  - first:
+      43: 4300004
+    second: Cylinder003
+  - first:
+      43: 4300006
+    second: Cylinder004
+  - first:
+      43: 4300008
+    second: Cylinder005
+  - first:
+      43: 4300010
+    second: Cylinder001
+  - first:
+      43: 4300012
+    second: Practice Dummy
   - first:
       95: 9500000
     second: //RootNode
   - first:
       137: 13700000
-    second: Spike
+    second: Practice Dummy
   externalObjects: {}
   materials:
     materialImportMode: 0
@@ -297,9 +376,6 @@ ModelImporter:
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
     optimizeBones: 1
-    generateMeshLods: 0
-    meshLodGenerationFlags: 0
-    maximumMeshLod: -1
     meshOptimizationFlags: -1
     indexFormat: 0
     secondaryUVAngleDistortion: 8
