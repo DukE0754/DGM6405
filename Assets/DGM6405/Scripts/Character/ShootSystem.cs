@@ -4,7 +4,7 @@ using UnityEngine;
 ///     Handles shooting/ranged combat.
 ///     Manages projectile spawning, weapon visibility, and shooting animations.
 /// </summary>
-public class ShootSystem : PausableBehaviour, IShootListener
+public class ShootSystem : PausableBehaviour, IShootListener, IFireProjectileListener
 {
 	[Header("References")]
 	[Tooltip("ProjectileShooter component for spawning projectiles. Required.")]
@@ -97,10 +97,15 @@ public class ShootSystem : PausableBehaviour, IShootListener
 	/// <summary>
 	///     Attempts to shoot based on input command.
 	/// </summary>
-	/// <param name="isShooting">Whether shoot input is active.</param>
+	/// <param name="shootInput">Whether shoot input is active.</param>
 	void IShootListener.OnShoot(bool shootInput)
 	{
 		TryShoot(shootInput);
+	}
+
+	void IFireProjectileListener.OnFireProjectile()
+	{
+		FireProjectile();
 	}
 
 	private void TryShoot(bool isShooting)
@@ -115,11 +120,7 @@ public class ShootSystem : PausableBehaviour, IShootListener
 		}
 
 		// Update shooting state
-		var wasShooting = IsShooting;
 		IsShooting = isShooting;
-
-		// If just started shooting, fire projectile
-		if (IsShooting && !wasShooting) FireProjectile();
 	}
 
 	/// <summary>

@@ -12,7 +12,7 @@ public class GameStarter : MonoBehaviour
 	{
 		Debug.Log("GameStarter: Waiting for level to finish loading...");
 		yield return new WaitUntil(() => LevelMgr.Instance.IsLevelLoaded);
-		
+
 		Debug.Log("GameStarter: Spawning player");
 		var spawnPoint = PlayerSpawnPoint.Instance;
 		if (spawnPoint == null)
@@ -26,7 +26,7 @@ public class GameStarter : MonoBehaviour
 		yield return new WaitUntil(() => PlayerMgr.Instance.HasSpawnedPlayer);
 
 		GlobalEventBus.Instance.Raise<ILevelListener>(l => l.OnLevelReady());
-		
+
 		Debug.Log("Game starting in 3 seconds...");
 		yield return new WaitForSeconds(1f);
 		Debug.Log("Game starting in 2 seconds...");

@@ -103,6 +103,13 @@ public interface IShootListener : IEntityListener
 	}
 }
 
+public interface IFireProjectileListener : IEntityListener
+{
+	void OnFireProjectile()
+	{
+	}
+}
+
 public interface IMeleeListener : IEntityListener
 {
 	void OnMelee(bool meleeInput)

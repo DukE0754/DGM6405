@@ -15,22 +15,17 @@ public class RotateWithMoveDirectionSystem : PausableBehaviour, IMovementListene
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
-	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
-	[SerializeField] private Transform _mainCamera;
-
 	private bool _isEnabled = true;
-	private float _rotationVelocity;
 	private Vector2 _lastMoveInput;
+
+	private Transform _mainCamera;
+	private float _rotationVelocity;
 
 	private void Awake()
 	{
 		if (_context == null) _context = GetComponent<CharacterContext>();
 
-		if (_mainCamera == null)
-		{
-			var mainCam = Camera.main;
-			if (mainCam != null) _mainCamera = mainCam.transform;
-		}
+		_mainCamera = _context?.CharacterCamera?.transform;
 	}
 
 	void IMovementListener.OnMove(Vector2 moveInput, bool isSprinting)
@@ -44,7 +39,7 @@ public class RotateWithMoveDirectionSystem : PausableBehaviour, IMovementListene
 		if (direction != Vector3.zero)
 		{
 			var targetRotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-			
+
 			var rotation = Mathf.SmoothDampAngle(
 				transform.eulerAngles.y, targetRotation, ref _rotationVelocity,
 				_rotationSmoothTime);

@@ -57,6 +57,7 @@ public class GameUI : MenuBase
 
 	public void RefreshAbilityIcons()
 	{
+		if (LevelMgr.Instance == null) return;
 		if (LevelMgr.Instance.TryGetCurrentLevelInfo(out var info))
 		{
 			SetIconStatus(_blockIcon, info.AllowBlock);

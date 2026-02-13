@@ -167,10 +167,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7209674949808696917, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
-      propertyPath: _maxHealth
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 8010110793092337776, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
       propertyPath: m_Name
       value: EnemyBud Variant
@@ -315,10 +311,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1691784775337812510, guid: 6fe41a4bea03db948b0c53fb6949991d, type: 3}
-      propertyPath: _maxHealth
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2044112179745463355, guid: 6fe41a4bea03db948b0c53fb6949991d, type: 3}
       propertyPath: m_Name
       value: EnemyBudDirect Variant
@@ -376,10 +368,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4722685179284200457, guid: d78370026e305ec4bb71548acb008aa8, type: 3}
-      propertyPath: _maxHealth
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 5381257703292609068, guid: d78370026e305ec4bb71548acb008aa8, type: 3}
       propertyPath: m_Name
       value: PlayerDummy
@@ -437,10 +425,6 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1446796453018689854, guid: a3889dfb67db15d44933cf1c9f55baec, type: 3}
-      propertyPath: _maxHealth
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2247372964264861467, guid: a3889dfb67db15d44933cf1c9f55baec, type: 3}
       propertyPath: m_Name
       value: EnemyBudFixed Variant
@@ -781,13 +765,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: PlayerWithCameraV3
       objectReference: {fileID: 0}
-    - target: {fileID: 1673963651534146124, guid: 324c9516de859134d8c741af2a269a30, type: 3}
-      propertyPath: m_IsActive
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 3294774693241910819, guid: 324c9516de859134d8c741af2a269a30, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: 3.35
       objectReference: {fileID: 0}
     - target: {fileID: 3294774693241910819, guid: 324c9516de859134d8c741af2a269a30, type: 3}
       propertyPath: m_LocalPosition.y

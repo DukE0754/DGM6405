@@ -2,77 +2,69 @@ using UnityEngine;
 
 public class ProjectileShooter : MonoBehaviour
 {
-    [Header("Projectile")]
-    [SerializeField] private GameObject projectilePrefab;
-    [SerializeField] private Transform firePoint;
+	[Header("Projectile")]
+	[SerializeField] private GameObject projectilePrefab;
 
-    [Header("Shooting")]
-    [SerializeField] private float projectileSpeed = 15f;
-    [SerializeField] private float fireCooldown = 0.5f;
+	[SerializeField] private Transform firePoint;
 
-    private float _nextFireTime;
+	[Header("Shooting")]
+	[SerializeField] private float projectileSpeed = 15f;
 
-    private Transform Origin => firePoint != null ? firePoint : transform;
+	[SerializeField] private float fireCooldown = 0.5f;
 
-    public bool CanShoot()
-    {
-        return Time.time >= _nextFireTime && projectilePrefab != null;
-    }
+	private float _nextFireTime;
 
-    public void ShootForward()
-    {
-        ShootDirection(Origin.forward);
-    }
+	private Transform Origin => firePoint != null ? firePoint : transform;
 
-    public void ShootAt(Vector3 aimPoint)
-    {
-        Vector3 dir = aimPoint - Origin.position;
-        ShootDirection(dir);
-    }
+	public bool CanShoot()
+	{
+		return Time.time >= _nextFireTime && projectilePrefab != null;
+	}
 
-    private void ShootDirection(Vector3 direction)
-    {
-        if (!CanShoot()) return;
-        if (direction.sqrMagnitude < 0.0001f) return;
+	public void ShootForward()
+	{
+		ShootDirection(Origin.forward);
+	}
 
-        _nextFireTime = Time.time + fireCooldown;
-        direction.Normalize();
+	public void ShootAt(Vector3 aimPoint)
+	{
+		var dir = aimPoint - Origin.position;
+		ShootDirection(dir);
+	}
 
-        Transform origin = Origin;
+	private void ShootDirection(Vector3 direction)
+	{
+		if (!CanShoot()) return;
+		if (direction.sqrMagnitude < 0.0001f) return;
 
-        GameObject projectile = Instantiate(
-            projectilePrefab,
-            origin.position,
-            Quaternion.LookRotation(direction, Vector3.up)
-        );
+		_nextFireTime = Time.time + fireCooldown;
+		direction.Normalize();
 
-        // 🔥 IGNORE COLLISION WITH SHOOTER
-        IgnoreSelfCollisions(projectile);
+		var origin = Origin;
 
-        Rigidbody rb = projectile.GetComponent<Rigidbody>();
-        if (rb != null)
-        {
-            // Unity 6
-            rb.linearVelocity = direction * projectileSpeed;
-        }
-    }
+		var projectile = Instantiate(
+			projectilePrefab,
+			origin.position,
+			Quaternion.LookRotation(direction, Vector3.up)
+		);
 
-    private void IgnoreSelfCollisions(GameObject projectile)
-    {
-        Collider[] shooterColliders = GetComponentsInChildren<Collider>();
-        Collider[] projectileColliders = projectile.GetComponentsInChildren<Collider>();
+		// 🔥 IGNORE COLLISION WITH SHOOTER
+		IgnoreSelfCollisions(projectile);
 
-        foreach (var shooterCol in shooterColliders)
-        {
-            foreach (var projCol in projectileColliders)
-            {
-                Physics.IgnoreCollision(shooterCol, projCol, true);
-            }
-        }
-    }
+		var rb = projectile.GetComponent<Rigidbody>();
+		if (rb != null)
+			// Unity 6
+			rb.linearVelocity = direction * projectileSpeed;
+	}
+
+	private void IgnoreSelfCollisions(GameObject projectile)
+	{
+		var shooterColliders = GetComponentsInChildren<Collider>();
+		var projectileColliders = projectile.GetComponentsInChildren<Collider>();
+
+		foreach (var shooterCol in shooterColliders)
+		{
+			foreach (var projCol in projectileColliders) Physics.IgnoreCollision(shooterCol, projCol, true);
+		}
+	}
 }
-
-
-
-
-

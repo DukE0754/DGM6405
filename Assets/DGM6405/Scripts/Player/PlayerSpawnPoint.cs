@@ -1,7 +1,7 @@
 using UnityEngine;
 
 /// <summary>
-/// Defines a spawn point for the player in a level.
+///     Defines a spawn point for the player in a level.
 /// </summary>
 public class PlayerSpawnPoint : Singleton<PlayerSpawnPoint>
 {

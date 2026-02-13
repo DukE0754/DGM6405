@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e80e7afe3104204b797171ac2250b18, type: 3}
   m_Name: SeedNoGravity
   m_EditorClassIdentifier: Assembly-CSharp::ProjectileData
-  _damage: 10
+  _damage: 1
   _speed: 20
   _lifetime: 5
   _useGravity: 0

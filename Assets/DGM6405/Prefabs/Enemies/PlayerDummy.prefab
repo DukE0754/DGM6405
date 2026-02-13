@@ -169,7 +169,7 @@ PrefabInstance:
       objectReference: {fileID: 4087056474222983025}
     - target: {fileID: 2065937337412963201, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -0.77
+      value: -3.12
       objectReference: {fileID: 0}
     - target: {fileID: 2065937337412963201, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_LocalPosition.y
@@ -177,7 +177,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2065937337412963201, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 8.157
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2065937337412963201, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_LocalRotation.w
@@ -209,7 +209,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2788263980729151106, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_Name
-      value: EnemyDummy Variant
+      value: PlayerDummy
       objectReference: {fileID: 0}
     - target: {fileID: 2788263980729151106, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_Layer
@@ -218,6 +218,10 @@ PrefabInstance:
     - target: {fileID: 2788263980729151106, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_TagString
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 3284724097754009767, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
+      propertyPath: _maxHealth
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 3344136795236224714, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
       propertyPath: m_Layer
@@ -243,6 +247,14 @@ PrefabInstance:
       propertyPath: m_LocalPosition.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8635079765518369577, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
+      propertyPath: _bakedListeners.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8635079765518369577, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
+      propertyPath: '_bakedListeners.Array.data[1]'
+      value: 
+      objectReference: {fileID: 8167260356144372985}
     m_RemovedComponents:
     - {fileID: 5666116912287280639, guid: f5bad5c6cfa8fc84baa22f450f6d7f9d, type: 3}
     m_RemovedGameObjects: []

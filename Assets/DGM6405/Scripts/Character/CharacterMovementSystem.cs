@@ -29,8 +29,6 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 	[Tooltip("CharacterController component. If null, will use from CharacterContext.")]
 	[SerializeField] private CharacterController _controller;
 
-	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
-	[SerializeField] private Transform _mainCamera;
 
 	[Tooltip("JumpGravitySystem for getting vertical velocity. Required for proper movement.")]
 	[SerializeField] private JumpGravitySystem _jumpGravitySystem;
@@ -38,6 +36,9 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 	[Header("Debug Gizmos")]
 	[Tooltip("Show movement gizmos in scene view when selected.")]
 	[SerializeField] private bool _showGizmos = true;
+
+
+	private Transform _mainCamera;
 
 	private float _rotationVelocity;
 
@@ -76,6 +77,8 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 			return;
 		}
 
+		_mainCamera = _context?.CharacterCamera?.transform;
+
 		// Find main camera if not assigned
 		if (_mainCamera == null)
 		{
@@ -85,8 +88,7 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 			else
 				Debug.LogWarning(
 					$"[{name}] CharacterMovementSystem: Main camera not found. " +
-					"Movement rotation relative to camera will not work correctly. " +
-					"Assign camera reference in inspector or ensure scene has a camera tagged 'MainCamera'.",
+					"Movement rotation relative to camera will not work correctly. ",
 					this
 				);
 		}

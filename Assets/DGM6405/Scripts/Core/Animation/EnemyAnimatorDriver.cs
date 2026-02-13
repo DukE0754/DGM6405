@@ -20,6 +20,28 @@ public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListene
 			_animator = GetComponentInChildren<Animator>();
 	}
 
+	public void OnHealthChanged(float current, float max)
+	{
+		// Optional: could drive a hit reaction based on delta, but keep minimal.
+	}
+
+	public void OnDied()
+	{
+		TriggerDie();
+	}
+
+	public void OnSpeedChanged(
+		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX, float velocityZ)
+	{
+		SetSpeed(speed);
+	}
+
+	// Event listeners
+	public void OnShoot(bool shootInput)
+	{
+		if (shootInput) TriggerAttack();
+	}
+
 	public void SetSpeed(float speed)
 	{
 		if (_animator == null) return;
@@ -43,26 +65,5 @@ public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListene
 	{
 		if (_animator == null) return;
 		_animator.SetTrigger(DieTriggerHash);
-	}
-
-	// Event listeners
-	public void OnShoot(bool shootInput)
-	{
-		if (shootInput) TriggerAttack();
-	}
-
-	public void OnHealthChanged(float current, float max)
-	{
-		// Optional: could drive a hit reaction based on delta, but keep minimal.
-	}
-
-	public void OnDied()
-	{
-		TriggerDie();
-	}
-
-	public void OnSpeedChanged(float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX, float velocityZ)
-	{
-		SetSpeed(speed);
 	}
 }

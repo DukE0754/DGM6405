@@ -29,7 +29,8 @@ public class TrainingDummyBrain : MonoBehaviour, IHealthListener
 			Debug.Log($"[Dummy] Took damage. HP: {current}/{max}");
 			_animatorDriver?.TriggerHit();
 		}
-		_lastHealth = (int)current;
+
+		_lastHealth = (int) current;
 	}
 
 	public void OnDied()

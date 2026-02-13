@@ -18,6 +18,9 @@ public class CharacterContext : PausableBehaviour
 	[SerializeField] private Animator _animator;
 
 	[Header("Camera")]
+	[Tooltip("Main camera transform for player third person camera.")]
+	[SerializeField] private Camera _mainCamera;
+
 	[Tooltip("Cinemachine camera target transform for camera rotation.")]
 	[SerializeField] private Transform _cameraTarget;
 
@@ -40,6 +43,7 @@ public class CharacterContext : PausableBehaviour
 	public CharacterController Controller => _controller;
 	public Animator Animator => _animator;
 	public LocalEventBus EventBus => _eventBus;
+	public Camera CharacterCamera => _mainCamera;
 	public Transform CameraTarget => _cameraTarget;
 	public WeaponHandSlots WeaponHandSlots => _weaponHandSlots;
 	public AudioClip[] FootstepAudioClips => _footstepAudioClips;

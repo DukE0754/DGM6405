@@ -1,5 +1,4 @@
-﻿
-using UnityEngine;
+﻿using UnityEngine;
 
 /// <summary>
 ///     Manages health values and state for an entity.
@@ -40,10 +39,7 @@ public class Health : MonoBehaviour
 		// Notify listeners about damage and updated health
 		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHealth, _maxHealth));
 
-		if (CurrentHealth <= 0)
-		{
-			Die();
-		}
+		if (CurrentHealth <= 0) Die();
 	}
 
 	public void Heal(int amount)

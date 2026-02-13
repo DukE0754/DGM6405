@@ -2,30 +2,24 @@ using UnityEngine;
 
 public class ProjectileDamage : MonoBehaviour
 {
-    [Header("Damage")]
-    [SerializeField] private float damage = 20f;
-    [SerializeField] private bool destroyOnHit = true;
+	[Header("Damage")]
+	[SerializeField] private float damage = 20f;
 
-    [Header("Target")]
-    [SerializeField] private LayerMask damageLayers;
+	[SerializeField] private bool destroyOnHit = true;
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        // Check layer
-        if ((damageLayers.value & (1 << collision.gameObject.layer)) == 0)
-            return;
+	[Header("Target")]
+	[SerializeField] private LayerMask damageLayers;
 
-        // Try get CombatStats
-        CombatStats stats = collision.gameObject.GetComponentInParent<CombatStats>();
-        if (stats != null)
-        {
-            stats.TakeDamage(damage, gameObject);
-        }
+	private void OnCollisionEnter(Collision collision)
+	{
+		// Check layer
+		if ((damageLayers.value & (1 << collision.gameObject.layer)) == 0)
+			return;
 
-        if (destroyOnHit)
-        {
-            Destroy(gameObject);
-        }
-    }
+		// Try get CombatStats
+		var stats = collision.gameObject.GetComponentInParent<CombatStats>();
+		if (stats != null) stats.TakeDamage(damage, gameObject);
+
+		if (destroyOnHit) Destroy(gameObject);
+	}
 }
-

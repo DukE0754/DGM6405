@@ -35,15 +35,15 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 	[Tooltip("Weapon hand bone transform for IK. If null, will try to find automatically.")]
 	[SerializeField] private Transform _weaponHandBone;
 
-	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
-	[SerializeField] private Transform _mainCamera;
-
 	[Tooltip("Target transform for AI aiming. Leave null for player (uses camera).")]
 	[SerializeField] private Transform _targetTransform;
 
 	[Header("Debug Gizmos")]
 	[Tooltip("Show aim system gizmos in scene view when selected.")]
 	[SerializeField] private bool _showGizmos = true;
+
+
+	private Transform _mainCamera;
 
 	// Internal state
 	private Vector3 _smoothAimPoint;
@@ -130,18 +130,7 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 				);
 		}
 
-		// Find main camera if not assigned (for player)
-		if (_mainCamera == null && _targetTransform == null)
-		{
-			var mainCam = Camera.main;
-			if (mainCam != null)
-				_mainCamera = mainCam.transform;
-			else
-				Debug.LogWarning(
-					$"[{name}] AimSystem: Main camera not found. Aim point calculation may not work correctly.",
-					this
-				);
-		}
+		_mainCamera = _context?.CharacterCamera?.transform;
 	}
 
 	/// <summary>

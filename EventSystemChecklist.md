@@ -1,0 +1,32 @@
+﻿# Event System Implementation Checklist
+
+- [x] Define Generic Event Bus Logic
+    - [x] Create `IEventBus` interface or base logic
+    - [x] Create `LocalEventBus` for entities
+    - [x] Create `GlobalEventBus` singleton
+- [x] Define Common Interfaces
+    - [x] `IGameStateListener` (Pause, Start, GameOver)
+    - [x] `ILevelListener` (LevelReady, LevelComplete)
+    - [x] `IPlayerListener` (Spawn, Death, HealthChanged)
+    - [x] `ICharacterActionListener` (Move, Jump, Shoot, Melee, Block)
+- [x] Refactor Global Systems
+    - [x] `GameMgr`: Replace `PauseStateChanged` event with `GlobalEventBus.Raise<IGameStateListener>`
+    - [x] `GameLoopManager`: Replace `OnLevelReady` event with `GlobalEventBus.Raise<ILevelListener>`
+    - [x] `LevelMgr`: Integrate with `GlobalEventBus` (implied by `GameMgr` and `GameLoopManager` changes)
+- [x] Refactor Local Systems (Player and Enemy)
+    - [x] `PlayerCommandBrain`: Use `LocalEventBus` to dispatch commands
+    - [x] `EnemyCommandBrain`: Use `LocalEventBus` to dispatch commands
+    - [x] `CharacterMovementSystem`: Implement `IMovementListener`
+    - [x] `JumpGravitySystem`: Implement `IJumpListener`
+    - [x] `ShootSystem`: Implement `IShootListener`
+    - [x] `MeleeSystem`: Implement `IMeleeListener`
+    - [x] `BlockSystem`: Implement `IBlockListener`
+    - [x] `AimSystem`: Implement `IAimTargetListener` and raise `IAimListener`
+    - [x] `CharacterSoundSystem`: Implement relevant listeners
+- [x] Refactor Other Scripts
+    - [x] `CombatStats`: Replace events with `LocalEventBus.Raise`
+    - [x] `PausableBehaviour`: Use `GlobalEventBus` for pause events
+- [x] Cleanup and Verification
+    - [x] Remove `FindObject` / `GetComponent` calls where replaced by event bus
+    - [x] Verify serialization of local event buses in Inspector
+    - [x] Run tests to ensure game still works (Manual check of code logic)

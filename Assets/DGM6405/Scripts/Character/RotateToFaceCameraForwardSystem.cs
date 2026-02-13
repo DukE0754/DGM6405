@@ -15,21 +15,16 @@ public class RotateToFaceCameraForwardSystem : PausableBehaviour, IRotationListe
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
-	[Tooltip("Main camera transform. If null, will try to find Camera.main.")]
-	[SerializeField] private Transform _mainCamera;
+	private bool _isEnabled;
 
-	private bool _isEnabled = false;
+	private Transform _mainCamera;
 	private float _rotationVelocity;
 
 	private void Awake()
 	{
 		if (_context == null) _context = GetComponent<CharacterContext>();
 
-		if (_mainCamera == null)
-		{
-			var mainCam = Camera.main;
-			if (mainCam != null) _mainCamera = mainCam.transform;
-		}
+		_mainCamera = _context?.CharacterCamera?.transform;
 	}
 
 	void IRotationListener.SetRotateToCamera(bool enable)
