@@ -24,17 +24,19 @@ public class Projectile : MonoBehaviour
 		if (collision.gameObject == _source) return;
 
 		// Check if we hit something damageable
-		var damageReceiver = collision.gameObject.GetComponent<IDamageReceiver>();
-		if (damageReceiver != null)
+		if (collision.gameObject.TryGetComponent(out SimpleDamageReceiver damageReceiver))
 		{
-			var info = new DamageInfo
+			if (damageReceiver != null)
 			{
-				Amount = _data != null ? _data.Damage : 0,
-				Source = _source,
-				HitPoint = collision.contacts[0].point,
-				HitNormal = collision.contacts[0].normal
-			};
-			damageReceiver.ApplyDamage(info);
+				var info = new DamageInfo
+				{
+					Amount = _data != null ? _data.Damage : 0,
+					Source = _source,
+					HitPoint = collision.contacts[0].point,
+					HitNormal = collision.contacts[0].normal
+				};
+				damageReceiver.ApplyDamage(info);
+			}
 		}
 
 		// Destroy on impact

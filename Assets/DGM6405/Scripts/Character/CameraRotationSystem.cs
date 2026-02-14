@@ -29,8 +29,7 @@ public class CameraRotationSystem : PausableBehaviour, ILookListener
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
-	[Tooltip("Cinemachine camera target transform. If null, will use from CharacterContext.")]
-	[SerializeField] private Transform _cameraTarget;
+	private Transform _cameraTarget;
 
 	private float _cinemachineTargetPitch;
 
@@ -42,10 +41,8 @@ public class CameraRotationSystem : PausableBehaviour, ILookListener
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
 
-		// Get camera target from context or direct reference
-		if (_cameraTarget == null)
-			if (_context != null)
-				_cameraTarget = _context.CameraTarget;
+		// Get camera target from context
+		_cameraTarget = _context?.CameraTarget;
 
 		// Validate camera target
 		if (_cameraTarget == null)

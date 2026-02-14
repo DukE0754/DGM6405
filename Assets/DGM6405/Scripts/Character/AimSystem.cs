@@ -245,7 +245,10 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 
 		// Raise event
 		if (IsAiming && _context != null && _context.EventBus != null)
+		{
 			_context.EventBus.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
+			_context.EventBus.Raise<IAimTargetListener>(l => l.OnSetAimTarget(_smoothAimPoint));
+		}
 	}
 
 	/// <summary>

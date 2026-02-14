@@ -25,6 +25,9 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	private bool _isCurrentDeviceMouse;
 
 	private bool _isInitialised;
+	private bool _isShooting;
+	private bool _isBlocking;
+	private bool _isMelee;
 
 	private void Awake()
 	{
@@ -207,19 +210,36 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		}
 
 		// Process melee
-		_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
+		if (_isMelee != isMeleeInput)
+		{
+			_isMelee = isMeleeInput;
+			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(isMeleeInput));
+		}
+
 		if (isMeleeInput)
 			_context.EventBus.Raise<IWeaponSlotListener>(l =>
 				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Melee));
 
 		// Process shoot
-		_context.EventBus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
+		if (_isShooting != isShootInput)
+		{
+			_isShooting = isShootInput;
+			_context.EventBus.Raise<IShootListener>(l => l.OnShoot(isShootInput));
+			UpdateRotationMode();
+		}
+
 		if (isShootInput)
 			_context.EventBus.Raise<IWeaponSlotListener>(l =>
 				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Ranged));
 
 		// Process block
-		_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
+		if (_isBlocking != isBlockInput)
+		{
+			_isBlocking = isBlockInput;
+			_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(isBlockInput));
+			UpdateRotationMode();
+		}
+
 		if (isBlockInput)
 			_context.EventBus.Raise<IWeaponSlotListener>(l =>
 				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.Shield));
@@ -230,6 +250,16 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 				l.OnWeaponSlotChanged(WeaponHandSlots.WeaponSlotType.None));
 	}
 
+	private void UpdateRotationMode()
+	{
+		if (_context?.EventBus == null) return;
+
+		// When blocking or shooting/aiming, face camera. Otherwise face movement.
+		var faceCamera = _isBlocking || _isShooting;
+		_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(faceCamera));
+		_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(!faceCamera));
+	}
+
 	protected override void OnPaused()
 	{
 		// Clear all inputs when paused
@@ -238,10 +268,16 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		// Notify systems to stop active actions via events
 		if (_context?.EventBus != null)
 		{
+			_isShooting = false;
+			_isBlocking = false;
+			_isMelee = false;
+
 			_context.EventBus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
 			_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(false));
 			_context.EventBus.Raise<IShootListener>(l => l.OnShoot(false));
 			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(false));
+
+			UpdateRotationMode();
 		}
 	}
 }

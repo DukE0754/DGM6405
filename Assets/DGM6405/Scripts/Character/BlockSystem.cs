@@ -79,7 +79,6 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 			if (IsBlocking)
 			{
 				IsBlocking = false;
-				UpdateRotationMode(false);
 			}
 
 			return;
@@ -89,17 +88,6 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		if (IsBlocking != isBlocking)
 		{
 			IsBlocking = isBlocking;
-			UpdateRotationMode(isBlocking);
-		}
-	}
-
-	private void UpdateRotationMode(bool isBlocking)
-	{
-		if (_context != null && _context.EventBus != null)
-		{
-			// When blocking, face camera. Otherwise face movement.
-			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(isBlocking));
-			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(!isBlocking));
 		}
 	}
 
@@ -109,7 +97,6 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		if (IsBlocking)
 		{
 			IsBlocking = false;
-			UpdateRotationMode(false);
 		}
 	}
 }

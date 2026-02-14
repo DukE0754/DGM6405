@@ -460,7 +460,7 @@ MonoBehaviour:
       HumanoidBodyBone: 0
       wasInitializing: 0
       BoneBakePathName: 
-      HumToGenericBoneBakePathName: Rig_Medium/root/hips
+      HumToGenericBoneBakePathName: 
       HumanoidBoneDefined: 0
       BakePosition: 0
       BakeScale: 0
@@ -468,7 +468,7 @@ MonoBehaviour:
       _Bake_IsRoot: 0
       _Bake_PivotPosition: {x: 0, y: 0, z: 0}
       _Bake_PivotRotation: {x: 0, y: 0, z: 0, w: 1}
-      DontDoInitialFramesWrap: 1
+      DontDoInitialFramesWrap: 0
     PelvisAdditionalRef:
       BoneName: 
       ID: -1

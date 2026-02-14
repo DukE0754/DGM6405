@@ -595,37 +595,37 @@ Avatar:
         m_X: []
     m_RootMotionSkeletonIndexArray: 
   m_TOS:
-    2137704606: Mannequin_Medium_Head
-    3332474112: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l
-    2958358607: Rig_Medium/root/hips/upperleg.l/lowerleg.l/foot.l
-    2845860963: Mannequin_Medium_ArmRight
-    505768470: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l
-    1946858024: Rig_Medium/root
-    1844871368: Rig_Medium/root/hips/spine/chest/head
-    405029407: Rig_Medium/root/hips/spine/chest
-    826798228: Mannequin_Medium_LegRight
-    2757086121: Rig_Medium/root/hips/upperleg.r/lowerleg.r/foot.r
-    353502491: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l/hand.l/handslot.l
-    764849339: Rig_Medium/root/hips/upperleg.r/lowerleg.r
     53556656: Mannequin_Medium_Body
-    1102087512: Rig_Medium/root/hips/upperleg.l
-    2808542328: Mannequin_Medium_ArmLeft
-    17000855: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r
+    276712843: Rig_Medium/root/hips/spine/chest/upperarm.l
     2710749634: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r
-    0: 
-    850439994: Rig_Medium/root/hips/upperleg.l/lowerleg.l
+    17000855: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r
+    2137704606: Mannequin_Medium_Head
     2707912018: Rig_Medium/root/hips/upperleg.l/lowerleg.l/foot.l/toes.l
+    3332474112: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l
+    1102087512: Rig_Medium/root/hips/upperleg.l
     1542276967: Rig_Medium/root/hips/upperleg.r/lowerleg.r/foot.r/toes.r
+    405029407: Rig_Medium/root/hips/spine/chest
+    2958358607: Rig_Medium/root/hips/upperleg.l/lowerleg.l/foot.l
+    826798228: Mannequin_Medium_LegRight
+    3933303016: Rig_Medium/root/hips/spine/chest/upperarm.r
     3506821154: Rig_Medium
+    2845860963: Mannequin_Medium_ArmRight
+    3659194891: Rig_Medium/root/hips
+    0: 
+    2463285050: Mannequin_Medium_LegLeft
+    1844871368: Rig_Medium/root/hips/spine/chest/head
+    2757086121: Rig_Medium/root/hips/upperleg.r/lowerleg.r/foot.r
+    505768470: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l
+    850439994: Rig_Medium/root/hips/upperleg.l/lowerleg.l
+    353502491: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l/hand.l/handslot.l
     442562194: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r/hand.r
     883360299: Rig_Medium/root/hips/spine/chest/upperarm.r/lowerarm.r/wrist.r/hand.r/handslot.r
-    276712843: Rig_Medium/root/hips/spine/chest/upperarm.l
-    2463285050: Mannequin_Medium_LegLeft
     2495376627: Rig_Medium/root/hips/spine
-    1867776197: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l/hand.l
-    3933303016: Rig_Medium/root/hips/spine/chest/upperarm.r
-    3659194891: Rig_Medium/root/hips
+    1946858024: Rig_Medium/root
+    2808542328: Mannequin_Medium_ArmLeft
+    764849339: Rig_Medium/root/hips/upperleg.r/lowerleg.r
     3149903931: Rig_Medium/root/hips/upperleg.r
+    1867776197: Rig_Medium/root/hips/spine/chest/upperarm.l/lowerarm.l/wrist.l/hand.l
   m_HumanDescription:
     serializedVersion: 3
     m_Human:
