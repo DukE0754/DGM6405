@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 #region Global Listeners
 
@@ -13,6 +14,55 @@ public interface IGameStateListener
 	}
 
 	void OnGameOver()
+	{
+	}
+
+	void OnNextLevel(int timeMs)
+	{
+	}
+}
+
+public interface IUIEventListener
+{
+	void OnShowMenu(GameMenus menu, Action onComplete = null, bool fadeIn = true)
+	{
+	}
+
+	void OnCloseAllMenus()
+	{
+	}
+
+	void OnHideMenu(GameMenus menu)
+	{
+	}
+}
+
+public interface ISceneEventListener
+{
+	void OnLoadScene(GameScenes scene, GameMenus menu, Action onComplete = null)
+	{
+	}
+}
+
+public interface IAudioEventListener
+{
+	void OnPlaySound(AudioMgr.SoundTypes sound)
+	{
+	}
+
+	void OnPlaySoundClip(AudioClip clip)
+	{
+	}
+
+	void OnSetMasterVolume(float volume, bool save = true)
+	{
+	}
+
+	void OnSetMusicVolume(float volume, bool save = true)
+	{
+	}
+
+	void OnSetSfxVolume(float volume, bool save = true)
 	{
 	}
 }
@@ -126,7 +176,7 @@ public interface IBlockListener : IEntityListener
 
 public interface IAimListener : IEntityListener
 {
-	void OnAimUpdate(Vector3 aimPoint)
+	void OnAimUpdate(Vector3 aimPoint, bool isTargeting)
 	{
 	}
 }
@@ -141,6 +191,10 @@ public interface IAimTargetListener : IEntityListener
 public interface IHealthListener : IEntityListener
 {
 	void OnHealthChanged(float current, float max)
+	{
+	}
+
+	void OnDamageTaken(int amount, Vector3 direction)
 	{
 	}
 

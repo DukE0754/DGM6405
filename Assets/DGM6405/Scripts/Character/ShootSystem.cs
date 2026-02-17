@@ -20,26 +20,10 @@ public class ShootSystem : PausableBehaviour, IShootListener
 
 	// Public properties
 	public bool IsShooting { get; private set; }
-	
+
 	private void Awake()
 	{
 		InitializeComponents();
-	}
-
-	private void InitializeComponents()
-	{
-		// Validate context
-		if (_context == null) _context = GetComponent<CharacterContext>();
-
-		if (_context == null)
-		{
-			Debug.LogError($"[{name}] ShootSystem: CharacterContext is required!", this);
-			enabled = false;
-			return;
-		}
-
-		// Get aim system if not assigned
-		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 	}
 
 	private void OnDrawGizmosSelected()
@@ -51,7 +35,18 @@ public class ShootSystem : PausableBehaviour, IShootListener
 		if (_aimSystem != null && _aimSystem.IsAiming)
 		{
 			var aimPoint = _aimSystem.GetAimPoint();
-			var firePoint = transform.position;
+			var firePoint = transform.position + Vector3.up * 1.5f; // Eye/Chest level fallback
+
+			// Try to get actual muzzle position from context
+			if (_context != null && _context.WeaponHandSlots != null)
+			{
+				var rangedSlot = _context.WeaponHandSlots.GetSlot(WeaponHandSlots.WeaponSlotType.Ranged);
+				if (rangedSlot != null && rangedSlot.activeInHierarchy)
+				{
+					var muzzle = rangedSlot.transform.Find("Muzzle");
+					if (muzzle != null) firePoint = muzzle.position;
+				}
+			}
 
 			// Aim line
 			Gizmos.color = Color.red;
@@ -77,6 +72,22 @@ public class ShootSystem : PausableBehaviour, IShootListener
 	void IShootListener.OnShoot(bool shootInput)
 	{
 		TryShoot(shootInput);
+	}
+
+	private void InitializeComponents()
+	{
+		// Validate context
+		if (_context == null) _context = GetComponent<CharacterContext>();
+
+		if (_context == null)
+		{
+			Debug.LogError($"[{name}] ShootSystem: CharacterContext is required!", this);
+			enabled = false;
+			return;
+		}
+
+		// Get aim system if not assigned
+		if (_aimSystem == null) _aimSystem = GetComponent<AimSystem>();
 	}
 
 	private void TryShoot(bool isShooting)

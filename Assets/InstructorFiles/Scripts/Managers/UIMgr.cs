@@ -14,16 +14,7 @@ public class UIMgr : Singleton<UIMgr>
 	[SerializeField] private int _sortGap = 10;
 
 	[Header("Menus")]
-	[SerializeField] private MenuBase _screenFaderPrefab;
-
-	[SerializeField] private MenuBase _splashMenuPrefab;
-	[SerializeField] private MenuBase _mainMenuPrefab;
-	[SerializeField] private MenuBase _settingsMenuPrefab;
-	[SerializeField] private MenuBase _inGameUIPrefab;
-	[SerializeField] private MenuBase _gameOverMenuPrefab;
-	[SerializeField] private MenuBase _pauseMenuPrefab;
-	[SerializeField] private MenuBase _levelCompleteMenuPrefab;
-	[SerializeField] private MenuBase _levelSelectMenuPrefab;
+	[SerializeField] private MenuConfiguration _menuConfiguration;
 
 	private readonly Stack<MenuBase> _activeMenus = new();
 	private readonly Dictionary<GameMenus, MenuBase> _disabledMenus = new();
@@ -54,6 +45,7 @@ public class UIMgr : Singleton<UIMgr>
 	{
 		var menu = PushMenu(menuToOpen);
 		if (!menu) return null;
+
 		if (fadeIn)
 		{
 			menu.PerformFullFadeIn(_fadeInDuration, onMenuOpenComplete);
@@ -67,6 +59,11 @@ public class UIMgr : Singleton<UIMgr>
 		return menu;
 	}
 
+	public void ShowMenu(MenuBase menuPrefab, Action onMenuOpenComplete = null, bool fadeIn = true)
+	{
+		ShowMenu(menuPrefab.MenuType(), onMenuOpenComplete, fadeIn);
+	}
+
 	/// <summary>
 	///     Use polymorphism to call a function specific to <see cref="SplashMenu" />
 	/// </summary>
@@ -74,8 +71,11 @@ public class UIMgr : Singleton<UIMgr>
 	public void ShowSplash(Action onComplete)
 	{
 		var menu = ShowMenu(GameMenus.Splash);
-		menu.PerformFullFadeIn(_fadeInDuration);
-		if (menu is SplashMenu splashMenu) splashMenu.OnShow(onComplete);
+		if (menu != null)
+		{
+			menu.PerformFullFadeIn(_fadeInDuration);
+			if (menu is SplashMenu splashMenu) splashMenu.OnShow(onComplete);
+		}
 	}
 
 	/// <summary>
@@ -191,39 +191,13 @@ public class UIMgr : Singleton<UIMgr>
 	/// <exception cref="ArgumentOutOfRangeException"></exception>
 	private MenuBase GetMenuPrefabFromType(GameMenus menuType)
 	{
-		MenuBase menu;
-		switch (menuType)
+		if (_menuConfiguration == null)
 		{
-			case GameMenus.Fader:
-				menu = _screenFaderPrefab;
-				break;
-			case GameMenus.Splash:
-				menu = _splashMenuPrefab;
-				break;
-			case GameMenus.MainMenu:
-				menu = _mainMenuPrefab;
-				break;
-			case GameMenus.SettingsMenu:
-				menu = _settingsMenuPrefab;
-				break;
-			case GameMenus.InGameUI:
-				menu = _inGameUIPrefab;
-				break;
-			case GameMenus.GameOverMenu:
-				menu = _gameOverMenuPrefab;
-				break;
-			case GameMenus.PauseMenu:
-				menu = _pauseMenuPrefab;
-				break;
-			case GameMenus.LevelCompleteMenu:
-				menu = _levelCompleteMenuPrefab;
-				break;
-			case GameMenus.LevelSelectMenu:
-				menu = _levelSelectMenuPrefab;
-				break;
-			default:
-				throw new ArgumentOutOfRangeException(nameof(menuType), menuType, null);
+			Debug.LogError("Menu Configuration is not assigned in UIMgr");
+			return null;
 		}
+
+		var menu = _menuConfiguration.GetPrefab(menuType);
 
 		if (menu == null) Debug.LogError($"Failed to find prefab for {menuType}");
 

@@ -1,5 +1,3 @@
-using UnityEngine;
-
 public class PauseMenu : MenuBase
 {
 	private void OnEnable()
@@ -35,16 +33,16 @@ public class PauseMenu : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
-
-		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu, () => Interactable = true);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(
+			GameMenus.SettingsMenu, () => Interactable = true));
 	}
-	
+
 	public void ButtonQuit()
 	{
 		if (!Interactable) return;
 		Interactable = false;
 		SceneMgr.Instance.LoadScene(
-			GameScenes.MainMenu, GameMenus.MainMenu, 
+			GameScenes.MainMenu, GameMenus.MainMenu,
 			() => GameMgr.Instance.GameState = GameMgr.GameStates.Menu);
 	}
 

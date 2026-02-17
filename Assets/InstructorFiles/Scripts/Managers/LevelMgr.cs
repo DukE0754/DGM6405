@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 ///     Manages level ordering, progression, and save coordination.
 ///     Single source of truth for which level is current and what comes next.
 /// </summary>
-public class LevelMgr : Singleton<LevelMgr>
+public class LevelMgr : Singleton<LevelMgr>, IGameStateListener
 {
 #region Serialized Data
 
@@ -16,10 +16,25 @@ public class LevelMgr : Singleton<LevelMgr>
 
 #endregion
 
+	private void OnEnable()
+	{
+		GlobalEventBus.Instance.Register<IGameStateListener>(this);
+	}
+
+	private void OnDisable()
+	{
+		GlobalEventBus.Instance.Unregister<IGameStateListener>(this);
+	}
+
+	public void OnNextLevel(int timeMs)
+	{
+		CompleteCurrentLevel(timeMs);
+	}
+
 #region Runtime State
 
 	public int CurrentLevelIndex { get; private set; } = -1;
-	
+
 	public bool IsLevelLoaded { get; private set; }
 
 #endregion
@@ -72,7 +87,7 @@ public class LevelMgr : Singleton<LevelMgr>
 	}
 
 #endregion
-	
+
 #region Level Resolution
 
 	public int GetNewGameLevelIndex()
@@ -117,11 +132,11 @@ public class LevelMgr : Singleton<LevelMgr>
 
 		CurrentLevelIndex = levelIndex;
 
-		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
-		SceneMgr.Instance.LoadScene(GameScenes.Gameplay, GameMenus.InGameUI, 
-			() => StartCoroutine(LoadLevelRoutine()));
+		GlobalContext.Instance.GameMgr.GameState = GameMgr.GameStates.Loading;
+		GlobalEventBus.Instance.Raise<ISceneEventListener>(l =>
+			l.OnLoadScene(GameScenes.Gameplay, GameMenus.InGameUI, () => StartCoroutine(LoadLevelRoutine())));
 	}
-	
+
 	private IEnumerator LoadLevelRoutine()
 	{
 		var levelName = _levelData.Levels[CurrentLevelIndex].SceneName;
@@ -149,11 +164,11 @@ public class LevelMgr : Singleton<LevelMgr>
 		if (HasNextLevel)
 			LoadLevel(CurrentLevelIndex + 1);
 		else
-			SceneMgr.Instance.LoadScene(
+			GlobalEventBus.Instance.Raise<ISceneEventListener>(l => l.OnLoadScene(
 				GameScenes.MainMenu,
 				GameMenus.MainMenu,
-				() => GameMgr.Instance.GameState = GameMgr.GameStates.Menu
-			);
+				() => GlobalContext.Instance.GameMgr.GameState = GameMgr.GameStates.Menu
+			));
 	}
 
 #endregion

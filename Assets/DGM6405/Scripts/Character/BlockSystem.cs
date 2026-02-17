@@ -28,7 +28,7 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		// Get context if not assigned
 		if (_context == null) _context = GetComponent<CharacterContext>();
 	}
-	
+
 	private void OnDrawGizmosSelected()
 	{
 		if (!_showGizmos)
@@ -76,27 +76,18 @@ public class BlockSystem : PausableBehaviour, IBlockListener
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 		{
 			// Cancel blocking if game is not running
-			if (IsBlocking)
-			{
-				IsBlocking = false;
-			}
+			if (IsBlocking) IsBlocking = false;
 
 			return;
 		}
 
 		// Update blocking state
-		if (IsBlocking != isBlocking)
-		{
-			IsBlocking = isBlocking;
-		}
+		if (IsBlocking != isBlocking) IsBlocking = isBlocking;
 	}
 
 	protected override void OnPaused()
 	{
 		// Cancel blocking when paused
-		if (IsBlocking)
-		{
-			IsBlocking = false;
-		}
+		if (IsBlocking) IsBlocking = false;
 	}
 }

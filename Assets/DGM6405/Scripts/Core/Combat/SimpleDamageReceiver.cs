@@ -17,6 +17,24 @@ public class SimpleDamageReceiver : MonoBehaviour, IDamageReceiver
 		if (_health == null) _health = GetComponentInParent<Health>();
 	}
 
+	private void OnEnable()
+	{
+		var colliders = GetComponentsInChildren<Collider>();
+		foreach (var col in colliders)
+		{
+			ColliderMgr.Instance.Register(col, this);
+		}
+	}
+
+	private void OnDisable()
+	{
+		var colliders = GetComponentsInChildren<Collider>();
+		foreach (var col in colliders)
+		{
+			if (col) ColliderMgr.Instance?.Unregister(col);
+		}
+	}
+
 	public void ApplyDamage(DamageInfo info)
 	{
 		if (_health == null) return;

@@ -25,7 +25,6 @@ public class Projectile : MonoBehaviour
 
 		// Check if we hit something damageable
 		if (collision.gameObject.TryGetComponent(out SimpleDamageReceiver damageReceiver))
-		{
 			if (damageReceiver != null)
 			{
 				var info = new DamageInfo
@@ -37,7 +36,6 @@ public class Projectile : MonoBehaviour
 				};
 				damageReceiver.ApplyDamage(info);
 			}
-		}
 
 		// Destroy on impact
 		Destroy(gameObject);
@@ -46,9 +44,9 @@ public class Projectile : MonoBehaviour
 	public void Launch(Vector3 direction, GameObject source)
 	{
 		_source = source;
-		float speed = _data != null ? _data.Speed : 0f;
-		float lifetime = _data != null ? _data.Lifetime : 5f;
-		
+		var speed = _data != null ? _data.Speed : 0f;
+		var lifetime = _data != null ? _data.Lifetime : 5f;
+
 		_rb.linearVelocity = direction.normalized * speed;
 		transform.forward = direction;
 		Destroy(gameObject, lifetime); // Simple destruction for now
@@ -57,8 +55,8 @@ public class Projectile : MonoBehaviour
 	public void LaunchWithVelocity(Vector3 velocity, GameObject source)
 	{
 		_source = source;
-		float lifetime = _data != null ? _data.Lifetime : 5f;
-		
+		var lifetime = _data != null ? _data.Lifetime : 5f;
+
 		_rb.linearVelocity = velocity;
 		if (velocity.sqrMagnitude > 0.001f)
 			transform.forward = velocity;

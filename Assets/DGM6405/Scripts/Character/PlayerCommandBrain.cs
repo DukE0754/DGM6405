@@ -7,7 +7,7 @@ using UnityEngine.InputSystem;
 ///     Command brain for player character.
 ///     Reads input from PlayerInputHandler and dispatches commands to modular systems.
 /// </summary>
-public class PlayerCommandBrain : PausableBehaviour, ILevelListener
+public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthListener
 {
 	[Header("Input")]
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
@@ -20,14 +20,19 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	[Tooltip("PlayerInput component for detecting control scheme. Optional.")]
 	[SerializeField] private PlayerInput _playerInput;
 #endif
+	
+	[Header("Debug")]
+	[SerializeField] private string _currentStateDebug;
+
+	private bool _isBlocking;
 
 	// Cached control scheme check
 	private bool _isCurrentDeviceMouse;
 
 	private bool _isInitialised;
-	private bool _isShooting;
-	private bool _isBlocking;
 	private bool _isMelee;
+	private bool _isShooting;
+	private bool _isDead;
 
 	private void Awake()
 	{
@@ -80,6 +85,30 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 		}
 	}
 
+	private void UpdateDebugState()
+	{
+		if (_isDead)
+		{
+			_currentStateDebug = "Dead";
+			return;
+		}
+
+		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
+		{
+			_currentStateDebug = "Game Not Running";
+			return;
+		}
+
+		System.Collections.Generic.List<string> actions = new();
+		if (_isShooting) actions.Add("Shooting");
+		if (_isBlocking) actions.Add("Blocking");
+		if (_isMelee) actions.Add("Melee");
+		if (_inputHandler != null && _inputHandler.jump) actions.Add("Jumping");
+		if (_inputHandler != null && _inputHandler.move != Vector2.zero) actions.Add("Moving");
+
+		_currentStateDebug = actions.Count > 0 ? string.Join(", ", actions) : "Idle";
+	}
+
 	private void InitializeComponents()
 	{
 		// Get context if not assigned
@@ -110,6 +139,8 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 
 	protected override void PausableUpdate()
 	{
+		UpdateDebugState();
+
 		// Check game state before processing input
 		if (GameMgr.Instance == null)
 		{
@@ -117,7 +148,7 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 			return;
 		}
 
-		if (!GameMgr.Instance.IsGameRunning)
+		if (!GameMgr.Instance.IsGameRunning || _isDead)
 			return;
 
 		// Update control scheme check
@@ -133,7 +164,7 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 	protected override void PausableLateUpdate()
 	{
 		// Check game state
-		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
+		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning || _isDead)
 			return;
 
 		// Process camera rotation in LateUpdate
@@ -252,7 +283,7 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 
 	private void UpdateRotationMode()
 	{
-		if (_context?.EventBus == null) return;
+		if (_context?.EventBus == null || _isDead) return;
 
 		// When blocking or shooting/aiming, face camera. Otherwise face movement.
 		var faceCamera = _isBlocking || _isShooting;
@@ -278,6 +309,38 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener
 			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(false));
 
 			UpdateRotationMode();
+		}
+	}
+
+	void IHealthListener.OnHealthChanged(float current, float max)
+	{
+	}
+
+	void IHealthListener.OnDamageTaken(int amount, Vector3 direction)
+	{
+	}
+
+	void IHealthListener.OnDied()
+	{
+		if (_isDead) return;
+		_isDead = true;
+
+		// Stop all active actions
+		if (_context?.EventBus != null)
+		{
+			_isShooting = false;
+			_isBlocking = false;
+			_isMelee = false;
+
+			_context.EventBus.Raise<IMovementListener>(l => l.OnMove(Vector2.zero, false));
+			_context.EventBus.Raise<IBlockListener>(l => l.OnBlock(false));
+			_context.EventBus.Raise<IShootListener>(l => l.OnShoot(false));
+			_context.EventBus.Raise<IMeleeListener>(l => l.OnMelee(false));
+			_context.EventBus.Raise<IJumpListener>(l => l.OnJump(false));
+
+			// Disable rotation
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(false));
+			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(false));
 		}
 	}
 }

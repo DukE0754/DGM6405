@@ -9,7 +9,8 @@ using UnityEngine;
 /// </summary>
 [RequireComponent(typeof(Canvas))] // Ensures Menu has Canvas
 [RequireComponent(typeof(CanvasGroup))] // Ensures Canvas has a CanvasGroup
-public abstract class MenuBase : MonoBehaviour
+[Serializable]
+public class MenuBase : MonoBehaviour
 {
 	/// <summary>
 	///     Menus should not be interactable while fading.
@@ -45,7 +46,7 @@ public abstract class MenuBase : MonoBehaviour
 	///     Expects only 1 of each type
 	/// </summary>
 	/// <returns></returns>
-	public abstract GameMenus MenuType();
+	public virtual GameMenus MenuType() => GameMenus.None;
 
 	public void OnInstantiate()
 	{

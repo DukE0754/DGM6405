@@ -11,13 +11,13 @@ public class SceneMgr : Singleton<SceneMgr>
 {
 	public void LoadScene(GameScenes sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
 	{
-		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
+		GlobalContext.Instance.GameMgr.GameState = GameMgr.GameStates.Loading;
 		StartCoroutine(PerformLoadSequence(sceneToLoad.ToString(), menuToOpen, onComplete));
 	}
 
 	public void LoadScene(string sceneToLoad, GameMenus menuToOpen, Action onComplete = null)
 	{
-		GameMgr.Instance.GameState = GameMgr.GameStates.Loading;
+		GlobalContext.Instance.GameMgr.GameState = GameMgr.GameStates.Loading;
 		StartCoroutine(PerformLoadSequence(sceneToLoad, menuToOpen, onComplete));
 	}
 
@@ -25,9 +25,9 @@ public class SceneMgr : Singleton<SceneMgr>
 	{
 		var waiting = true;
 
-		UIMgr.Instance.CloseAllMenus();
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnCloseAllMenus());
 
-		UIMgr.Instance.ShowMenu(GameMenus.Fader, () => waiting = false);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(GameMenus.Fader, () => waiting = false));
 
 		yield return new WaitWhile(() => waiting);
 
@@ -41,8 +41,8 @@ public class SceneMgr : Singleton<SceneMgr>
 
 		while (!asyncOperation.isDone) yield return null;
 
-		UIMgr.Instance.HideMenu(GameMenus.Fader);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnHideMenu(GameMenus.Fader));
 
-		UIMgr.Instance.ShowMenu(menuToOpen, () => onComplete?.Invoke());
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(menuToOpen, () => onComplete?.Invoke()));
 	}
 }

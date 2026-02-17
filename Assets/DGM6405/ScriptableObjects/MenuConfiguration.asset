@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 521794772af94403815944dd8e0454f7, type: 3}
+  m_Name: MenuConfiguration
+  m_EditorClassIdentifier: Assembly-CSharp::MenuConfiguration
+  _menuPrefabs:
+  - {fileID: 7431612978833750563, guid: 969d1fcbbf44549789933a3215313428, type: 3}
+  - {fileID: 2968855652903854471, guid: 7fc904751edfd44bf9f6e2d818e2febc, type: 3}
+  - {fileID: 4633760019947690283, guid: d566c6d6cd9636740aa1638fca58d5c9, type: 3}
+  - {fileID: 3720962945561023688, guid: c0a7c86aa5f279842bbff0e5518e911b, type: 3}
+  - {fileID: 5485982806887736885, guid: 0a464c8bdf6306043a275fab0eb409ec, type: 3}
+  - {fileID: 3337753152252030631, guid: b460d693855274329aa2b4d92a36e07f, type: 3}
+  - {fileID: 3592973633136120970, guid: 6a90ae913c7434edaa1ee56894ba53e3, type: 3}
+  - {fileID: 7759477483224727364, guid: acfd65e77be9c444196060bb458eee63, type: 3}
+  - {fileID: 5816890450284624309, guid: a8ef5501282dc4d099d05cb15187fe1f, type: 3}

@@ -14,6 +14,28 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 
 	private Vector3 _lastAimTarget;
 
+	// Event listeners
+	public void OnSetAimTarget(Vector3 worldPosition)
+	{
+		_lastAimTarget = worldPosition;
+
+		// Rotate muzzle to face the target directly
+		if (_muzzle != null)
+		{
+			var direction = (_lastAimTarget - _muzzle.position).normalized;
+			if (direction != Vector3.zero)
+			{
+				_muzzle.rotation = Quaternion.LookRotation(direction);
+			}
+		}
+	}
+
+	public void OnFireProjectile()
+	{
+		if (_useArc) FireArc(_lastAimTarget);
+		else Fire(_lastAimTarget);
+	}
+
 	public bool CanFire => true;
 
 	public void Fire(Vector3 targetPosition)
@@ -21,6 +43,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 		if (_muzzle == null) return;
 
 		var direction = (targetPosition - _muzzle.position).normalized;
+		if (direction == Vector3.zero) direction = _muzzle.forward;
 		SpawnProjectile(direction);
 	}
 
@@ -46,7 +69,8 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 
 	private void SpawnProjectile(Vector3 direction)
 	{
-		var projectile = Instantiate(_projectilePrefab, _muzzle.position,
+		var projectile = Instantiate(
+			_projectilePrefab, _muzzle.position,
 			Quaternion.LookRotation(direction));
 		projectile.Launch(direction, gameObject);
 	}
@@ -63,17 +87,5 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 		var velocityXZ = displacementXZ / time;
 
 		return velocityXZ + velocityY * -Mathf.Sign(gravity);
-	}
-
-	// Event listeners
-	public void OnSetAimTarget(Vector3 worldPosition)
-	{
-		_lastAimTarget = worldPosition;
-	}
-
-	public void OnFireProjectile()
-	{
-		if (_useArc) FireArc(_lastAimTarget);
-		else Fire(_lastAimTarget);
 	}
 }

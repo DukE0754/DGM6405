@@ -297,30 +297,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
-    - target: {fileID: 1957426856326312451, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: _leftIK
-      value: 
-      objectReference: {fileID: 1321287708368322480}
-    - target: {fileID: 1957426856326312451, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: _footOffset
-      value: 0.018
-      objectReference: {fileID: 0}
-    - target: {fileID: 1957426856326312451, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: _compensationMultiplier
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 2085210499851947648, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
       propertyPath: _mainCamera
       value: 
       objectReference: {fileID: 4134729424306236490}
-    - target: {fileID: 4569017989459591247, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: m_Data.m_MaintainTargetPositionOffset
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4569017989459591247, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: m_Data.m_MaintainTargetRotationOffset
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7503618140753904176, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -361,30 +341,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7860869991516949739, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: m_Data.m_MaintainTargetPositionOffset
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 7860869991516949739, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-      propertyPath: m_Data.m_MaintainTargetRotationOffset
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
---- !u!114 &1321287708368322480 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 7860869991516949739, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
-  m_PrefabInstance: {fileID: 9169684741015171931}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: aeda7bfbf984f2a4da5ab4b8967b115d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Unity.Animation.Rigging::UnityEngine.Animations.Rigging.TwoBoneIKConstraint
 --- !u!4 &1685321807350411627 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 7503618140753904176, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}

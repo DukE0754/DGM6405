@@ -206,7 +206,7 @@ public class LevelSelectMenu : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
-		UIMgr.Instance.HideMenu(GameMenus.LevelSelectMenu);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnHideMenu(GameMenus.LevelSelectMenu));
 	}
 
 #endregion

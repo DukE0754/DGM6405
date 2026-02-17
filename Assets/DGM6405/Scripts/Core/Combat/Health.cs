@@ -10,6 +10,9 @@ public class Health : MonoBehaviour
 	[SerializeField] private int _maxHealth = 100;
 	[SerializeField] private bool _isInvulnerable;
 	[SerializeField] private LocalEventBus _bus;
+	
+	[Header("Debug")]
+	[SerializeField] private string _currentStateDebug;
 
 	public int CurrentHealth { get; private set; }
 
@@ -20,6 +23,16 @@ public class Health : MonoBehaviour
 	{
 		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 		ResetHealth();
+	}
+
+	private void Update()
+	{
+		UpdateDebugState();
+	}
+
+	private void UpdateDebugState()
+	{
+		_currentStateDebug = IsDead ? "Dead" : (_isInvulnerable ? "Invulnerable" : $"Alive ({CurrentHealth}/{_maxHealth})");
 	}
 
 	public void ResetHealth()
@@ -38,6 +51,9 @@ public class Health : MonoBehaviour
 
 		// Notify listeners about damage and updated health
 		_bus?.Raise<IHealthListener>(l => l.OnHealthChanged(CurrentHealth, _maxHealth));
+
+		var direction = info.Source != null ? (transform.position - info.Source.transform.position).normalized : Vector3.zero;
+		_bus?.Raise<IHealthListener>(l => l.OnDamageTaken(info.Amount, direction));
 
 		if (CurrentHealth <= 0) Die();
 	}

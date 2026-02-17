@@ -5,7 +5,7 @@ using UnityEngine;
 ///     Separates animation logic from other systems for better maintainability.
 /// </summary>
 public class CharacterAnimationSystem : PausableBehaviour,
-	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener
+	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener, IHealthListener
 {
 	[Header("Animation Settings")]
 	[Tooltip("Smoothing time for animation parameter changes")]
@@ -27,8 +27,10 @@ public class CharacterAnimationSystem : PausableBehaviour,
 
 	private int _animIDBlock;
 	private int _animIDDodge;
+	private int _animIDDie;
 	private int _animIDFreeFall;
 	private int _animIDGrounded;
+	private int _animIDHit;
 	private int _animIDJump;
 	private int _animIDMelee;
 	private int _animIDMotionSpeed;
@@ -159,6 +161,20 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
 	}
 
+	void IHealthListener.OnHealthChanged(float current, float max)
+	{
+	}
+
+	void IHealthListener.OnDamageTaken(int amount, Vector3 direction)
+	{
+		SetHit();
+	}
+
+	void IHealthListener.OnDied()
+	{
+		SetDie();
+	}
+
 	/// <summary>
 	///     Sets shoot animation state.
 	/// </summary>
@@ -182,6 +198,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animIDMelee = Animator.StringToHash("Melee");
 		_animIDShoot = Animator.StringToHash("Shoot");
 		_animIDDodge = Animator.StringToHash("Dodge");
+		_animIDHit = Animator.StringToHash("Hit");
+		_animIDDie = Animator.StringToHash("Die");
 		_animIDVelocityX = Animator.StringToHash("VelocityX");
 		_animIDVelocityZ = Animator.StringToHash("VelocityZ");
 	}
@@ -286,6 +304,22 @@ public class CharacterAnimationSystem : PausableBehaviour,
 			return;
 
 		_animator.SetBool(_animIDDodge, isDodging);
+	}
+
+	private void SetHit()
+	{
+		if (!_hasAnimator || _animator == null)
+			return;
+
+		_animator.SetTrigger(_animIDHit);
+	}
+
+	private void SetDie()
+	{
+		if (!_hasAnimator || _animator == null)
+			return;
+
+		_animator.SetTrigger(_animIDDie);
 	}
 
 	protected override void OnPaused()

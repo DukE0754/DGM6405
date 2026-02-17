@@ -58,47 +58,49 @@ public class Settings : MenuBase
 
 	private void OnMasterChanged(float value)
 	{
-		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_ignoreEvents) return;
 		if (_isMuted)
-			AudioMgr.Instance.GlobalVolume = value;
+			GlobalContext.Instance.AudioMgr.GlobalVolume = value;
 		else
-			AudioMgr.Instance.SetMasterVolume(value);
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMasterVolume(value));
 	}
 
 	private void OnSfxChanged(float value)
 	{
-		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_ignoreEvents) return;
 		if (_isMuted)
-			AudioMgr.Instance.SfxVolume = value;
+			GlobalContext.Instance.AudioMgr.SfxVolume = value;
 		else
-			AudioMgr.Instance.SetSfxVolume(value);
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetSfxVolume(value));
 	}
 
 	private void OnMusicChanged(float value)
 	{
-		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_ignoreEvents) return;
 		if (_isMuted)
-			AudioMgr.Instance.MusicVolume = value;
+			GlobalContext.Instance.AudioMgr.MusicVolume = value;
 		else
-			AudioMgr.Instance.SetMusicVolume(value);
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMusicVolume(value));
 	}
 
 	private void OnMuteAllChanged(bool isMuted)
 	{
-		if (_ignoreEvents || AudioMgr.Instance == null) return;
+		if (_ignoreEvents) return;
 
 		_isMuted = isMuted;
 		if (_isMuted)
 		{
-			AudioMgr.Instance.SetMasterVolume(0f, false);
-			AudioMgr.Instance.SetMusicVolume(0f, false);
-			AudioMgr.Instance.SetSfxVolume(0f, false);
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMasterVolume(0f, false));
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMusicVolume(0f, false));
+			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetSfxVolume(0f, false));
 		}
 		else
 		{
-			if (_masterSlider) AudioMgr.Instance.SetMasterVolume(_masterSlider.value);
-			if (_musicSlider) AudioMgr.Instance.SetMusicVolume(_musicSlider.value);
-			if (_sfxSlider) AudioMgr.Instance.SetSfxVolume(_sfxSlider.value);
+			if (_masterSlider)
+				GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMasterVolume(_masterSlider.value));
+			if (_musicSlider)
+				GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMusicVolume(_musicSlider.value));
+			if (_sfxSlider) GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetSfxVolume(_sfxSlider.value));
 		}
 	}
 
@@ -110,6 +112,6 @@ public class Settings : MenuBase
 	public void Close()
 	{
 		SaveUtil.Save();
-		UIMgr.Instance.HideMenu(GameMenus.SettingsMenu);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnHideMenu(GameMenus.SettingsMenu));
 	}
 }

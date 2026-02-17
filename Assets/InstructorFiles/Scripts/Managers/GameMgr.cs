@@ -57,7 +57,8 @@ public class GameMgr : Singleton<GameMgr>
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.None;
 		_gameState = GameStates.GameOver;
-		SceneMgr.Instance.LoadScene(GameScenes.GameOver, GameMenus.GameOverMenu, () => GameState = GameStates.GameOver);
+		GlobalEventBus.Instance.Raise<ISceneEventListener>(l => l.OnLoadScene(
+			GameScenes.GameOver, GameMenus.GameOverMenu, () => GameState = GameStates.GameOver));
 		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnGameOver());
 	}
 
@@ -67,9 +68,9 @@ public class GameMgr : Singleton<GameMgr>
 		Cursor.lockState = CursorLockMode.None;
 		_gameState = GameStates.GameOver;
 		LastRunTimeMs = timeMs;
-		LevelMgr.Instance.CompleteCurrentLevel(timeMs);
-		SceneMgr.Instance.LoadScene(
-			GameScenes.GameOver, GameMenus.LevelCompleteMenu, () => GameState = GameStates.GameOver);
+		GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnNextLevel(timeMs));
+		GlobalEventBus.Instance.Raise<ISceneEventListener>(l =>
+			l.OnLoadScene(GameScenes.GameOver, GameMenus.LevelCompleteMenu, () => GameState = GameStates.GameOver));
 	}
 
 	/// <summary>
@@ -95,7 +96,7 @@ public class GameMgr : Singleton<GameMgr>
 			Cursor.lockState = CursorLockMode.None;
 			_gameState = GameStates.Paused;
 			Debug.Log("Pause state enabled");
-			UIMgr.Instance.ShowMenu(GameMenus.PauseMenu);
+			GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(GameMenus.PauseMenu));
 			GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnPauseStateChanged(true));
 			return;
 		}
@@ -107,8 +108,8 @@ public class GameMgr : Singleton<GameMgr>
 		Cursor.lockState = CursorLockMode.Locked;
 		_gameState = GameStates.InGame;
 		Debug.Log("Pause state disabled");
-		UIMgr.Instance.CloseAllMenus();
-		UIMgr.Instance.ShowMenu(GameMenus.InGameUI, null, false);
+		GlobalEventBus.Instance?.Raise<IUIEventListener>(l => l?.OnCloseAllMenus());
+		GlobalEventBus.Instance?.Raise<IUIEventListener>(l => l?.OnShowMenu(GameMenus.InGameUI, null, false));
 		GlobalEventBus.Instance?.Raise<IGameStateListener>(l => l?.OnPauseStateChanged(false));
 	}
 

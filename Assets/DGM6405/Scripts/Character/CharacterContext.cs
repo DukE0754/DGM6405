@@ -39,6 +39,13 @@ public class CharacterContext : PausableBehaviour
 	[Range(0f, 1f)]
 	[SerializeField] private float _footstepAudioVolume = 0.5f;
 
+	[Header("Debug")]
+	[SerializeField] private string _currentStateSummary;
+	[SerializeField] private string _healthState;
+	[SerializeField] private string _brainState;
+	[SerializeField] private string _aimState;
+	[SerializeField] private string _movementState;
+
 	// Public properties for O(1) access
 	public CharacterController Controller => _controller;
 	public Animator Animator => _animator;
@@ -118,5 +125,36 @@ public class CharacterContext : PausableBehaviour
 
 		if (_landingAudioClip == null)
 			Debug.LogWarning($"[{name}] CharacterContext: Landing audio clip not assigned.", this);
+	}
+
+	protected override void PausableUpdate()
+	{
+		UpdateDebugSummary();
+	}
+
+	private void UpdateDebugSummary()
+	{
+		// Try to find components if not cached (CharacterContext usually has them)
+		var health = GetComponent<Health>();
+		var brain = GetComponent<PlayerCommandBrain>();
+		var aim = GetComponent<AimSystem>();
+		var move = GetComponent<CharacterMovementSystem>();
+
+		_healthState = health != null ? GetPrivateFieldValue<string>(health, "_currentStateDebug") : "N/A";
+		_brainState = brain != null ? GetPrivateFieldValue<string>(brain, "_currentStateDebug") : "N/A";
+		_aimState = aim != null ? GetPrivateFieldValue<string>(aim, "_currentStateDebug") : "N/A";
+		
+		float speed = move != null ? move.Speed : 0f;
+		_movementState = move != null ? $"Speed: {speed:F2}" : "N/A";
+
+		_currentStateSummary = $"H: {_healthState} | B: {_brainState} | A: {_aimState}";
+	}
+
+	private T GetPrivateFieldValue<T>(object obj, string fieldName)
+	{
+		if (obj == null) return default;
+		var field = obj.GetType().GetField(fieldName, System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
+		if (field != null) return (T)field.GetValue(obj);
+		return default;
 	}
 }

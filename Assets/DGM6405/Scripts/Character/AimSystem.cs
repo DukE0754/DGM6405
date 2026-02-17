@@ -35,22 +35,34 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 	[Tooltip("Weapon hand bone transform for IK. If null, will try to find automatically.")]
 	[SerializeField] private Transform _weaponHandBone;
 
-	[Tooltip("Target transform for AI aiming. Leave null for player (uses camera).")]
-	[SerializeField] private Transform _targetTransform;
+	[Header("Auto-Lock Settings")]
+	[Tooltip("DetectionSystem for auto-locking targets. Optional for players.")]
+	[SerializeField] private DetectionSystem _detectionSystem;
+
+	
+
+	[Tooltip("A physical transform that represents the aim point. If assigned, its position will be updated.")]
+	[SerializeField] private Transform _visualAimTarget;
 
 	[Header("Debug Gizmos")]
 	[Tooltip("Show aim system gizmos in scene view when selected.")]
 	[SerializeField] private bool _showGizmos = true;
+	
+	[Header("Debug")]
+	[SerializeField] private string _currentStateDebug;
 
 
 	private Transform _mainCamera;
+	private Transform _targetTransform;
 
 	// Internal state
 	private Vector3 _smoothAimPoint;
 	private Vector3 _smoothAimVelocity;
+	private Transform _lockedTarget;
 
 	// Public properties
 	public bool IsAiming { get; private set; }
+	public bool IsTargeting { get; private set; }
 
 	public Vector3 CurrentAimPoint { get; private set; }
 
@@ -131,6 +143,8 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 		}
 
 		_mainCamera = _context?.CharacterCamera?.transform;
+
+		if (_detectionSystem == null) _detectionSystem = GetComponent<DetectionSystem>();
 	}
 
 	/// <summary>
@@ -149,18 +163,28 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 		// Apply head IK
 		if (_headBone != null && _headIKWeight > 0f)
 		{
-			var lookDirection = (_smoothAimPoint - _headBone.position).normalized;
-			var lookRotation = Quaternion.LookRotation(lookDirection);
 			_animator.SetLookAtWeight(_headIKWeight, 0f, 1f, 0f, 0.5f);
 			_animator.SetLookAtPosition(_smoothAimPoint);
 		}
 
-		// Apply hand IK (if needed, can be extended with custom IK solution)
-		// For now, basic implementation - can be enhanced with FimpIK plugins
+		// Apply hand/weapon IK
 		if (_weaponHandBone != null && _handIKWeight > 0f)
 		{
-			// Basic hand IK - can be enhanced with full IK solution
-			// This is a placeholder for more advanced IK implementation
+			// Basic hand orientation towards target
+			// Note: For more complex weapons, we'd use a two-bone IK or Fabrik
+			// but for now we'll use the Animator's IK to set a goal position
+			// or just let the ProjectileWeapon handle its own muzzle rotation.
+			// To truly "point" the arm, we can use SetIKPosition:
+			_animator.SetIKPositionWeight(AvatarIKGoal.RightHand, _handIKWeight);
+			_animator.SetIKPosition(AvatarIKGoal.RightHand, _smoothAimPoint);
+			
+			// Optional: Rotate hand to face target
+			var handToTarget = (_smoothAimPoint - _weaponHandBone.position).normalized;
+			if (handToTarget != Vector3.zero)
+			{
+				_animator.SetIKRotationWeight(AvatarIKGoal.RightHand, _handIKWeight);
+				_animator.SetIKRotation(AvatarIKGoal.RightHand, Quaternion.LookRotation(handToTarget));
+			}
 		}
 	}
 
@@ -176,12 +200,22 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 			if (_headBone != null) startPos = _headBone.position;
 
 			// Aim line
-			Gizmos.color = Color.magenta;
+			Gizmos.color = _lockedTarget != null ? Color.red : Color.magenta;
 			Gizmos.DrawLine(startPos, _smoothAimPoint);
 
 			// Aim point sphere
-			Gizmos.color = Color.green;
+			Gizmos.color = _lockedTarget != null ? Color.red : Color.green;
 			Gizmos.DrawWireSphere(_smoothAimPoint, 0.2f);
+
+			if (_lockedTarget != null)
+			{
+				var targetCenter = GetTargetCenter(_lockedTarget);
+				Gizmos.DrawWireCube(targetCenter, Vector3.one * 0.5f);
+				
+				// Line to actual target center (not smoothed)
+				Gizmos.color = new Color(1f, 0f, 0f, 0.3f);
+				Gizmos.DrawLine(startPos, targetCenter);
+			}
 
 			// IK target positions
 			if (_headBone != null)
@@ -220,6 +254,8 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 
 	protected override void PausableLateUpdate()
 	{
+		UpdateDebugState();
+
 		// Check game state
 		if (GameMgr.Instance == null)
 		{
@@ -235,6 +271,8 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 
 		// Update aim point
 		UpdateAimPoint();
+		
+		IsTargeting = _targetTransform != null || _lockedTarget != null;
 
 		// Smooth aim point
 		if (_aimSmoothing > 0f)
@@ -243,11 +281,42 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 		else
 			_smoothAimPoint = CurrentAimPoint;
 
+		// Update visual aim target if assigned
+		if (_visualAimTarget != null)
+		{
+			_visualAimTarget.position = _smoothAimPoint;
+		}
+
 		// Raise event
 		if (IsAiming && _context != null && _context.EventBus != null)
 		{
-			_context.EventBus.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint));
+			_context.EventBus.Raise<IAimListener>(l => l.OnAimUpdate(_smoothAimPoint, IsTargeting));
 			_context.EventBus.Raise<IAimTargetListener>(l => l.OnSetAimTarget(_smoothAimPoint));
+		}
+	}
+
+	private void UpdateDebugState()
+	{
+		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
+		{
+			_currentStateDebug = "Game Not Running";
+			return;
+		}
+
+		if (!IsAiming)
+		{
+			_currentStateDebug = "Not Aiming";
+			return;
+		}
+
+		if (IsTargeting)
+		{
+			string targetName = _lockedTarget != null ? _lockedTarget.name : (_targetTransform != null ? _targetTransform.name : "Unknown");
+			_currentStateDebug = $"Targeting: {targetName}";
+		}
+		else
+		{
+			_currentStateDebug = "Aiming (Fallback)";
 		}
 	}
 
@@ -257,30 +326,78 @@ public class AimSystem : PausableBehaviour, IAimTargetListener
 	private void UpdateAimPoint()
 	{
 		Vector3 aimDirection;
+		Vector3 origin = transform.position;
+		if (_headBone != null) origin = _headBone.position;
+		else if (_mainCamera != null) origin = _mainCamera.position;
 
+		// Try auto-locking if we have a detection system
+		if (_detectionSystem != null)
+		{
+			_lockedTarget = _detectionSystem.GetBestTarget();
+		}
+
+		// Calculate target world position
+		Vector3 targetPos = Vector3.zero;
+		bool hasTarget = false;
+
+		if (_targetTransform != null)
+		{
+			targetPos = GetTargetCenter(_targetTransform);
+			hasTarget = true;
+		}
+		else if (_lockedTarget != null)
+		{
+			targetPos = GetTargetCenter(_lockedTarget);
+			hasTarget = true;
+		}
+
+		// AI or Player with auto-lock target
+		if (hasTarget)
+		{
+			// When we have a specific target, we want to overlap with it eventually.
+			// We only clamp distance for fallback/camera-based aiming where we shoot into "infinity".
+			CurrentAimPoint = targetPos;
+			IsAiming = true;
+		}
 		// Player: use camera forward
-		if (_targetTransform == null && _mainCamera != null)
+		else if (_mainCamera != null)
 		{
 			aimDirection = _mainCamera.forward;
 			CurrentAimPoint = _mainCamera.position + aimDirection * _maxAimDistance;
-			IsAiming = true;
-		}
-		// AI: use target transform
-		else if (_targetTransform != null)
-		{
-			var toTarget = _targetTransform.position - transform.position;
-			var distance = Mathf.Min(toTarget.magnitude, _maxAimDistance);
-			aimDirection = toTarget.normalized;
-			CurrentAimPoint = transform.position + aimDirection * distance;
 			IsAiming = true;
 		}
 		// Fallback: use character forward
 		else
 		{
 			aimDirection = transform.forward;
-			CurrentAimPoint = transform.position + aimDirection * _maxAimDistance;
+			CurrentAimPoint = origin + aimDirection * _maxAimDistance;
 			IsAiming = false;
 		}
+	}
+
+	/// <summary>
+	///     Gets the center of a target, prioritizing colliders if available.
+	/// </summary>
+	private Vector3 GetTargetCenter(Transform target)
+	{
+		if (target == null) return Vector3.zero;
+
+		// Try to find a collider via ColliderMgr
+		var colliders = target.GetComponentsInChildren<Collider>();
+		foreach (var col in colliders)
+		{
+			if (ColliderMgr.Instance != null && ColliderMgr.Instance.TryGetDamageReceiver(col, out _))
+			{
+				return col.bounds.center;
+			}
+		}
+
+		// Fallback 1: Use a child called "Center" if it exists
+		var center = target.Find("Center");
+		if (center != null) return center.position;
+
+		// Fallback 2: Offset from base transform (assuming humanoid)
+		return target.position + Vector3.up * 1f;
 	}
 
 	/// <summary>

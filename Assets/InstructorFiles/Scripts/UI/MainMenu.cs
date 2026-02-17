@@ -74,7 +74,8 @@ public class MainMenu : MenuBase
 		if (!Interactable) return;
 		Interactable = false;
 
-		UIMgr.Instance.ShowMenu(GameMenus.LevelSelectMenu, () => Interactable = true);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(
+			GameMenus.LevelSelectMenu, () => Interactable = true));
 	}
 
 	public void ButtonSettings()
@@ -82,7 +83,8 @@ public class MainMenu : MenuBase
 		if (!Interactable) return;
 		Interactable = false;
 
-		UIMgr.Instance.ShowMenu(GameMenus.SettingsMenu, () => Interactable = true);
+		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(
+			GameMenus.SettingsMenu, () => Interactable = true));
 	}
 
 	public void ButtonQuit()

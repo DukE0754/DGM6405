@@ -7,7 +7,7 @@ using UnityEngine;
 public class PlayerMgr : Singleton<PlayerMgr>
 {
 	[SerializeField] private GameObject _playerPrefab;
-	
+
 	/// <summary>
 	///     The current player object in the scene.
 	///     Returns null if no player exists.
@@ -15,7 +15,7 @@ public class PlayerMgr : Singleton<PlayerMgr>
 	public GameObject PlayerObject { get; private set; }
 
 	public bool HasSpawnedPlayer => PlayerObject != null;
-	
+
 	public void SpawnPlayer(Vector3 position, Quaternion rotation)
 	{
 		if (PlayerObject)
@@ -27,7 +27,7 @@ public class PlayerMgr : Singleton<PlayerMgr>
 		PlayerObject = Instantiate(_playerPrefab, position, rotation);
 		Debug.Log("Player spawned");
 	}
-	
+
 	/// <summary>
 	///     Registers the player object with the manager.
 	///     Called when a player is spawned or initialized.
@@ -44,7 +44,7 @@ public class PlayerMgr : Singleton<PlayerMgr>
 	public void PauseInput()
 	{
 		// Run pause from game manager
-		GameMgr.Instance.PauseGameToggle();
+		GlobalContext.Instance.GameMgr.PauseGameToggle();
 	}
 
 	public void DebugAssignAsPlayer(GameObject player)
