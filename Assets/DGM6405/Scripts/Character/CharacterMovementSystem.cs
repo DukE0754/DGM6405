@@ -244,7 +244,9 @@ public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 		// Move the player
 		var movement = targetDirection.normalized * (Speed * Time.deltaTime) +
 						new Vector3(0.0f, verticalVelocity, 0.0f) * Time.deltaTime;
-		_controller.Move(movement);
+		
+		if (_controller.enabled)
+			_controller.Move(movement);
 
 		// Calculate local velocity for animations (VelocityX and VelocityZ)
 		// We want the velocity relative to the character's orientation

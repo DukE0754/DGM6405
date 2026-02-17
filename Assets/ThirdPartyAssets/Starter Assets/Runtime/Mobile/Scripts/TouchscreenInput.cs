@@ -21,18 +21,18 @@ public class TouchscreenInput : MonoBehaviour
     public UnityEvent<bool> JumpEvent;
     public UnityEvent<bool> SprintEvent;
     
-    private UIDocument m_Document;
+    private UIDocument _mDocument;
 
-    private VirtualJoystick m_MoveJoystick;
-    private VirtualJoystick m_LookJoystick;
+    private VirtualJoystick _mMoveJoystick;
+    private VirtualJoystick _mLookJoystick;
 
     private void Awake()
     {
-        m_Document = GetComponent<UIDocument>();
+        _mDocument = GetComponent<UIDocument>();
 
         var safeArea = Screen.safeArea;
 
-        var root = m_Document.rootVisualElement;
+        var root = _mDocument.rootVisualElement;
 
         root.style.position = Position.Absolute;
         root.style.left = safeArea.xMin;
@@ -43,17 +43,17 @@ public class TouchscreenInput : MonoBehaviour
 
     private void Start()
     {
-        var joystickMove = m_Document.rootVisualElement.Q<VisualElement>("JoystickMove");
-        var joystickLook = m_Document.rootVisualElement.Q<VisualElement>("JoystickLook");
+        var joystickMove = _mDocument.rootVisualElement.Q<VisualElement>("JoystickMove");
+        var joystickLook = _mDocument.rootVisualElement.Q<VisualElement>("JoystickLook");
         
-        m_MoveJoystick = new VirtualJoystick(joystickMove);
-        m_MoveJoystick.JoystickEvent.AddListener(mov =>
+        _mMoveJoystick = new VirtualJoystick(joystickMove);
+        _mMoveJoystick.JoystickEvent.AddListener(mov =>
         {
             MoveEvent.Invoke(mov * MoveMagnitudeMultiplier);
         });;
         
-        m_LookJoystick = new VirtualJoystick(joystickLook);
-        m_LookJoystick.JoystickEvent.AddListener(mov =>
+        _mLookJoystick = new VirtualJoystick(joystickLook);
+        _mLookJoystick.JoystickEvent.AddListener(mov =>
         {
             if (InvertLookY)
                 mov.y *= -1;
@@ -61,11 +61,11 @@ public class TouchscreenInput : MonoBehaviour
             LookEvent.Invoke(mov * LookMagnitudeMultiplier);
         });
 
-        var jumpButton = m_Document.rootVisualElement.Q<VisualElement>("ButtonJump");
+        var jumpButton = _mDocument.rootVisualElement.Q<VisualElement>("ButtonJump");
         jumpButton.RegisterCallback<PointerEnterEvent>(evt => { JumpEvent.Invoke(true); });
         jumpButton.RegisterCallback<PointerLeaveEvent>(evt => { JumpEvent.Invoke(false); });
         
-        var sprintButton = m_Document.rootVisualElement.Q<VisualElement>("ButtonSprint");
+        var sprintButton = _mDocument.rootVisualElement.Q<VisualElement>("ButtonSprint");
         sprintButton.RegisterCallback<PointerEnterEvent>(evt => { SprintEvent.Invoke(true); });
         sprintButton.RegisterCallback<PointerLeaveEvent>(evt => { SprintEvent.Invoke(false); });
     }

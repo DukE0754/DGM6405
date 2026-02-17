@@ -14,12 +14,24 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 	[Header("Settings")]
 	[Tooltip("If true, the look animator will only be active when the character is aiming.")]
 	[SerializeField] private bool _onlyLookWhenAiming = false;
+	[Tooltip("Initial amount for the look animator (usually 1f).")]
+	[SerializeField] private float _initialLookAmount = 1f;
 
 	[Header("Debug")]
 	[Tooltip("Current state of the look system.")]
-	[SerializeField] private string _currentStateDebug;
+	[SerializeField] private LookState _currentStateDebug;
 
-	private float _initialLookAmount;
+	private enum LookState
+	{
+		Inactive,
+		Dead,
+		NoAnimator,
+		Targeting,
+		OnlyLookWhenAiming,
+		RotateToCameraFallback,
+		RotateWithMovement
+	}
+
 	private bool _isDead;
 	private bool _rotateToCamera;
 	private bool _rotateToMovement = true; // Default behavior
@@ -32,10 +44,14 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 
 		if (_lookAnimator != null)
 		{
-			_initialLookAmount = _lookAnimator.LookAnimatorAmount;
 			// Ensure follow mode is set to position if we want to drive it via aim point
 			_lookAnimator.FollowMode = FLookAnimator.EFFollowMode.FollowJustPosition;
 			_isLooking = _initialLookAmount > 0.01f;
+			
+			// Set the initial look on or off state directly in Awake without SwitchLooking
+			_lookAnimator.LookAnimatorAmount = _isLooking ? _initialLookAmount : 0f;
+			_lookAnimator.enabled = _isLooking;
+			UpdateState(_isLooking ? LookState.Targeting : LookState.Inactive);
 		}
 		else
 		{
@@ -69,9 +85,9 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 
 	public void OnAimUpdate(Vector3 aimPoint, bool isTargeting)
 	{
-		if (_isDead || _lookAnimator == null)
+		if (!GameMgr.Instance.IsGameRunning || _isDead || _lookAnimator == null)
 		{
-			UpdateState("Dead/No Animator");
+			UpdateState(_lookAnimator == null ? LookState.NoAnimator : LookState.Inactive);
 			return;
 		}
 		
@@ -79,7 +95,7 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 		if (isTargeting)
 		{
 			_lookAnimator.FollowOffset = aimPoint;
-			SetLooking(true, "Targeting");
+			SetLooking(true, LookState.Targeting);
 			return;
 		}
 
@@ -87,7 +103,7 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 		// If _onlyLookWhenAiming is true, and we aren't targeting, we don't look.
 		if (_onlyLookWhenAiming)
 		{
-			SetLooking(false, "OnlyLookWhenAiming (No Target)");
+			SetLooking(false, LookState.OnlyLookWhenAiming);
 			return;
 		}
 
@@ -98,17 +114,17 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 		if (_rotateToCamera)
 		{
 			_lookAnimator.FollowOffset = aimPoint;
-			SetLooking(true, "RotateToCamera Fallback");
+			SetLooking(true, LookState.RotateToCameraFallback);
 		}
 		else
 		{
-			SetLooking(false, "RotateWithMovement (No Target)");
+			SetLooking(false, LookState.RotateWithMovement);
 		}
 	}
 
-	private void SetLooking(bool enable, string reason)
+	private void SetLooking(bool enable, LookState state)
 	{
-		UpdateState(reason);
+		UpdateState(state);
 		
 		if (_lookAnimator == null) return;
 
@@ -139,7 +155,7 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 		}
 	}
 
-	private void UpdateState(string state)
+	private void UpdateState(LookState state)
 	{
 		_currentStateDebug = state;
 	}
@@ -182,7 +198,7 @@ public class LookAnimatorInterface : PausableBehaviour, IAimListener, IHealthLis
 			_lookAnimator.LookAnimatorAmount = 0f;
 			_lookAnimator.enabled = false;
 		}
-		UpdateState("Dead");
+		UpdateState(LookState.Dead);
 	}
 
 	protected override void OnPaused()

@@ -1,11 +1,12 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 /// <summary>
 ///     Brain for the Bud Turret.
 ///     Handles 3 targeting modes: Fixed Axis, Direct Aim, and Arc Fire.
 ///     Emits aim and shoot commands via LocalEventBus.
 /// </summary>
-public class BudBrain : MonoBehaviour, IHealthListener
+public class BudBrain : PausableBehaviour, IHealthListener
 {
 	public enum FireMode
 	{
@@ -38,10 +39,20 @@ public class BudBrain : MonoBehaviour, IHealthListener
 		if (_bus == null) _bus = GetComponent<LocalEventBus>();
 	}
 
-	private void Update()
+	protected override void PausableUpdate()
 	{
 		if (_health != null && _health.IsDead) return;
 
+		// Check game state before processing input
+		if (GameMgr.Instance == null)
+		{
+			Debug.LogWarning($"[{name}] PlayerCommandBrain: GameMgr.Instance is null. Skipping update.", this);
+			return;
+		}
+
+		if (!GameMgr.Instance.IsGameRunning)
+			return;
+		
 		switch (_mode)
 		{
 			case FireMode.FixedAxis:
@@ -53,6 +64,8 @@ public class BudBrain : MonoBehaviour, IHealthListener
 			case FireMode.ArcFire:
 				HandleArcFire();
 				break;
+			default:
+				throw new ArgumentOutOfRangeException();
 		}
 	}
 
@@ -69,9 +82,10 @@ public class BudBrain : MonoBehaviour, IHealthListener
 
 	private void HandleFixedAxis()
 	{
-		// Compute a far target along fixed axis from this transform
+		// Compute a far target along fixed axis from the muzzle (or transform if weapon/muzzle is missing)
 		var range = _detection != null ? _detection.DetectionRange : 50f;
-		var targetPos = transform.position + transform.TransformDirection(_fixedAxis).normalized * range;
+		var origin = (_weapon != null && _weapon.Muzzle != null) ? _weapon.Muzzle.position : transform.position;
+		var targetPos = origin + transform.TransformDirection(_fixedAxis).normalized * range;
 		_bus?.Raise<IAimTargetListener>(l => l.OnSetAimTarget(targetPos));
 
 		// Ensure direct fire

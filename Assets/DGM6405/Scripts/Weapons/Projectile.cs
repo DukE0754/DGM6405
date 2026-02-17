@@ -4,18 +4,36 @@
 ///     Handles projectile movement and collision.
 /// </summary>
 [RequireComponent(typeof(Rigidbody))]
-public class Projectile : MonoBehaviour
+public class Projectile : PausableBehaviour
 {
 	[SerializeField] private ProjectileData _data;
 
 	private Rigidbody _rb;
 	private GameObject _source;
+	private Vector3 _savedVelocity;
+	private Vector3 _savedAngularVelocity;
 
 	private void Awake()
 	{
 		_rb = GetComponent<Rigidbody>();
 		if (_data != null)
 			_rb.useGravity = _data.UseGravity;
+	}
+
+	protected override void OnPaused()
+	{
+		_savedVelocity = _rb.linearVelocity;
+		_savedAngularVelocity = _rb.angularVelocity;
+		_rb.linearVelocity = Vector3.zero;
+		_rb.angularVelocity = Vector3.zero;
+		_rb.isKinematic = true;
+	}
+
+	protected override void OnResumed()
+	{
+		_rb.isKinematic = false;
+		_rb.linearVelocity = _savedVelocity;
+		_rb.angularVelocity = _savedAngularVelocity;
 	}
 
 	private void OnCollisionEnter(Collision collision)
@@ -49,7 +67,7 @@ public class Projectile : MonoBehaviour
 
 		_rb.linearVelocity = direction.normalized * speed;
 		transform.forward = direction;
-		Destroy(gameObject, lifetime); // Simple destruction for now
+		StartCoroutine(DestroyAfterDelay(lifetime));
 	}
 
 	public void LaunchWithVelocity(Vector3 velocity, GameObject source)
@@ -61,6 +79,19 @@ public class Projectile : MonoBehaviour
 		if (velocity.sqrMagnitude > 0.001f)
 			transform.forward = velocity;
 		_rb.useGravity = true; // Force gravity for arc shots
-		Destroy(gameObject, lifetime);
+		StartCoroutine(DestroyAfterDelay(lifetime));
+	}
+
+	private System.Collections.IEnumerator DestroyAfterDelay(float delay)
+	{
+		var remaining = delay;
+		while (remaining > 0)
+		{
+			if (!IsPaused)
+				remaining -= Time.deltaTime;
+			yield return null;
+		}
+
+		Destroy(gameObject);
 	}
 }

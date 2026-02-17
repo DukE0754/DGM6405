@@ -297,6 +297,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Player
       objectReference: {fileID: 0}
+    - target: {fileID: 1956557780149999403, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
+      propertyPath: _initialLookAmount
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1956557780149999403, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
+      propertyPath: _onlyLookWhenAiming
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2085210499851947648, guid: 38202149bfad19941b871ec67c8ff56e, type: 3}
       propertyPath: _mainCamera
       value: 

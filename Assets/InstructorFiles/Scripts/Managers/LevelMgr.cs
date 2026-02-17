@@ -43,12 +43,25 @@ public class LevelMgr : Singleton<LevelMgr>, IGameStateListener
 
 	public LevelData LevelData => _levelData;
 
-	public int LevelCount => _levelData != null ? _levelData.Levels.Length : 0;
+	public int LevelCount
+	{
+		get
+		{
+			if (!HasValidLevelData) return 0;
+			var count = 0;
+			foreach (var chapter in _levelData.Chapters)
+			{
+				if (chapter.Levels != null)
+					count += chapter.Levels.Length;
+			}
+			return count;
+		}
+	}
 
 	public bool HasValidLevelData =>
 		_levelData != null &&
-		_levelData.Levels != null &&
-		_levelData.Levels.Length > 0;
+		_levelData.Chapters != null &&
+		_levelData.Chapters.Length > 0;
 
 	public bool HasNextLevel =>
 		HasValidLevelData &&
@@ -67,23 +80,40 @@ public class LevelMgr : Singleton<LevelMgr>, IGameStateListener
 		info = null;
 		if (!HasValidLevelData) return false;
 
-		if (CurrentLevelIndex < 0 || CurrentLevelIndex >= LevelCount)
+		var absoluteIndex = 0;
+		foreach (var chapter in _levelData.Chapters)
 		{
-			// Fallback scenario: Check current level name and if it exists in _levelData.Levels
-			var currentSceneName = SceneManager.GetActiveScene().name;
-			for (var i = 0; i < _levelData.Levels.Length; i++)
-				if (_levelData.Levels[i].SceneName == currentSceneName)
+			if (chapter.Levels == null) continue;
+			for (var i = 0; i < chapter.Levels.Length; i++)
+			{
+				if (absoluteIndex == CurrentLevelIndex)
 				{
-					CurrentLevelIndex = i;
-					info = _levelData.Levels[i];
+					info = chapter.Levels[i];
 					return true;
 				}
-
-			return false;
+				absoluteIndex++;
+			}
 		}
 
-		info = _levelData.Levels[CurrentLevelIndex];
-		return true;
+		// Fallback scenario: Check current level name
+		var currentSceneName = SceneManager.GetActiveScene().name;
+		absoluteIndex = 0;
+		foreach (var chapter in _levelData.Chapters)
+		{
+			if (chapter.Levels == null) continue;
+			for (var i = 0; i < chapter.Levels.Length; i++)
+			{
+				if (chapter.Levels[i].SceneName == currentSceneName)
+				{
+					CurrentLevelIndex = absoluteIndex;
+					info = chapter.Levels[i];
+					return true;
+				}
+				absoluteIndex++;
+			}
+		}
+
+		return false;
 	}
 
 #endregion
@@ -118,6 +148,7 @@ public class LevelMgr : Singleton<LevelMgr>, IGameStateListener
 
 	public void LoadLevel(int levelIndex)
 	{
+		IsLevelLoaded = false;
 		if (!HasValidLevelData)
 		{
 			Debug.LogError("LevelMgr: No LevelData assigned");
@@ -139,7 +170,32 @@ public class LevelMgr : Singleton<LevelMgr>, IGameStateListener
 
 	private IEnumerator LoadLevelRoutine()
 	{
-		var levelName = _levelData.Levels[CurrentLevelIndex].SceneName;
+		LevelData.LevelInfo levelInfo = null;
+		var absoluteIndex = 0;
+		foreach (var chapter in _levelData.Chapters)
+		{
+			if (chapter.Levels == null) continue;
+			var found = false;
+			for (var i = 0; i < chapter.Levels.Length; i++)
+			{
+				if (absoluteIndex == CurrentLevelIndex)
+				{
+					levelInfo = chapter.Levels[i];
+					found = true;
+					break;
+				}
+				absoluteIndex++;
+			}
+			if (found) break;
+		}
+
+		if (levelInfo == null)
+		{
+			Debug.LogError($"LevelMgr: Could not find level info for index {CurrentLevelIndex}");
+			yield break;
+		}
+
+		var levelName = levelInfo.SceneName;
 
 		Debug.Log($"LevelMgr: Loading {levelName} additively");
 

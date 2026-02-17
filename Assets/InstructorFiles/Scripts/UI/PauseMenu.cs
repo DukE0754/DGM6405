@@ -26,6 +26,7 @@ public class PauseMenu : MenuBase
 	{
 		if (!Interactable) return;
 		Interactable = false;
+		GameMgr.Instance.SetPaused(false);
 		LevelMgr.Instance.ReloadCurrentLevel();
 	}
 

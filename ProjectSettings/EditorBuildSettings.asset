@@ -18,17 +18,20 @@ EditorBuildSettings:
     path: Assets/InstructorFiles/Scenes/GameOver.unity
     guid: 4d59908eab214f045899234d9ef5ca04
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Level_1_1.unity
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_1.unity
     guid: 01e9e8a3e10734240b3bb06e93f7ab75
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Level_1_2.unity
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_2.unity
     guid: 48246e72a407cfd45923541d395940a6
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Level_1_3.unity
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_3.unity
     guid: 3d152012455a29c4a988a6bfd89a81a3
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Level_1_4.unity
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_4.unity
     guid: 3d17532807b7891409cabf54b9f9e827
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_1.unity
+    guid: 1a185f41a21fd42a0bb64c228976fb9e
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
   m_UseUCBPForAssetBundles: 0

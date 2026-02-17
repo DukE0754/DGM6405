@@ -232,6 +232,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1693158649696497329, guid: 76e0056e660c4d740827a9ae3e8aa06c, type: 3}
+      propertyPath: m_VersionIndex
+      value: 1675
+      objectReference: {fileID: 0}
     - target: {fileID: 2273228053176596213, guid: 76e0056e660c4d740827a9ae3e8aa06c, type: 3}
       propertyPath: m_Name
       value: Tile_Diagonal_Grass
@@ -279,7 +283,7 @@ PrefabInstance:
     - target: {fileID: 5386870033473032590, guid: 76e0056e660c4d740827a9ae3e8aa06c, type: 3}
       propertyPath: 'm_Materials.Array.data[0]'
       value: 
-      objectReference: {fileID: 2100000, guid: b52181fdcbbebcc4c9a3d51328de3016, type: 2}
+      objectReference: {fileID: 2100000, guid: 6998a7e8ecdd74da69de41b08bf8b97a, type: 2}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects:

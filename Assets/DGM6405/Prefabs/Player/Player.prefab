@@ -169,9 +169,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: daf4f0f1e4948464b981f9b6531ced60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
-  _maxHealth: 3
+  _maxHealth: 1
   _isInvulnerable: 0
   _bus: {fileID: 7520212663915834375}
+  _currentStateDebug: 
 --- !u!114 &733090169373934074
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -258,6 +259,11 @@ MonoBehaviour:
   - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
   _landingAudioClip: {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
   _footstepAudioVolume: 0.5
+  _currentStateSummary: 
+  _healthState: 
+  _brainState: 
+  _aimState: 
+  _movementState: 
 --- !u!114 &5842777080005819000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -272,7 +278,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::JumpGravitySystem
   _jumpHeight: 1.2
   _gravity: -15
-  _jumpTimeout: 0.5
+  _jumpTimeout: 0
   _fallTimeout: 0.15
   _groundedOffset: -0.14
   _groundedRadius: 0.28
@@ -405,6 +411,7 @@ MonoBehaviour:
   _detectionSystem: {fileID: 370838149222387582}
   _visualAimTarget: {fileID: 2737685803043343873}
   _showGizmos: 1
+  _currentStateDebug: 
 --- !u!114 &583196415320645849
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -420,6 +427,7 @@ MonoBehaviour:
   _context: {fileID: 2085210499851947648}
   _inputHandler: {fileID: 7858590987847128923}
   _playerInput: {fileID: 7780476860577037835}
+  _currentStateDebug: 
 --- !u!114 &2248084230966760437
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -485,6 +493,7 @@ MonoBehaviour:
   _targetMask:
     serializedVersion: 2
     m_Bits: 4096
+  _currentStateDebug: 
 --- !u!114 &124904999883503638
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -1,12 +1,26 @@
 using UnityEngine;
 
-public class ProjectileLifetime : MonoBehaviour
+public class ProjectileLifetime : PausableBehaviour
 {
 	[SerializeField] private float lifeTimeSeconds = 3f;
 
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		if (lifeTimeSeconds <= 0f) lifeTimeSeconds = 0.1f;
-		Destroy(gameObject, lifeTimeSeconds);
+		StartCoroutine(DestroyAfterDelay(lifeTimeSeconds));
+	}
+
+	private System.Collections.IEnumerator DestroyAfterDelay(float delay)
+	{
+		var remaining = delay;
+		while (remaining > 0)
+		{
+			if (!IsPaused)
+				remaining -= Time.deltaTime;
+			yield return null;
+		}
+
+		Destroy(gameObject);
 	}
 }

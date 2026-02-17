@@ -34,6 +34,10 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 	private bool _isShooting;
 	private bool _isDead;
 
+	private bool _allowShoot = true;
+	private bool _allowBlock = true;
+	private bool _allowMelee = true;
+
 	private void Awake()
 	{
 		InitializeComponents();
@@ -71,6 +75,14 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 	public void OnLevelReady()
 	{
 		if (_isInitialised) return;
+
+		if (LevelMgr.Instance.TryGetCurrentLevelInfo(out var info))
+		{
+			_allowBlock = info.AllowBlock;
+			_allowShoot = info.AllowShoot;
+			_allowMelee = info.AllowMelee;
+		}
+
 		_isInitialised = true;
 	}
 
@@ -226,9 +238,9 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 			return;
 
 		// Enforce exclusivity: Melee > Shoot > Block
-		var isMeleeInput = _inputHandler.melee;
-		var isShootInput = _inputHandler.shoot;
-		var isBlockInput = _inputHandler.block;
+		var isMeleeInput = _inputHandler.melee && _allowMelee;
+		var isShootInput = _inputHandler.shoot && _allowShoot;
+		var isBlockInput = _inputHandler.block && _allowBlock;
 
 		if (isMeleeInput)
 		{

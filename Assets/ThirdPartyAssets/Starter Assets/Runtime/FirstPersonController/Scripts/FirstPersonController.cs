@@ -11,7 +11,7 @@ namespace StarterAssets
 #endif
 	public class FirstPersonController : MonoBehaviour
 	{
-		private const float _threshold = 0.01f;
+		private const float THRESHOLD = 0.01f;
 
 		[Header("Player")]
 		[Tooltip("Move speed of the character in m/s")]
@@ -156,7 +156,7 @@ namespace StarterAssets
 		private void CameraRotation()
 		{
 			// if there is an input
-			if (_input.look.sqrMagnitude >= _threshold)
+			if (_input.look.sqrMagnitude >= THRESHOLD)
 			{
 				//Don't multiply mouse input by Time.deltaTime
 				var deltaTimeMultiplier = IsCurrentDeviceMouse ? 1.0f : Time.deltaTime;

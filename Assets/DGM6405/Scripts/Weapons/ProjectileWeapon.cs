@@ -11,6 +11,7 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	[SerializeField] private Transform _muzzle;
 	[SerializeField] private float _arcHeight = 2f;
 	[SerializeField] private bool _useArc;
+	public Transform Muzzle => _muzzle;
 
 	private Vector3 _lastAimTarget;
 

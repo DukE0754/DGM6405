@@ -7,7 +7,7 @@ using UnityEngine;
 ///     This manager is not a singleton and does not survive the game loop
 ///     This interacts with the <see cref="GameMgr" /> for any persistant data or states
 /// </summary>
-public class GameLoopManager : MonoBehaviour
+public class GameLoopManager : Singleton<GameLoopManager>
 {
 	/// <summary>
 	///     Timer for use with the <see cref="_isCountdownTimer" />

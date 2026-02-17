@@ -6,7 +6,7 @@ public class LevelCompleteTrigger : MonoBehaviour
 	{
 		if (other.CompareTag("Player"))
 		{
-			var gameLoop = FindFirstObjectByType<GameLoopManager>();
+			var gameLoop = GameLoopManager.Instance;
 			var timeMs = 0;
 
 			if (gameLoop != null)

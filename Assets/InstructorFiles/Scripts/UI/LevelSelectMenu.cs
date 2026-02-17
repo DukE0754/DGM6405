@@ -42,23 +42,34 @@ public class LevelSelectMenu : MenuBase
 		if (!LevelMgr.Instance.HasValidLevelData)
 			return;
 
-		var levels = LevelMgr.Instance.LevelData.Levels;
+		var chapters = LevelMgr.Instance.LevelData.Chapters;
 		var bestTimes = SaveUtil.SavedValues.BestTimeMs;
 
-		for (var i = 0; i < levels.Length; i++)
+		var absoluteIndex = 0;
+		for (var c = 0; c < chapters.Length; c++)
 		{
-			var isUnlocked = LevelMgr.Instance.IsLevelUnlocked(i);
-			var bestTime = bestTimes != null && i < bestTimes.Length ? bestTimes[i] : 0;
-			_entries.Add(
-				new LevelSelectEntry
-				{
-					Index = i,
-					LevelName = levels[i].LevelName,
-					ParTimeMs = levels[i].ParTimeMs,
-					BestTimeMs = bestTime,
-					IsUnlocked = isUnlocked,
-					IsCompleted = SaveUtil.SavedValues.HighestLevelCompleted >= i
-				});
+			var chapter = chapters[c];
+			if (chapter.Levels == null) continue;
+
+			for (var l = 0; l < chapter.Levels.Length; l++)
+			{
+				var level = chapter.Levels[l];
+				var isUnlocked = LevelMgr.Instance.IsLevelUnlocked(absoluteIndex);
+				var bestTime = bestTimes != null && absoluteIndex < bestTimes.Length ? bestTimes[absoluteIndex] : 0;
+				_entries.Add(
+					new LevelSelectEntry
+					{
+						ChapterIndex = c,
+						ChapterName = chapter.ChapterName,
+						Index = absoluteIndex,
+						LevelName = level.LevelName,
+						ParTimeMs = level.ParTimeMs,
+						BestTimeMs = bestTime,
+						IsUnlocked = isUnlocked,
+						IsCompleted = SaveUtil.SavedValues.HighestLevelCompleted >= absoluteIndex
+					});
+				absoluteIndex++;
+			}
 		}
 	}
 
@@ -67,7 +78,18 @@ public class LevelSelectMenu : MenuBase
 		if (_gridItemPrefab == null || _gridParent == null)
 			return;
 
-		while (_gridItems.Count < _itemsPerPage)
+		// Find the max number of items in any chapter to ensure we have enough pool
+		var maxLevelsInChapter = 0;
+		if (LevelMgr.Instance.HasValidLevelData)
+		{
+			foreach (var chapter in LevelMgr.Instance.LevelData.Chapters)
+			{
+				if (chapter.Levels != null && chapter.Levels.Length > maxLevelsInChapter)
+					maxLevelsInChapter = chapter.Levels.Length;
+			}
+		}
+
+		while (_gridItems.Count < maxLevelsInChapter)
 		{
 			var item = Instantiate(_gridItemPrefab, _gridParent);
 			item.gameObject.SetActive(false);
@@ -75,27 +97,29 @@ public class LevelSelectMenu : MenuBase
 		}
 	}
 
-	private void ShowPage(int pageIndex)
+	private void ShowPage(int chapterIndex)
 	{
 		EnsureGridItemPool();
 
 		if (_entries.Count == 0)
 		{
-			for (var i = 0; i < _gridItems.Count; i++)
-				_gridItems[i].gameObject.SetActive(false);
+			foreach (var item in _gridItems)
+				item.gameObject.SetActive(false);
 			UpdatePageLabel(0, 0);
 			return;
 		}
 
-		var totalPages = Mathf.CeilToInt(_entries.Count / (float) _itemsPerPage);
-		_currentPageIndex = Mathf.Clamp(pageIndex, 0, Mathf.Max(0, totalPages - 1));
+		var chaptersCount = LevelMgr.Instance.LevelData.Chapters.Length;
+		_currentPageIndex = Mathf.Clamp(chapterIndex, 0, Mathf.Max(0, chaptersCount - 1));
+
+		var chapterEntries = _entries.FindAll(e => e.ChapterIndex == _currentPageIndex);
+		var chapterName = LevelMgr.Instance.LevelData.Chapters[_currentPageIndex].ChapterName;
 
 		for (var i = 0; i < _gridItems.Count; i++)
 		{
-			var entryIndex = _currentPageIndex * _itemsPerPage + i;
-			if (entryIndex < _entries.Count)
+			if (i < chapterEntries.Count)
 			{
-				var entry = _entries[entryIndex];
+				var entry = chapterEntries[i];
 				_gridItems[i].gameObject.SetActive(true);
 				_gridItems[i].Bind(
 					entry.Index,
@@ -112,25 +136,25 @@ public class LevelSelectMenu : MenuBase
 			}
 		}
 
-		UpdatePageLabel(_currentPageIndex + 1, totalPages);
+		UpdatePageLabel(_currentPageIndex + 1, chaptersCount, chapterName);
 	}
 
-	private void UpdatePageLabel(int page, int totalPages)
+	private void UpdatePageLabel(int page, int totalPages, string chapterName = "")
 	{
 		if (_pageLabel != null)
-			_pageLabel.text = totalPages <= 0 ? "0/0" : $"{page}/{totalPages}";
+			_pageLabel.text = totalPages <= 0 ? "0/0" : $"{chapterName} ({page}/{totalPages})";
 	}
 
 	private void UpdatePagingButtons()
 	{
-		if (_entries.Count == 0)
+		if (!LevelMgr.Instance.HasValidLevelData)
 		{
 			if (_previousPageButton != null) _previousPageButton.interactable = false;
 			if (_nextPageButton != null) _nextPageButton.interactable = false;
 			return;
 		}
 
-		var totalPages = Mathf.CeilToInt(_entries.Count / (float) _itemsPerPage);
+		var totalPages = LevelMgr.Instance.LevelData.Chapters.Length;
 		if (_previousPageButton != null)
 			_previousPageButton.interactable = _currentPageIndex > 0;
 		if (_nextPageButton != null)
@@ -168,6 +192,8 @@ public class LevelSelectMenu : MenuBase
 	private class LevelSelectEntry
 	{
 		public int BestTimeMs;
+		public int ChapterIndex;
+		public string ChapterName;
 		public int Index;
 		public bool IsCompleted;
 		public bool IsUnlocked;
