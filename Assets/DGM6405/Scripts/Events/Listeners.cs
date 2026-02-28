@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 #region Global Listeners
@@ -170,6 +170,13 @@ public interface IMeleeListener : IEntityListener
 public interface IBlockListener : IEntityListener
 {
 	void OnBlock(bool blockInput)
+	{
+	}
+}
+
+public interface IBlockHitListener : IEntityListener
+{
+	void OnBlockHit(Vector3 hitPoint, Vector3 hitNormal, GameObject source)
 	{
 	}
 }
