@@ -187,6 +187,7 @@ MonoBehaviour:
   _maxHealth: 1
   _isInvulnerable: 0
   _bus: {fileID: 4489439331459071451}
+  _currentStateDebug: 
 --- !u!114 &5870445023475736518
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -212,7 +213,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 143240ff1bd5b7d4eb83f499eb8bc925, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _offset: {x: 0, y: 1, z: 0}
+  _offset: {x: 0, y: 0.2, z: 0}
 --- !u!114 &4489439331459071451
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -279,6 +280,7 @@ MonoBehaviour:
   _targetMask:
     serializedVersion: 2
     m_Bits: 0
+  _currentStateDebug: 
 --- !u!114 &5911081341631781753
 MonoBehaviour:
   m_ObjectHideFlags: 0
