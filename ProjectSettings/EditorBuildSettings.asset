@@ -21,20 +21,17 @@ EditorBuildSettings:
     path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_1.unity
     guid: 01e9e8a3e10734240b3bb06e93f7ab75
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_4.unity
-    guid: 3d152012455a29c4a988a6bfd89a81a3
-  - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_4.unity
-    guid: 3d17532807b7891409cabf54b9f9e827
-  - enabled: 1
     path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_2.unity
     guid: 1a185f41a21fd42a0bb64c228976fb9e
   - enabled: 1
-    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_9.unity
-    guid: 4bd0fa68f08c2a643a296eb840e52b59
-  - enabled: 1
     path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_3.unity
     guid: 5aaa72580ebbcce4099003e085e18791
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_4.unity
+    guid: 3d152012455a29c4a988a6bfd89a81a3
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_5.unity
+    guid: 63a82bc0f434f478698503e853fe828a
   - enabled: 1
     path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_6.unity
     guid: 67fdc8e10421e244fb056b9ac2fc6ac5
@@ -45,8 +42,23 @@ EditorBuildSettings:
     path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_8.unity
     guid: cf4bd8e4157e94540b2ccd2cbd92fc0d
   - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 1/Level_1_9.unity
+    guid: 4bd0fa68f08c2a643a296eb840e52b59
+  - enabled: 1
     path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_1.unity
     guid: 1bed20f52da2b674daf8705db970f80e
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_2.unity
+    guid: d1580a3929cac484f9cbc1b915859464
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_3.unity
+    guid: 6faacd86dfbeac54bb832bb1216b1ceb
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_4.unity
+    guid: 8c59d592c2f35b346b72a4fedc85acbb
+  - enabled: 1
+    path: Assets/DGM6405/Scenes/Levels/Chapter 2/Level_2_5.unity
+    guid: ce9d4ff63e48d7e4db19dad0d106e6cc
   m_configObjects:
     com.unity.addressableassets: {fileID: 11400000, guid: 6aa8479ca0f4c4eaaaa9d2b9ae03215e, type: 2}
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 052faaac586de48259a63d0c4782560b, type: 3}
