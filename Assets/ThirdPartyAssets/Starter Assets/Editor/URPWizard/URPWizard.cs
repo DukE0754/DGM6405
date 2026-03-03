@@ -7,6 +7,7 @@ using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 #endif
 
+// ReSharper disable once InconsistentNaming
 public class URPWizard : EditorWindow
 {
     [InitializeOnLoadMethod]
@@ -14,7 +15,7 @@ public class URPWizard : EditorWindow
     {
         URPCheck();
     }
-
+	// ReSharper disable once InconsistentNaming
     static void URPCheck()
     {
         if (GraphicsSettings.currentRenderPipeline != null) 

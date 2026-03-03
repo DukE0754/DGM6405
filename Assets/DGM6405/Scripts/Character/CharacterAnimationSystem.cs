@@ -5,7 +5,8 @@ using UnityEngine;
 ///     Separates animation logic from other systems for better maintainability.
 /// </summary>
 public class CharacterAnimationSystem : PausableBehaviour,
-	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener, IHealthListener
+	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener, IHealthListener,
+	IBlockHitListener
 {
 	[Header("Animation Settings")]
 	[Tooltip("Smoothing time for animation parameter changes")]
@@ -26,6 +27,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	[SerializeField] private Animator _animator;
 
 	private int _animIDBlock;
+	private int _animIDBlockedHit;
 	private int _animIDDodge;
 	private int _animIDDie;
 	private int _animIDFreeFall;
@@ -43,6 +45,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 
 	// Cached animator state
 	private bool _hasAnimator;
+	private bool _hasBlockedHitParam;
 
 	private void Awake()
 	{
@@ -104,6 +107,11 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	void IBlockListener.OnBlock(bool blockInput)
 	{
 		SetBlock(blockInput);
+	}
+
+	void IBlockHitListener.OnBlockHit(Vector3 hitPoint, Vector3 hitNormal, GameObject source)
+	{
+		SetBlockedHit();
 	}
 
 	/// <summary>
@@ -199,9 +207,12 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animIDShoot = Animator.StringToHash("Shoot");
 		_animIDDodge = Animator.StringToHash("Dodge");
 		_animIDHit = Animator.StringToHash("Hit");
+		_animIDBlockedHit = Animator.StringToHash("BlockedHit");
 		_animIDDie = Animator.StringToHash("Die");
 		_animIDVelocityX = Animator.StringToHash("VelocityX");
 		_animIDVelocityZ = Animator.StringToHash("VelocityZ");
+
+		_hasBlockedHitParam = HasAnimatorParam("BlockedHit", AnimatorControllerParameterType.Trigger);
 	}
 
 	private void SetMovement(
@@ -314,12 +325,35 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animator.SetTrigger(_animIDHit);
 	}
 
+	private void SetBlockedHit()
+	{
+		if (!_hasAnimator || _animator == null)
+			return;
+
+		if (_hasBlockedHitParam)
+			_animator.SetTrigger(_animIDBlockedHit);
+		else
+			SetHit();
+	}
+
 	private void SetDie()
 	{
 		if (!_hasAnimator || _animator == null)
 			return;
 
 		_animator.SetTrigger(_animIDDie);
+	}
+
+	private bool HasAnimatorParam(string paramName, AnimatorControllerParameterType paramType)
+	{
+		if (_animator == null) return false;
+
+		var parameters = _animator.parameters;
+		for (var i = 0; i < parameters.Length; i++)
+			if (parameters[i].name == paramName && parameters[i].type == paramType)
+				return true;
+
+		return false;
 	}
 
 	protected override void OnPaused()

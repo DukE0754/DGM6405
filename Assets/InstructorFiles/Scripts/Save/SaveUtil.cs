@@ -12,6 +12,9 @@ public static class SaveUtil
 
 	public static void Save()
 	{
+		if (SavedValues == null)
+			SavedValues = new SavedValues();
+
 		var savedJson = JsonUtility.ToJson(SavedValues);
 		// todo use async but careful of double operations
 		File.WriteAllText(SaveDataPath, savedJson);
@@ -26,7 +29,8 @@ public static class SaveUtil
 			var savedJson = File.ReadAllText(SaveDataPath);
 			SavedValues = JsonUtility.FromJson<SavedValues>(savedJson);
 		}
-		else
+
+		if (SavedValues == null)
 		{
 			SavedValues = new SavedValues();
 		}
