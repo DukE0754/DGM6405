@@ -82831,6 +82831,63 @@ Mesh:
       - serializedVersion: 1
         m_IndexStart: 0
         m_IndexCount: 0
+--- !u!1001 &899328552
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 2.84
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -3.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: -0.7071068
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6139506984751035763, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8010110793092337776, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
+      propertyPath: m_Name
+      value: EnemyBud Variant
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: e3d8be2b506dd3548bdc75f5911f6671, type: 3}
 --- !u!43 &899689819
 Mesh:
   m_ObjectHideFlags: 0
@@ -196421,3 +196478,4 @@ SceneRoots:
   - {fileID: 1113470152}
   - {fileID: 1061478118}
   - {fileID: 1716908484}
+  - {fileID: 899328552}

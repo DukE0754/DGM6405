@@ -39,6 +39,36 @@ MonoBehaviour:
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
+    - SceneName: Level_1_5
+      LevelName: 1-5
+      ParTimeMs: 15000
+      AllowBlock: 0
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_1_6
+      LevelName: 1-6
+      ParTimeMs: 20000
+      AllowBlock: 0
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_1_7
+      LevelName: 1-7
+      ParTimeMs: 20000
+      AllowBlock: 0
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_1_8
+      LevelName: 1-8
+      ParTimeMs: 45000
+      AllowBlock: 0
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_1_9
+      LevelName: 1-9
+      ParTimeMs: 90000
+      AllowBlock: 0
+      AllowShoot: 0
+      AllowMelee: 0
   - ChapterName: 2
     Levels:
     - SceneName: Level_2_1
