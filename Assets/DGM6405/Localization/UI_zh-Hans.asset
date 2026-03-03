@@ -43,11 +43,11 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 723390554112
-    m_Localized: "\u8DF3\u8DC3"
+    m_Localized: "\u6309 {jumpBinding} \u8DF3\u8DC3"
     m_Metadata:
       m_Items: []
   - m_Id: 1075007447040
-    m_Localized: "\u683C\u6321"
+    m_Localized: "\u957F\u6309 {blockBinding} \u683C\u6321"
     m_Metadata:
       m_Items: []
   - m_Id: 1940313333760
@@ -156,6 +156,10 @@ MonoBehaviour:
       m_Items: []
   - m_Id: 50664511102976
     m_Localized: "\u5B9D\u5B9D\u5DF4\u58EB"
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43822087135232
+    m_Localized: "\u5E72\u5F97\u6F02\u4EAE\uFF01"
     m_Metadata:
       m_Items: []
   references:

@@ -73,31 +73,37 @@ MonoBehaviour:
     Levels:
     - SceneName: Level_2_1
       LevelName: level_2_1_name
-      ParTimeMs: 0
+      ParTimeMs: 15000
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_2
       LevelName: level_2_2_name
-      ParTimeMs: 0
+      ParTimeMs: 20000
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_3
       LevelName: level_2_3_name
-      ParTimeMs: 0
+      ParTimeMs: 20000
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_4
       LevelName: level_2_4_name
-      ParTimeMs: 0
+      ParTimeMs: 25000
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_5
       LevelName: level_2_5_name
-      ParTimeMs: 0
+      ParTimeMs: 90000
+      AllowBlock: 1
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_2_6
+      LevelName: level_2_6_name
+      ParTimeMs: 75000
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
