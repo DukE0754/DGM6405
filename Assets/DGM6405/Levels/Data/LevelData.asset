@@ -16,55 +16,55 @@ MonoBehaviour:
   - ChapterName: 1
     Levels:
     - SceneName: Level_1_1
-      LevelName: 1-1 Baby Steps
+      LevelName: level_1_1_name
       ParTimeMs: 30000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_2
-      LevelName: 1-2 Water You Waiting For?
+      LevelName: level_1_2_name
       ParTimeMs: 20000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_3
-      LevelName: 1-3 Jumping For Joy
+      LevelName: level_1_3_name
       ParTimeMs: 25000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_4
-      LevelName: 1-4 Faster, Farther
+      LevelName: level_1_4_name
       ParTimeMs: 15000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_5
-      LevelName: 1-5
+      LevelName: level_1_5_name
       ParTimeMs: 15000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_6
-      LevelName: 1-6
+      LevelName: level_1_6_name
       ParTimeMs: 20000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_7
-      LevelName: 1-7
+      LevelName: level_1_7_name
       ParTimeMs: 20000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_8
-      LevelName: 1-8
+      LevelName: level_1_8_name
       ParTimeMs: 45000
       AllowBlock: 0
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_1_9
-      LevelName: 1-9
+      LevelName: level_1_9_name
       ParTimeMs: 90000
       AllowBlock: 0
       AllowShoot: 0
@@ -72,31 +72,31 @@ MonoBehaviour:
   - ChapterName: 2
     Levels:
     - SceneName: Level_2_1
-      LevelName: 2-1 Bullies
+      LevelName: level_2_1_name
       ParTimeMs: 0
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_2
-      LevelName: 2-2
+      LevelName: level_2_2_name
       ParTimeMs: 0
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_3
-      LevelName: 2-3
+      LevelName: level_2_3_name
       ParTimeMs: 0
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_4
-      LevelName: 2-4
+      LevelName: level_2_4_name
       ParTimeMs: 0
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
     - SceneName: Level_2_5
-      LevelName: 2-5
+      LevelName: level_2_5_name
       ParTimeMs: 0
       AllowBlock: 1
       AllowShoot: 0
