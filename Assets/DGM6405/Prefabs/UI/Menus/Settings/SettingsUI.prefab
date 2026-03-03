@@ -3122,9 +3122,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Components.LocalizeStringEvent
   m_StringReference:
     m_TableReference:
-      m_TableCollectionName: 
+      m_TableCollectionName: GUID:96a3430ad48104139b3d4f1735dd4c58
     m_TableEntryReference:
-      m_KeyId: 0
+      m_KeyId: 31233315692544
       m_Key: 
     m_FallbackState: 0
     m_WaitForCompletion: 0
