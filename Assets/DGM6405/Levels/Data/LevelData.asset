@@ -47,3 +47,27 @@ MonoBehaviour:
       AllowBlock: 1
       AllowShoot: 0
       AllowMelee: 0
+    - SceneName: Level_2_2
+      LevelName: 2-2
+      ParTimeMs: 0
+      AllowBlock: 1
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_2_3
+      LevelName: 2-3
+      ParTimeMs: 0
+      AllowBlock: 1
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_2_4
+      LevelName: 2-4
+      ParTimeMs: 0
+      AllowBlock: 1
+      AllowShoot: 0
+      AllowMelee: 0
+    - SceneName: Level_2_5
+      LevelName: 2-5
+      ParTimeMs: 0
+      AllowBlock: 1
+      AllowShoot: 0
+      AllowMelee: 0
