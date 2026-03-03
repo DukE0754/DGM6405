@@ -66,6 +66,174 @@ MonoBehaviour:
     m_Localized: Path <size=50%><voffset=35>of the </voffset><size=100%>Tower
     m_Metadata:
       m_Items: []
+  - m_Id: 31200675618816
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31233315692544
+    m_Localized: Master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31290496638976
+    m_Localized: Sounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31360541515776
+    m_Localized: Music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31406611750912
+    m_Localized: Mute All
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31466800013312
+    m_Localized: Back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33670160179200
+    m_Localized: Language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40614430236672
+    m_Localized: Play Again
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40698312122368
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41319354327040
+    m_Localized: Game Over
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43822087135232
+    m_Localized: Level Complete
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43872859185152
+    m_Localized: Time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44008691720192
+    m_Localized: Best
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44048327892992
+    m_Localized: Par
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44086772883456
+    m_Localized: Next Level
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44123544346624
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46778186457088
+    m_Localized: Paused
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46822226649088
+    m_Localized: Resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47378592686080
+    m_Localized: Restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47409701838848
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47470867374080
+    m_Localized: Main Menu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47570901524480
+    m_Localized: Give Up
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48961808228352
+    m_Localized: Level Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50664511102976
+    m_Localized: 1-1 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50726943318016
+    m_Localized: 1-2 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50791116169216
+    m_Localized: 1-3 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50864793313280
+    m_Localized: 1-4 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50899958358016
+    m_Localized: 1-5 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50931902177280
+    m_Localized: 1-6 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50964689051648
+    m_Localized: 1-7 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50996213440512
+    m_Localized: 1-8 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51310714937344
+    m_Localized: 1-9 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51345808678912
+    m_Localized: 2-1 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51375588237312
+    m_Localized: 2-2 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51405296492544
+    m_Localized: 2-3 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51470727634944
+    m_Localized: 2-4 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51505888485376
+    m_Localized: 2-5 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51532870443008
+    m_Localized: 2-6 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51610255351808
+    m_Localized: 2-7 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51688269406208
+    m_Localized: 2-8 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51715809206272
+    m_Localized: 2-9 NAME
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51749229420544
+    m_Localized: 3-1 NAME
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds: []

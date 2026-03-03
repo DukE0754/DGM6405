@@ -63,6 +63,174 @@ MonoBehaviour:
     m_Key: loc_ftue_block
     m_Metadata:
       m_Items: []
+  - m_Id: 31200675618816
+    m_Key: loc_settings_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31233315692544
+    m_Key: loc_settings_master
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31290496638976
+    m_Key: loc_settings_sounds
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31360541515776
+    m_Key: loc_settings_music
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31406611750912
+    m_Key: loc_settings_muteall
+    m_Metadata:
+      m_Items: []
+  - m_Id: 33670160179200
+    m_Key: loc_settings_language
+    m_Metadata:
+      m_Items: []
+  - m_Id: 31466800013312
+    m_Key: loc_back
+    m_Metadata:
+      m_Items: []
+  - m_Id: 41319354327040
+    m_Key: loc_gameover_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40614430236672
+    m_Key: loc_gameover_playagain
+    m_Metadata:
+      m_Items: []
+  - m_Id: 40698312122368
+    m_Key: loc_gameover_mainmenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43822087135232
+    m_Key: loc_levelcomplete_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 43872859185152
+    m_Key: loc_levelcomplete_time
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44008691720192
+    m_Key: loc_levelcomplete_best
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44048327892992
+    m_Key: loc_levelcomplete_par
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44086772883456
+    m_Key: loc_levelcomplete_nextlevel
+    m_Metadata:
+      m_Items: []
+  - m_Id: 44123544346624
+    m_Key: loc_levelcomplete_mainmenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46778186457088
+    m_Key: loc_pause_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 46822226649088
+    m_Key: loc_pause_resume
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47378592686080
+    m_Key: loc_pause_restart
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47409701838848
+    m_Key: loc_pause_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47470867374080
+    m_Key: loc_pause_mainmenu
+    m_Metadata:
+      m_Items: []
+  - m_Id: 47570901524480
+    m_Key: loc_pause_giveup
+    m_Metadata:
+      m_Items: []
+  - m_Id: 48961808228352
+    m_Key: loc_levelselect_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50664511102976
+    m_Key: level_1_1_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50726943318016
+    m_Key: level_1_2_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50791116169216
+    m_Key: level_1_3_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50864793313280
+    m_Key: level_1_4_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50899958358016
+    m_Key: level_1_5_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50931902177280
+    m_Key: level_1_6_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50964689051648
+    m_Key: level_1_7_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 50996213440512
+    m_Key: level_1_8_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51310714937344
+    m_Key: level_1_9_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51345808678912
+    m_Key: level_2_1_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51375588237312
+    m_Key: level_2_2_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51405296492544
+    m_Key: level_2_3_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51470727634944
+    m_Key: level_2_4_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51505888485376
+    m_Key: level_2_5_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51532870443008
+    m_Key: level_2_6_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51610255351808
+    m_Key: level_2_7_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51688269406208
+    m_Key: level_2_8_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51715809206272
+    m_Key: level_2_9_name
+    m_Metadata:
+      m_Items: []
+  - m_Id: 51749229420544
+    m_Key: level_3_1_name
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
