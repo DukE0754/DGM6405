@@ -1,0 +1,76 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b11a58205ec3474ca216360e9fa74a8, type: 3}
+  m_Name: UI Shared Data
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.SharedTableData
+  m_TableCollectionName: UI
+  m_TableCollectionNameGuidString: 96a3430ad48104139b3d4f1735dd4c58
+  m_Entries:
+  - m_Id: 1538742280192
+    m_Key: loc_test
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1940313333760
+    m_Key: loc_main_title
+    m_Metadata:
+      m_Items: []
+  - m_Id: 156077383680
+    m_Key: loc_main_newgame
+    m_Metadata:
+      m_Items: []
+  - m_Id: 243495067648
+    m_Key: loc_main_continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 291809255424
+    m_Key: loc_main_levelselect
+    m_Metadata:
+      m_Items: []
+  - m_Id: 325074280448
+    m_Key: loc_main_settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 392329945088
+    m_Key: loc_main_quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 910523621376
+    m_Key: loc_ftue_goal
+    m_Metadata:
+      m_Items: []
+  - m_Id: 570227154944
+    m_Key: loc_ftue_move
+    m_Metadata:
+      m_Items: []
+  - m_Id: 667253989376
+    m_Key: loc_ftue_look
+    m_Metadata:
+      m_Items: []
+  - m_Id: 723390554112
+    m_Key: loc_ftue_jump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1075007447040
+    m_Key: loc_ftue_block
+    m_Metadata:
+      m_Items: []
+  m_Metadata:
+    m_Items: []
+  m_KeyGenerator:
+    rid: 1090662842773012795
+  references:
+    version: 2
+    RefIds:
+    - rid: 1090662842773012795
+      type: {class: DistributedUIDGenerator, ns: UnityEngine.Localization.Tables, asm: Unity.Localization}
+      data:
+        m_CustomEpoch: 1772563425109

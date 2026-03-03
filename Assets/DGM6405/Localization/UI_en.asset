@@ -1,0 +1,71 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: UI_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 96a3430ad48104139b3d4f1735dd4c58, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 156077383680
+    m_Localized: New Game
+    m_Metadata:
+      m_Items: []
+  - m_Id: 243495067648
+    m_Localized: Continue
+    m_Metadata:
+      m_Items: []
+  - m_Id: 291809255424
+    m_Localized: Level Select
+    m_Metadata:
+      m_Items: []
+  - m_Id: 325074280448
+    m_Localized: Settings
+    m_Metadata:
+      m_Items: []
+  - m_Id: 392329945088
+    m_Localized: Quit
+    m_Metadata:
+      m_Items: []
+  - m_Id: 570227154944
+    m_Localized: '{moveBinding} to move'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 667253989376
+    m_Localized: '{lookBinding} to look around'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 723390554112
+    m_Localized: '{jumpBinding} to jump'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 910523621376
+    m_Localized: Reach the door of the Tower to proceed.
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1075007447040
+    m_Localized: '{blockBinding} to block'
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1538742280192
+    m_Localized: en
+    m_Metadata:
+      m_Items: []
+  - m_Id: 1940313333760
+    m_Localized: Path <size=50%><voffset=35>of the </voffset><size=100%>Tower
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []
