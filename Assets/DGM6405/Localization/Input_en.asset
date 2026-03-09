@@ -1,0 +1,67 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9620f8c34305754d8cc9a7e49e852d9, type: 3}
+  m_Name: Input_en
+  m_EditorClassIdentifier: Unity.Localization::UnityEngine.Localization.Tables.StringTable
+  m_LocaleId:
+    m_Code: en
+  m_SharedData: {fileID: 11400000, guid: 71b3fc068df3b7e4bbfd2e706d3ed893, type: 2}
+  m_Metadata:
+    m_Items: []
+  m_TableData:
+  - m_Id: 191166783488
+    m_Localized: Mouse
+    m_Metadata:
+      m_Items: []
+  - m_Id: 298754875392
+    m_Localized: Left Stick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 347605934080
+    m_Localized: Right Stick
+    m_Metadata:
+      m_Items: []
+  - m_Id: 413947240448
+    m_Localized: Arrow Keys
+    m_Metadata:
+      m_Items: []
+  - m_Id: 476488507392
+    m_Localized: WASD
+    m_Metadata:
+      m_Items: []
+  - m_Id: 532352442368
+    m_Localized: South Face Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 26895591514112
+    m_Localized: Shift
+    m_Metadata:
+      m_Items: []
+  - m_Id: 27047219798016
+    m_Localized: Right Bumper
+    m_Metadata:
+      m_Items: []
+  - m_Id: 650281371934720
+    m_Localized: Space
+    m_Metadata:
+      m_Items: []
+  - m_Id: 650512335478784
+    m_Localized: Right Mouse Button
+    m_Metadata:
+      m_Items: []
+  - m_Id: 650423936327680
+    m_Localized: Left Trigger
+    m_Metadata:
+      m_Items: []
+  references:
+    version: 2
+    RefIds: []

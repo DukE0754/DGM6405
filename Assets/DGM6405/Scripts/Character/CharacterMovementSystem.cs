@@ -6,18 +6,12 @@ using UnityEngine;
 /// </summary>
 public class CharacterMovementSystem : PausableBehaviour, IMovementListener
 {
-	private const float THRESHOLD = 0.01f;
-
 	[Header("Movement Settings")]
 	[Tooltip("Move speed of the character in m/s")]
 	[SerializeField] private float _moveSpeed = 2.0f;
 
 	[Tooltip("Sprint speed of the character in m/s")]
 	[SerializeField] private float _sprintSpeed = 5.335f;
-
-	[Tooltip("How fast the character turns to face movement direction")]
-	[Range(0.0f, 0.3f)]
-	[SerializeField] private float _rotationSmoothTime = 0.12f;
 
 	[Tooltip("Acceleration and deceleration rate")]
 	[SerializeField] private float _speedChangeRate = 10.0f;

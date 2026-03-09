@@ -720,7 +720,7 @@ public class DualGridSpawner : MonoBehaviour
 			var id = EditorDestroyQueue.Dequeue();
 
 			// Resolve the instance ID back into a Unity object (may be null if already destroyed).
-			var unityObj = EditorUtility.InstanceIDToObject(id);
+			var unityObj = EditorUtility.EntityIdToObject(id);
 
 			// If the object no longer exists (already destroyed / unloaded), skip it.
 			if (!unityObj)

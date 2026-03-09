@@ -12,7 +12,7 @@ namespace FIMSpace.Generating
         public static void CheckExistence()
         {
             if (Instance != null) return;
-            Instance = FindObjectOfType<FGeneratorsGizmosDrawer>();
+            Instance = FindFirstObjectByType<FGeneratorsGizmosDrawer>();
             if (Instance != null) return;
             Instance = new GameObject("FGenerators-GizmosDrawer").AddComponent<FGeneratorsGizmosDrawer>();
             Instance.Refresh();

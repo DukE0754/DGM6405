@@ -29,16 +29,6 @@ public class PlayerMgr : Singleton<PlayerMgr>
 	}
 
 	/// <summary>
-	///     Registers the player object with the manager.
-	///     Called when a player is spawned or initialized.
-	/// </summary>
-	public void RegisterPlayer(GameObject player)
-	{
-		PlayerObject = player;
-		GlobalEventBus.Instance.Raise<IPlayerGlobalListener>(l => l.OnPlayerSpawned(player));
-	}
-
-	/// <summary>
 	///     Handles the player using the pause input action
 	/// </summary>
 	public void PauseInput()

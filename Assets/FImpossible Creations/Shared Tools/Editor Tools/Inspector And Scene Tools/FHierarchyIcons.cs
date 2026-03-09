@@ -20,7 +20,7 @@ public class FHierarchyIcons
     private static void EvaluateIcons(int instanceId, Rect selectionRect)
     {
 #if UNITY_EDITOR
-        GameObject go = EditorUtility.InstanceIDToObject(instanceId) as GameObject;
+        GameObject go = EditorUtility.EntityIdToObject(instanceId) as GameObject;
         if (go == null) return;
 
         IFHierarchyIcon slotCon = go.GetComponent<IFHierarchyIcon>();

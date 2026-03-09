@@ -27,12 +27,12 @@ public class GameStarter : MonoBehaviour
 
 		GlobalEventBus.Instance.Raise<ILevelListener>(l => l.OnLevelReady());
 
-		Debug.Log("Game starting in 3 seconds...");
-		yield return new WaitForSeconds(1f);
-		Debug.Log("Game starting in 2 seconds...");
-		yield return new WaitForSeconds(1f);
-		Debug.Log("Game starting in 1 second...");
-		yield return new WaitForSeconds(1f);
+		// Debug.Log("Game starting in 3 seconds...");
+		// yield return new WaitForSeconds(1f);
+		// Debug.Log("Game starting in 2 seconds...");
+		// yield return new WaitForSeconds(1f);
+		// Debug.Log("Game starting in 1 second...");
+		// yield return new WaitForSeconds(1f);
 
 		GameMgr.Instance.StartGame();
 	}

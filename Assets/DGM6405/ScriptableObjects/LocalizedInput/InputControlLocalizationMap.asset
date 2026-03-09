@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99e08eac1e894ecf9d0feda55e885360, type: 3}
+  m_Name: InputControlLocalizationMap
+  m_EditorClassIdentifier: Assembly-CSharp::InputControlLocalizationMap
+  _rules:
+  - PathContains: Look
+    Composite: 0
+    SchemeKeys:
+    - ControlScheme: KeyboardMouse
+      LocalizationKey: loc_mouse
+    - ControlScheme: Gamepad
+      LocalizationKey: loc_right_stick
+  - PathContains: Move
+    Composite: 0
+    SchemeKeys:
+    - ControlScheme: KeyboardMouse
+      LocalizationKey: loc_wasd
+    - ControlScheme: Gamepad
+      LocalizationKey: loc_left_stick
+  - PathContains: Sprint
+    Composite: 0
+    SchemeKeys:
+    - ControlScheme: KeyboardMouse
+      LocalizationKey: loc_shift
+    - ControlScheme: Gamepad
+      LocalizationKey: loc_rb
+  - PathContains: Jump
+    Composite: 0
+    SchemeKeys:
+    - ControlScheme: KeyboardMouse
+      LocalizationKey: loc_space
+    - ControlScheme: Gamepad
+      LocalizationKey: loc_button_south
+  - PathContains: Block
+    Composite: 0
+    SchemeKeys:
+    - ControlScheme: KeyboardMouse
+      LocalizationKey: loc_right_mouse
+    - ControlScheme: Gamepad
+      LocalizationKey: loc_left_trigger

@@ -55,8 +55,16 @@ MonoBehaviour:
     m_Key: loc_ftue_look
     m_Metadata:
       m_Items: []
+  - m_Id: 1545717741887488
+    m_Key: loc_ftue_run
+    m_Metadata:
+      m_Items: []
   - m_Id: 723390554112
     m_Key: loc_ftue_jump
+    m_Metadata:
+      m_Items: []
+  - m_Id: 2149484191391744
+    m_Key: loc_ftue_running_jump
     m_Metadata:
       m_Items: []
   - m_Id: 1075007447040

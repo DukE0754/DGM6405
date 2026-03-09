@@ -16,7 +16,8 @@ MonoBehaviour:
     m_Code: en
   m_SharedData: {fileID: 11400000, guid: 96a3430ad48104139b3d4f1735dd4c58, type: 2}
   m_Metadata:
-    m_Items: []
+    m_Items:
+    - rid: 4859673349192679677
   m_TableData:
   - m_Id: 156077383680
     m_Localized: New Game
@@ -41,15 +42,18 @@ MonoBehaviour:
   - m_Id: 570227154944
     m_Localized: '{moveBinding} to move'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 4859673349192679677
   - m_Id: 667253989376
     m_Localized: '{lookBinding} to look around'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 4859673349192679677
   - m_Id: 723390554112
     m_Localized: '{jumpBinding} to jump'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 4859673349192679677
   - m_Id: 910523621376
     m_Localized: Reach the door of the Tower to proceed.
     m_Metadata:
@@ -57,7 +61,8 @@ MonoBehaviour:
   - m_Id: 1075007447040
     m_Localized: '{blockBinding} to block'
     m_Metadata:
-      m_Items: []
+      m_Items:
+      - rid: 4859673349192679677
   - m_Id: 1538742280192
     m_Localized: en
     m_Metadata:
@@ -234,6 +239,25 @@ MonoBehaviour:
     m_Localized: 3-1 NAME
     m_Metadata:
       m_Items: []
+  - m_Id: 1545717741887488
+    m_Localized: '{runBinding} to sprint'
+    m_Metadata:
+      m_Items:
+      - rid: 4859673349192679677
+  - m_Id: 2149484191391744
+    m_Localized: Run + Jump for distance
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
-    RefIds: []
+    RefIds:
+    - rid: 4859673349192679677
+      type: {class: SmartFormatTag, ns: UnityEngine.Localization.Metadata, asm: Unity.Localization}
+      data:
+        m_Entries: 
+        m_SharedEntries:
+        - id: 667253989376
+        - id: 570227154944
+        - id: 1075007447040
+        - id: 723390554112
+        - id: 1545717741887488
