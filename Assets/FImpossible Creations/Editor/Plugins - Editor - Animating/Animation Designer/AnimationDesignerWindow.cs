@@ -51,7 +51,7 @@ namespace FIMSpace.AnimationTools
         [OnOpenAssetAttribute(1)]
         public static bool OpenDesignerScriptableFile(int instanceID, int line)
         {
-            UnityEngine.Object obj = EditorUtility.InstanceIDToObject(instanceID);
+            UnityEngine.Object obj = EditorUtility.EntityIdToObject(instanceID);
             if (obj is AnimationDesignerSave)
             {
                 if (Get == null) Init(); else Get.Focus();
