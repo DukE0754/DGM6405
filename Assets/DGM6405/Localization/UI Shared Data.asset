@@ -239,6 +239,10 @@ MonoBehaviour:
     m_Key: level_3_1_name
     m_Metadata:
       m_Items: []
+  - m_Id: 2184688016662528
+    m_Key: loc_ftue_paths
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
