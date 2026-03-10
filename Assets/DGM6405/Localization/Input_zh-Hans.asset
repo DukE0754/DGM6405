@@ -35,31 +35,31 @@ MonoBehaviour:
     m_Metadata:
       m_Items: []
   - m_Id: 476488507392
-    m_Localized: todo
+    m_Localized: "\u952E\u76D8WASD"
     m_Metadata:
       m_Items: []
   - m_Id: 532352442368
-    m_Localized: todo
+    m_Localized: "A\u952E/X\u952E"
     m_Metadata:
       m_Items: []
   - m_Id: 26895591514112
-    m_Localized: todo
+    m_Localized: "Shift\u952E"
     m_Metadata:
       m_Items: []
   - m_Id: 27047219798016
-    m_Localized: todo
+    m_Localized: "\u53F3\u80A9\u952ERB/R1"
     m_Metadata:
       m_Items: []
   - m_Id: 650281371934720
-    m_Localized: todo
+    m_Localized: "\u7A7A\u683C\u952E"
     m_Metadata:
       m_Items: []
   - m_Id: 650512335478784
-    m_Localized: todo
+    m_Localized: "\u9F20\u6807\u53F3\u952E"
     m_Metadata:
       m_Items: []
   - m_Id: 650423936327680
-    m_Localized: todo
+    m_Localized: "\u5DE6\u6273\u673ALT/L2"
     m_Metadata:
       m_Items: []
   references:
