@@ -5,7 +5,8 @@ using UnityEngine;
 ///     Separates animation logic from other systems for better maintainability.
 /// </summary>
 public class CharacterAnimationSystem : PausableBehaviour,
-	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener, IHealthListener,
+	IMovementSpeedListener, IGroundListener, IShootListener, IMeleeListener, IBlockListener, IJumpListener,
+	IHealthListener,
 	IBlockHitListener
 {
 	[Header("Animation Settings")]
@@ -28,8 +29,8 @@ public class CharacterAnimationSystem : PausableBehaviour,
 
 	private int _animIDBlock;
 	private int _animIDBlockedHit;
-	private int _animIDDodge;
 	private int _animIDDie;
+	private int _animIDDodge;
 	private int _animIDFreeFall;
 	private int _animIDGrounded;
 	private int _animIDHit;
@@ -100,18 +101,18 @@ public class CharacterAnimationSystem : PausableBehaviour,
 		_animationRunSpeed = Mathf.Max(_animationWalkSpeed, _animationRunSpeed);
 	}
 
-	/// <summary>
-	///     Sets block animation state.
-	/// </summary>
-	/// <param name="isBlocking">Whether the character is blocking.</param>
-	void IBlockListener.OnBlock(bool blockInput)
-	{
-		SetBlock(blockInput);
-	}
-
 	void IBlockHitListener.OnBlockHit(Vector3 hitPoint, Vector3 hitNormal, GameObject source)
 	{
 		SetBlockedHit();
+	}
+
+	/// <summary>
+	///     Sets block animation state.
+	/// </summary>
+	/// <param name="blockInput"></param>
+	void IBlockListener.OnBlock(bool blockInput)
+	{
+		SetBlock(blockInput);
 	}
 
 	/// <summary>
@@ -131,42 +132,9 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <summary>
 	///     Sets free fall animation state.
 	/// </summary>
-	/// <param name="isFreeFalling">Whether the character is in free fall.</param>
 	public void OnFall()
 	{
 		SetFreeFall(true);
-	}
-
-	/// <summary>
-	///     Sets jump animation state.
-	/// </summary>
-	/// <param name="isJumping">Whether the character is jumping.</param>
-	public void OnJumpPerformed()
-	{
-		SetJumping(true);
-	}
-
-	/// <summary>
-	///     Sets melee attack animation state.
-	/// </summary>
-	/// <param name="isMeleeAttacking">Whether the character is performing melee attack.</param>
-	void IMeleeListener.OnMelee(bool meleeInput)
-	{
-		SetMelee(meleeInput);
-	}
-
-	/// <summary>
-	///     Updates movement animation parameters.
-	/// </summary>
-	/// <param name="speedBlend">Blended speed value for animation.</param>
-	/// <param name="currentSpeed">Current actual speed of the character.</param>
-	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
-	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
-	public void OnSpeedChanged(
-		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
-		float velocityZ)
-	{
-		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
 	}
 
 	void IHealthListener.OnHealthChanged(float current, float max)
@@ -184,9 +152,42 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	}
 
 	/// <summary>
+	///     Sets jump animation state.
+	/// </summary>
+	public void OnJumpPerformed()
+	{
+		SetJumping(true);
+	}
+
+	/// <summary>
+	///     Sets melee attack animation state.
+	/// </summary>
+	/// <param name="meleeInput"></param>
+	void IMeleeListener.OnMelee(bool meleeInput)
+	{
+		SetMelee(meleeInput);
+	}
+
+	/// <summary>
+	///     Updates movement animation parameters.
+	/// </summary>
+	/// <param name="animationBlend"></param>
+	/// <param name="walkSpeed">Movement speed threshold for walking.</param>
+	/// <param name="sprintSpeed">Movement speed threshold for sprinting.</param>
+	/// <param name="speed"></param>
+	/// <param name="velocityX"></param>
+	/// <param name="velocityZ"></param>
+	public void OnSpeedChanged(
+		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
+		float velocityZ)
+	{
+		SetMovement(animationBlend, speed, walkSpeed, sprintSpeed, velocityX, velocityZ);
+	}
+
+	/// <summary>
 	///     Sets shoot animation state.
 	/// </summary>
-	/// <param name="isShooting">Whether the character is shooting.</param>
+	/// <param name="shootInput"></param>
 	void IShootListener.OnShoot(bool shootInput)
 	{
 		SetShoot(shootInput);
