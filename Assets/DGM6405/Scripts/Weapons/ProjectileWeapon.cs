@@ -13,16 +13,22 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	[SerializeField] private bool _useArc;
 
 	private Vector3 _lastAimTarget;
-
+	
+	/// <summary>
+	/// Moved to LateUpdate to avoid firing before the animation modifications apply
+	/// </summary>
 	private bool _pendingFire;
+	
 	public Transform Muzzle => _muzzle;
 
 	private void LateUpdate()
 	{
 		if (!_pendingFire) return;
+		
+		_pendingFire = false;
+		
 		if (_useArc) FireArc(_lastAimTarget);
 		else Fire(_lastAimTarget);
-		_pendingFire = false;
 	}
 
 	// Event listeners
@@ -34,8 +40,6 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	public void OnFireProjectile()
 	{
 		_pendingFire = true;
-		//if (_useArc) FireArc(_lastAimTarget);
-		//else Fire(_lastAimTarget);
 	}
 
 	public bool CanFire => true;

@@ -252,6 +252,10 @@ MonoBehaviour:
     m_Localized: There may be more ways than one to the Tower
     m_Metadata:
       m_Items: []
+  - m_Id: 2522081630609408
+    m_Localized: Path <size=50%>of the\n\t<size=100%>Tower
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

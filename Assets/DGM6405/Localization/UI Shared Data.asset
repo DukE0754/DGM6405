@@ -243,6 +243,10 @@ MonoBehaviour:
     m_Key: loc_ftue_paths
     m_Metadata:
       m_Items: []
+  - m_Id: 2522081630609408
+    m_Key: loc_splash
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
