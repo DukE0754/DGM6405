@@ -11,30 +11,31 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	[SerializeField] private Transform _muzzle;
 	[SerializeField] private float _arcHeight = 2f;
 	[SerializeField] private bool _useArc;
-	public Transform Muzzle => _muzzle;
 
 	private Vector3 _lastAimTarget;
+
+	private bool _pendingFire;
+	public Transform Muzzle => _muzzle;
+
+	private void LateUpdate()
+	{
+		if (!_pendingFire) return;
+		if (_useArc) FireArc(_lastAimTarget);
+		else Fire(_lastAimTarget);
+		_pendingFire = false;
+	}
 
 	// Event listeners
 	public void OnSetAimTarget(Vector3 worldPosition)
 	{
 		_lastAimTarget = worldPosition;
-
-		// Rotate muzzle to face the target directly
-		if (_muzzle != null)
-		{
-			var direction = (_lastAimTarget - _muzzle.position).normalized;
-			if (direction != Vector3.zero)
-			{
-				_muzzle.rotation = Quaternion.LookRotation(direction);
-			}
-		}
 	}
 
 	public void OnFireProjectile()
 	{
-		if (_useArc) FireArc(_lastAimTarget);
-		else Fire(_lastAimTarget);
+		_pendingFire = true;
+		//if (_useArc) FireArc(_lastAimTarget);
+		//else Fire(_lastAimTarget);
 	}
 
 	public bool CanFire => true;
@@ -43,8 +44,16 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	{
 		if (_muzzle == null) return;
 
-		var direction = (targetPosition - _muzzle.position).normalized;
-		if (direction == Vector3.zero) direction = _muzzle.forward;
+		var direction = targetPosition - _muzzle.position;
+
+		if (direction.sqrMagnitude < 0.0001f)
+		{
+			Debug.LogWarning("ProjectileWeapon: Invalid fire direction.");
+			return;
+		}
+
+		direction.Normalize();
+
 		SpawnProjectile(direction);
 	}
 
@@ -54,12 +63,20 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 		SpawnProjectile(direction);
 	}
 
+	/// <summary>
+	/// </summary>
+	/// <param name="targetPosition"></param>
 	public void FireArc(Vector3 targetPosition)
 	{
 		if (_muzzle == null) return;
 
 		var velocity = CalculateArcVelocity(_muzzle.position, targetPosition, _arcHeight);
-		var projectile = Instantiate(_projectilePrefab, _muzzle.position, _muzzle.rotation);
+
+		var projectile = Instantiate(
+			_projectilePrefab,
+			_muzzle.position,
+			Quaternion.LookRotation(velocity.normalized));
+
 		projectile.LaunchWithVelocity(velocity, gameObject);
 	}
 
@@ -70,9 +87,19 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 
 	private void SpawnProjectile(Vector3 direction)
 	{
+		if (_projectilePrefab == null)
+		{
+			Debug.LogError("ProjectileWeapon: Projectile prefab not assigned.");
+			return;
+		}
+
+		var rotation = Quaternion.LookRotation(direction);
+
 		var projectile = Instantiate(
-			_projectilePrefab, _muzzle.position,
-			Quaternion.LookRotation(direction));
+			_projectilePrefab,
+			_muzzle.position,
+			rotation);
+
 		projectile.Launch(direction, gameObject);
 	}
 
@@ -80,10 +107,13 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 	{
 		var displacementY = end.y - start.y;
 		var displacementXZ = new Vector3(end.x - start.x, 0, end.z - start.z);
+
 		var gravity = Physics.gravity.y;
 
-		var time = Mathf.Sqrt(-2 * height / gravity) +
-					Mathf.Sqrt(2 * (displacementY - height) / gravity);
+		var time =
+			Mathf.Sqrt(-2 * height / gravity) +
+			Mathf.Sqrt(2 * (displacementY - height) / gravity);
+
 		var velocityY = Vector3.up * Mathf.Sqrt(-2 * gravity * height);
 		var velocityXZ = displacementXZ / time;
 

@@ -354,5 +354,6 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToCamera(false));
 			_context.EventBus.Raise<IRotationListener>(l => l.SetRotateToMovement(false));
 		}
+		GlobalEventBus.Instance?.Raise<IHealthListener>(l => l.OnDied());
 	}
 }
