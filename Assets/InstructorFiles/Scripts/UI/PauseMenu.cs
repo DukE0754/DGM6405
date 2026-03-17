@@ -1,12 +1,14 @@
 public class PauseMenu : MenuBase
 {
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		GameMgr.Instance?.SetPaused(true);
 	}
 
-	private void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		GameMgr.Instance?.SetPaused(false);
 	}
 

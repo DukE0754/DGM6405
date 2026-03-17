@@ -256,6 +256,11 @@ MonoBehaviour:
     m_Localized: Path <size=50%>of the\n\t<size=100%>Tower
     m_Metadata:
       m_Items: []
+  - m_Id: 5140543154528256
+    m_Localized: '{controlName} not bound'
+    m_Metadata:
+      m_Items:
+      - rid: 4859673349192679677
   references:
     version: 2
     RefIds:
@@ -269,3 +274,4 @@ MonoBehaviour:
         - id: 1075007447040
         - id: 723390554112
         - id: 1545717741887488
+        - id: 5140543154528256

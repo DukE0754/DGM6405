@@ -18,8 +18,9 @@ public class LevelComplete : MenuBase
 		return GameMenus.LevelCompleteMenu;
 	}
 
-	protected virtual void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		UpdateStats();
 	}
 

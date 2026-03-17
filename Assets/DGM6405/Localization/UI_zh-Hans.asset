@@ -184,6 +184,11 @@ MonoBehaviour:
     m_Localized: "\u706F\u5854\u4E4B\u8DEF"
     m_Metadata:
       m_Items: []
+  - m_Id: 5140543154528256
+    m_Localized: "{controlName} \u672A\u7ED1\u5B9A"
+    m_Metadata:
+      m_Items:
+      - rid: 4859673349192679676
   references:
     version: 2
     RefIds:
@@ -197,3 +202,4 @@ MonoBehaviour:
         - id: 1075007447040
         - id: 723390554112
         - id: 1545717741887488
+        - id: 5140543154528256

@@ -3520,7 +3520,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1063991
 --- !u!225 &6365801590835862676
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -3546,6 +3546,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Interactable: 0
+  DefaultSelectable: {fileID: 3393032025438414295}
   _backButton: {fileID: 3393032025438414295}
   _masterSlider: {fileID: 1616204922056100267}
   _sfxSlider: {fileID: 2956150512774716819}

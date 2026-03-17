@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7147036899073817472}
   - component: {fileID: 7477449386200667618}
   - component: {fileID: 5006546925670439847}
+  - component: {fileID: 13371337}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -21,6 +22,18 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &13371337
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 891463982941930220}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b53beb051d841f9b1f7fd6336a5d2a2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &4958056609607339308
 RectTransform:
   m_ObjectHideFlags: 0
@@ -110,7 +123,7 @@ MonoBehaviour:
   m_SpriteState:
     m_HighlightedSprite: {fileID: 1369868345, guid: 0bae5aee11a0ec5408f83c7280977503, type: 3}
     m_PressedSprite: {fileID: -306723611, guid: 0bae5aee11a0ec5408f83c7280977503, type: 3}
-    m_SelectedSprite: {fileID: -2128131656, guid: 0bae5aee11a0ec5408f83c7280977503, type: 3}
+    m_SelectedSprite: {fileID: 1369868345, guid: 0bae5aee11a0ec5408f83c7280977503, type: 3}
     m_DisabledSprite: {fileID: 1711926941, guid: 0bae5aee11a0ec5408f83c7280977503, type: 3}
   m_AnimationTriggers:
     m_NormalTrigger: Normal

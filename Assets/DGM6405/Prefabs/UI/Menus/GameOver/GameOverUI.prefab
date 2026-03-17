@@ -422,7 +422,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1063991
 --- !u!225 &6365801590835862676
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -448,6 +448,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Interactable: 0
+  DefaultSelectable: {fileID: 5182395651674369931}
 --- !u!1001 &1795378523858550362
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -775,6 +776,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+--- !u!114 &5182395651674369931 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7147036899073817472, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}
+  m_PrefabInstance: {fileID: 2649507816673580043}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &6920483853431691559 stripped
 RectTransform:
   m_CorrespondingSourceObject: {fileID: 4958056609607339308, guid: e0d6ad42ec9824eeab85aa7c923765b7, type: 3}

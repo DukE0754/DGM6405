@@ -425,7 +425,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1063991
 --- !u!114 &3337753152252030631
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -439,6 +439,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Interactable: 0
+  DefaultSelectable: {fileID: 5880229948469904500}
   _newGameButton: {fileID: 5880229948469904500}
   _continueButton: {fileID: 56918292580516813}
   _levelSelectButton: {fileID: 891808992162505941}

@@ -25,9 +25,9 @@ public class Settings : MenuBase
 		if (_muteAllToggle) _muteAllToggle.onValueChanged.AddListener(OnMuteAllChanged);
 	}
 
-	private void OnEnable()
+	protected override void OnEnable()
 	{
-		_backButton.Select();
+		base.OnEnable();
 		_isMuted = false;
 		RefreshSlidersFromSaveData();
 		if (_muteAllToggle) _muteAllToggle.isOn = false;

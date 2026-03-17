@@ -8,19 +8,20 @@ using UnityEngine.UI;
 /// </summary>
 public class LevelSelectMenu : MenuBase
 {
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		if (_itemsPerPage < 1)
 			_itemsPerPage = 1;
 		EnsureSaveLoaded();
 		BuildModel();
 		ShowPage(0);
 		UpdatePagingButtons();
-		_backButton?.Select();
 	}
 
-	private void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		Interactable = false;
 	}
 

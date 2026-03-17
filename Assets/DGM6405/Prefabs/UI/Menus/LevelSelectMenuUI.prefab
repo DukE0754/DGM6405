@@ -799,7 +799,7 @@ MonoBehaviour:
   m_BlockingObjects: 0
   m_BlockingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 1063991
 --- !u!225 &6365801590835862676
 CanvasGroup:
   m_ObjectHideFlags: 0
@@ -825,6 +825,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::LevelSelectMenu
   Interactable: 0
+  DefaultSelectable: {fileID: 6645015940602086385}
   _gridItemPrefab: {fileID: 3268299876506134584, guid: 007c6d2dac1370243ac5de768c150efc, type: 3}
   _gridParent: {fileID: 3695764728690519600}
   _itemsPerPage: 9

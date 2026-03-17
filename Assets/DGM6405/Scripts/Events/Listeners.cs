@@ -96,6 +96,13 @@ public interface IPlayerGlobalListener
 	}
 }
 
+public interface IUnsupportedInputListener
+{
+	void OnUnsupportedInput(string controlName)
+	{
+	}
+}
+
 #endregion
 
 #region Local Entity Listeners

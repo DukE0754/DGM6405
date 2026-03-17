@@ -8,10 +8,10 @@ using UnityEngine.UI;
 /// </summary>
 public class MainMenu : MenuBase
 {
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		UpdateButtonStates();
-		//_newGameButton?.Select();
 	}
 
 	public override GameMenus MenuType()

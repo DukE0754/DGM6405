@@ -247,6 +247,10 @@ MonoBehaviour:
     m_Key: loc_splash
     m_Metadata:
       m_Items: []
+  - m_Id: 5140543154528256
+    m_Key: loc_unbound
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:
