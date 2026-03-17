@@ -4,7 +4,7 @@ using UnityEngine;
 ///     Handles vertical movement including jumping and gravity.
 ///     Manages ground detection and vertical velocity.
 /// </summary>
-public class JumpGravitySystem : PausableBehaviour, IJumpListener
+public class JumpGravitySystem : PausableBehaviour, IJumpListener, IWaterVolumeListener
 {
 	[Header("Jump Settings")]
 	[Tooltip("The height the player can jump")]
@@ -18,6 +18,13 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 
 	[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
 	[SerializeField] private float _fallTimeout = 0.15f;
+
+	[Header("Water Settings")]
+	[Tooltip("How quickly vertical speed is lost when entering water")]
+	[SerializeField] private float _waterDrag = 10f;
+
+	[Tooltip("Maximum downward speed when in water")]
+	[SerializeField] private float _waterTerminalVelocity = -2f;
 
 	[Header("Ground Detection")]
 	[Tooltip("Useful for rough ground")]
@@ -44,6 +51,8 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 	private float _fallTimeoutDelta;
 	private float _jumpTimeoutDelta;
 
+	private bool _isInWater;
+
 	// Internal state
 
 	// Public properties
@@ -58,6 +67,16 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 		// Reset timeouts on start
 		_jumpTimeoutDelta = _jumpTimeout;
 		_fallTimeoutDelta = _fallTimeout;
+	}
+
+	private void OnEnable()
+	{
+		_context?.EventBus?.Register<IWaterVolumeListener>(this);
+	}
+
+	private void OnDisable()
+	{
+		_context?.EventBus?.Unregister<IWaterVolumeListener>(this);
 	}
 
 	private void InitializeComponents()
@@ -205,8 +224,26 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 				_context?.EventBus?.Raise<IGroundListener>(l => l.OnFall());
 		}
 
-		// Apply gravity over time if under terminal (multiply by delta time twice to linearly speed up over time)
-		if (VerticalVelocity < _terminalVelocity) VerticalVelocity += _gravity * Time.deltaTime;
+		// Simplified gravity/drag for water
+		if (_isInWater)
+		{
+			// If moving down faster than water terminal, apply drag
+			if (VerticalVelocity < _waterTerminalVelocity)
+			{
+				VerticalVelocity = Mathf.MoveTowards(VerticalVelocity, _waterTerminalVelocity, _waterDrag * Time.deltaTime);
+			}
+			else
+			{
+				// Apply gravity up to water terminal
+				VerticalVelocity += _gravity * Time.deltaTime;
+				if (VerticalVelocity < _waterTerminalVelocity) VerticalVelocity = _waterTerminalVelocity;
+			}
+		}
+		else
+		{
+			// Standard gravity
+			if (VerticalVelocity < _terminalVelocity) VerticalVelocity += _gravity * Time.deltaTime;
+		}
 	}
 
 	/// <summary>
@@ -231,5 +268,15 @@ public class JumpGravitySystem : PausableBehaviour, IJumpListener
 	{
 		// Freeze vertical velocity when paused
 		VerticalVelocity = 0f;
+	}
+
+	void IWaterVolumeListener.OnEnteredWater(float surfaceHeight)
+	{
+		_isInWater = true;
+	}
+
+	void IWaterVolumeListener.OnExitedWater()
+	{
+		_isInWater = false;
 	}
 }

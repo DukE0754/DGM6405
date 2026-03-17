@@ -236,4 +236,15 @@ public interface IWeaponSlotListener : IEntityListener
 	}
 }
 
+public interface IWaterVolumeListener : IEntityListener
+{
+	void OnEnteredWater(float surfaceHeight)
+	{
+	}
+
+	void OnExitedWater()
+	{
+	}
+}
+
 #endregion

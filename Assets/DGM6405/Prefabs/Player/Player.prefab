@@ -280,6 +280,8 @@ MonoBehaviour:
   _gravity: -15
   _jumpTimeout: 0
   _fallTimeout: 0.15
+  _waterDrag: 50
+  _waterTerminalVelocity: -2
   _groundedOffset: -0.14
   _groundedRadius: 0.28
   _groundLayers:
@@ -301,7 +303,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CharacterMovementSystem
   _moveSpeed: 2
   _sprintSpeed: 5.335
-  _rotationSmoothTime: 0.12
   _speedChangeRate: 10
   _context: {fileID: 2085210499851947648}
   _controller: {fileID: 4251330539324106305}
@@ -469,8 +470,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
   _gameOverDelay: 3
-  _waterHeight: -1
-  _floatOffset: 0.5
+  _waterHeight: 0
+  _floatOffset: -0.1
+  _floatSpeed: 2
   _context: {fileID: 2085210499851947648}
 --- !u!114 &370838149222387582
 MonoBehaviour:

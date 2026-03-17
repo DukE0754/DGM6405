@@ -19,10 +19,14 @@ public class SimpleDamageReceiver : MonoBehaviour, IDamageReceiver
 
 	private void OnEnable()
 	{
+		var context = GetComponentInParent<CharacterContext>();
+		var bus = context != null ? context.EventBus : GetComponentInParent<LocalEventBus>();
+
 		var colliders = GetComponentsInChildren<Collider>();
 		foreach (var col in colliders)
 		{
 			ColliderMgr.Instance.Register(col, this);
+			if (bus != null) ColliderMgr.Instance.Register(col, bus);
 		}
 	}
 

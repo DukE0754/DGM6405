@@ -5,18 +5,20 @@ using UnityEngine;
 ///     Handles the player's death sequence, including disabling components,
 ///     handling water floating, and triggering game over.
 /// </summary>
-public class PlayerDeathHandler : MonoBehaviour, IHealthListener
+public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeListener
 {
 	[Header("Settings")]
 	[SerializeField] private float _gameOverDelay = 3f;
 	[SerializeField] private float _waterHeight = 0f;
 	[SerializeField] private float _floatOffset = 0.5f;
+	[SerializeField] private float _floatSpeed = 2f;
 
 	[Header("References")]
 	[SerializeField] private CharacterContext _context;
 	
 	private bool _isDead;
 	private bool _isFloating;
+	private float _currentWaterHeight;
 
 	private void Awake()
 	{
@@ -26,11 +28,22 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener
 	private void OnEnable()
 	{
 		_context?.EventBus?.Register<IHealthListener>(this);
+		_context?.EventBus?.Register<IWaterVolumeListener>(this);
 	}
 
 	private void OnDisable()
 	{
 		_context?.EventBus?.Unregister<IHealthListener>(this);
+		_context?.EventBus?.Unregister<IWaterVolumeListener>(this);
+	}
+
+	public void OnEnteredWater(float surfaceHeight)
+	{
+		_currentWaterHeight = surfaceHeight;
+	}
+
+	public void OnExitedWater()
+	{
 	}
 
 	public void OnHealthChanged(float current, float max) { }
@@ -52,24 +65,18 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener
 			_context.Controller.enabled = false;
 		}
 
-		// Check for water height continuously if we are below it or near it
+		// Smoothly float to water surface if we are in/near water
 		float timer = 0;
+		Vector3 startPos = transform.position;
+		
 		while (timer < _gameOverDelay)
 		{
-			if (!_isFloating && transform.position.y <= _waterHeight + _floatOffset)
+			// If we are below the floating target, move up smoothly
+			float targetY = _currentWaterHeight + _floatOffset;
+			if (transform.position.y < targetY)
 			{
-				_isFloating = true;
-				// Snap to water surface
 				Vector3 pos = transform.position;
-				pos.y = _waterHeight + _floatOffset;
-				transform.position = pos;
-			}
-
-			if (_isFloating)
-			{
-				// Keep at water surface
-				Vector3 pos = transform.position;
-				pos.y = _waterHeight + _floatOffset;
+				pos.y = Mathf.MoveTowards(pos.y, targetY, _floatSpeed * Time.deltaTime);
 				transform.position = pos;
 			}
 

@@ -7,9 +7,16 @@ using UnityEngine;
 /// </summary>
 public class ColliderMgr : Singleton<ColliderMgr>
 {
-	private readonly Dictionary<Collider, SimpleDamageReceiver> _damageReceivers = new();
+	private readonly Dictionary<Collider, LocalEventBus> _eventBuses = new();
+	private readonly Dictionary<Collider, IDamageReceiver> _damageReceivers = new();
 
-	public void Register(Collider col, SimpleDamageReceiver receiver)
+	public void Register(Collider col, LocalEventBus bus)
+	{
+		if (col == null) return;
+		_eventBuses[col] = bus;
+	}
+
+	public void Register(Collider col, IDamageReceiver receiver)
 	{
 		if (col == null) return;
 		_damageReceivers[col] = receiver;
@@ -18,17 +25,22 @@ public class ColliderMgr : Singleton<ColliderMgr>
 	public void Unregister(Collider col)
 	{
 		if (col == null) return;
-		_damageReceivers?.Remove(col);
+		_eventBuses.Remove(col);
+		_damageReceivers.Remove(col);
 	}
 
-	public SimpleDamageReceiver GetDamageReceiver(Collider col)
+	public bool TryGetEventBus(Collider col, out LocalEventBus bus)
 	{
-		if (col == null) return null;
-		_damageReceivers.TryGetValue(col, out var receiver);
-		return receiver;
+		if (col == null)
+		{
+			bus = null;
+			return false;
+		}
+
+		return _eventBuses.TryGetValue(col, out bus);
 	}
 
-	public bool TryGetDamageReceiver(Collider col, out SimpleDamageReceiver receiver)
+	public bool TryGetDamageReceiver(Collider col, out IDamageReceiver receiver)
 	{
 		if (col == null)
 		{

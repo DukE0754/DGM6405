@@ -44,6 +44,7 @@ GameObject:
   - component: {fileID: 536368961052283595}
   - component: {fileID: 5024696730473184656}
   - component: {fileID: 6923180616601814420}
+  - component: {fileID: 6428346913747933278}
   m_Layer: 0
   m_Name: KillBox
   m_TagString: Untagged
@@ -60,8 +61,8 @@ Transform:
   m_GameObject: {fileID: 7888912954641048766}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.55, z: 0}
-  m_LocalScale: {x: 100, y: 1, z: 100}
+  m_LocalPosition: {x: 0, y: -5.55, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3497144191945528730}
@@ -85,7 +86,7 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 1, y: 1, z: 1}
+  m_Size: {x: 1000, y: 10, z: 1000}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &6923180616601814420
 MonoBehaviour:
@@ -99,6 +100,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da7fdbe1c8745904da0482e7fc7ac8fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::KilLBox
+--- !u!114 &6428346913747933278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7888912954641048766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73dfdf5a0549438f9d4a2f4fde1262ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WaterVolume
 --- !u!1001 &1301347542125170904
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -137,7 +150,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4717799323456031077, guid: 87fd973c08aac544690fa273c393d96c, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4717799323456031077, guid: 87fd973c08aac544690fa273c393d96c, type: 3}
       propertyPath: m_LocalPosition.y
@@ -145,7 +158,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4717799323456031077, guid: 87fd973c08aac544690fa273c393d96c, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 250
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4717799323456031077, guid: 87fd973c08aac544690fa273c393d96c, type: 3}
       propertyPath: m_LocalRotation.w

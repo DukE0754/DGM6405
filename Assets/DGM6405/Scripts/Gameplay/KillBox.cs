@@ -4,6 +4,16 @@ public class KillBox : MonoBehaviour
 {
 	private void OnTriggerEnter(Collider other)
 	{
+		HandleTrigger(other);
+	}
+
+	private void OnTriggerStay(Collider other)
+	{
+		HandleTrigger(other);
+	}
+
+	private void HandleTrigger(Collider other)
+	{
 		if (ColliderMgr.Instance.TryGetDamageReceiver(other, out var receiver))
 		{
 			receiver.ApplyDamage(new DamageInfo
