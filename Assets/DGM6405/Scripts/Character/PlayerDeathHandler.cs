@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 /// <summary>
 ///     Handles the player's death sequence, including disabling components,
@@ -7,18 +8,19 @@ using UnityEngine;
 /// </summary>
 public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeListener
 {
+	[FormerlySerializedAs("_settings")]
 	[Header("Settings")]
+	[SerializeField] private WaterData Data;
+
 	[SerializeField] private float _gameOverDelay = 3f;
-	[SerializeField] private float _waterHeight = 0f;
-	[SerializeField] private float _floatOffset = 0.5f;
-	[SerializeField] private float _floatSpeed = 2f;
 
 	[Header("References")]
 	[SerializeField] private CharacterContext _context;
-	
+
+	private float _currentWaterHeight;
+
 	private bool _isDead;
 	private bool _isFloating;
-	private float _currentWaterHeight;
 
 	private void Awake()
 	{
@@ -37,17 +39,13 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 		_context?.EventBus?.Unregister<IWaterVolumeListener>(this);
 	}
 
-	public void OnEnteredWater(float surfaceHeight)
-	{
-		_currentWaterHeight = surfaceHeight;
-	}
-
-	public void OnExitedWater()
+	public void OnHealthChanged(float current, float max)
 	{
 	}
 
-	public void OnHealthChanged(float current, float max) { }
-	public void OnDamageTaken(int amount, Vector3 direction) { }
+	public void OnDamageTaken(int amount, Vector3 direction)
+	{
+	}
 
 	public void OnDied()
 	{
@@ -57,26 +55,35 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 		StartCoroutine(DeathSequence());
 	}
 
+	public void OnEnteredWater(float surfaceHeight)
+	{
+		_currentWaterHeight = surfaceHeight;
+	}
+
+	public void OnExitedWater()
+	{
+	}
+
 	private IEnumerator DeathSequence()
 	{
 		// Disable character controller to stop movement and gravity
-		if (_context.Controller != null)
-		{
-			_context.Controller.enabled = false;
-		}
+		if (_context.Controller != null) _context.Controller.enabled = false;
 
 		// Smoothly float to water surface if we are in/near water
 		float timer = 0;
-		Vector3 startPos = transform.position;
-		
+		var startPos = transform.position;
+
+		var floatOffset = Data != null ? Data.FloatOffset : 0.5f;
+		var floatSpeed = Data != null ? Data.FloatSpeed : 2f;
+
 		while (timer < _gameOverDelay)
 		{
 			// If we are below the floating target, move up smoothly
-			float targetY = _currentWaterHeight + _floatOffset;
+			var targetY = _currentWaterHeight + floatOffset;
 			if (transform.position.y < targetY)
 			{
-				Vector3 pos = transform.position;
-				pos.y = Mathf.MoveTowards(pos.y, targetY, _floatSpeed * Time.deltaTime);
+				var pos = transform.position;
+				pos.y = Mathf.MoveTowards(pos.y, targetY, floatSpeed * Time.deltaTime);
 				transform.position = pos;
 			}
 

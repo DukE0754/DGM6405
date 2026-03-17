@@ -112,6 +112,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 73dfdf5a0549438f9d4a2f4fde1262ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WaterVolume
+  Data: {fileID: 11400000, guid: c7105e5f3aa174cf1a0cf5923b88175e, type: 2}
 --- !u!1001 &1301347542125170904
 PrefabInstance:
   m_ObjectHideFlags: 0

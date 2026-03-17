@@ -1,282 +1,419 @@
+// Assets/Scripts/Character/Movement/JumpGravitySystem.cs
+
 using UnityEngine;
 
 /// <summary>
-///     Handles vertical movement including jumping and gravity.
-///     Manages ground detection and vertical velocity.
+///     Vertical movement for CharacterController.
+///     Compatible with PlayerCommandBrain:
+///     - Brain raises IJumpListener.OnJump(bool) every frame and clears inputHandler.jump immediately after.
+///     - Therefore OnJump(true) is treated as a one-frame "pressed" pulse.
+///     Features:
+///     - Coyote time as "time since last grounded" (robust reset).
+///     - Jump buffer (press a bit early -> jump on landing).
+///     - Gravity always applied (no coyote float); optional gravity ramp never starts at 0.
+///     - Ground snap / ledge safety (flat platforms).
+///     - Restores OnGroundedChanged for landing transitions.
+///     - OnFall fires once per airborne episode (after fall timeout).
 /// </summary>
 public class JumpGravitySystem : PausableBehaviour, IJumpListener, IWaterVolumeListener
 {
+	private const float StickToGroundVelocity = -2f;
+	private const float JumpingUpThreshold = 0.1f;
+	private const float TerminalVelocity = 53.0f;
+
 	[Header("Jump Settings")]
-	[Tooltip("The height the player can jump")]
 	[SerializeField] private float _jumpHeight = 1.2f;
 
-	[Tooltip("The character uses its own gravity value. The engine default is -9.81f")]
+	[Tooltip("Negative value.")]
 	[SerializeField] private float _gravity = -15.0f;
 
-	[Tooltip("Time required to pass before being able to jump again. Set to 0f to instantly jump again")]
-	[SerializeField] private float _jumpTimeout = 0.50f;
+	[Tooltip("Cooldown after a jump before another jump can start. Set 0 for immediate.")]
+	[SerializeField] private float _jumpTimeout;
 
-	[Tooltip("Time required to pass before entering the fall state. Useful for walking down stairs")]
-	[SerializeField] private float _fallTimeout = 0.15f;
+	[Tooltip("Delay before raising OnFall (event timing only).")]
+	[SerializeField] private float _fallTimeout = 0.10f;
+
+	[Header("Forgiveness Settings")]
+	[SerializeField] private float _coyoteTime = 0.12f;
+
+	[SerializeField] private float _jumpBufferTime = 0.12f;
+
+	[Header("Anti 'Late Midair Jump'")]
+	[Tooltip("If falling faster than this (more negative), coyote is disabled for this airborne episode.")]
+	[SerializeField] private float _coyoteMaxFallSpeed = -3.0f;
+
+	[Header("Gravity Shaping (no zero-gravity coyote)")]
+	[Tooltip("Seconds to ramp gravity after leaving ground. Set 0 for instant full gravity.")]
+	[SerializeField] private float _gravityRampTime = 0.08f;
+
+	[Tooltip("Gravity scale at the instant you leave ground (must be > 0 to avoid 'no gravity' feel).")]
+	[SerializeField] [Range(0.05f, 1f)] private float _minAirGravityScale = 0.35f;
+
+	[Header("Early Fall Clamp (optional)")]
+	[SerializeField] private float _earlyFallTime = 0.10f;
+
+	[SerializeField] private float _earlyFallMaxDownSpeed = 2.0f;
+
+	[Header("Ground Snap / Ledge Safety (flat platforms)")]
+	[SerializeField] private float _groundSnapDistance = 0.25f;
+
+	[SerializeField] private float _groundSnapWindow = 0.12f;
+
+	[SerializeField] [Range(0f, 1f)]
+	private float _groundMinNormalY = 0.9f;
 
 	[Header("Water Settings")]
-	[Tooltip("How quickly vertical speed is lost when entering water")]
 	[SerializeField] private float _waterDrag = 10f;
 
-	[Tooltip("Maximum downward speed when in water")]
 	[SerializeField] private float _waterTerminalVelocity = -2f;
 
 	[Header("Ground Detection")]
-	[Tooltip("Useful for rough ground")]
 	[SerializeField] private float _groundedOffset = -0.14f;
 
-	[Tooltip("The radius of the grounded check. Should match the radius of the CharacterController")]
 	[SerializeField] private float _groundedRadius = 0.28f;
-
-	[Tooltip("What layers the character uses as ground")]
 	[SerializeField] private LayerMask _groundLayers;
 
-	[Header("Debug Gizmos")]
-	[Tooltip("Show jump/gravity gizmos in scene view when selected.")]
-	[SerializeField] private bool _showGizmos = true;
-
 	[Header("References")]
-	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
 	[SerializeField] private CharacterContext _context;
 
 	private CharacterController _controller;
+	private bool _coyoteDisabledThisAir;
 
-	private readonly float _terminalVelocity = 53.0f;
-
-	private float _fallTimeoutDelta;
-	private float _jumpTimeoutDelta;
+	// Event gating
+	private bool _fallEventFiredThisAir;
+	private float _fallTimeoutRemaining;
 
 	private bool _isInWater;
+	private float _jumpBufferRemaining;
 
-	// Internal state
+	// Timers/state
+	private float _jumpCooldownRemaining;
 
-	// Public properties
+	// Input pulse from brain (OnJump(true) occurs for one frame)
+	private bool _jumpPressedThisFrame;
+
+	// Robust coyote: time since last grounded + per-air-episode disable
+	private float _lastGroundedTime;
+
+	private float _timeSinceLeftGround;
+
 	public bool IsGrounded { get; private set; }
-
 	public float VerticalVelocity { get; private set; }
 
 	private void Awake()
 	{
 		InitializeComponents();
 
-		// Reset timeouts on start
-		_jumpTimeoutDelta = _jumpTimeout;
-		_fallTimeoutDelta = _fallTimeout;
+		_jumpCooldownRemaining = 0f;
+		_jumpBufferRemaining = 0f;
+		_fallTimeoutRemaining = _fallTimeout;
+
+		_timeSinceLeftGround = 0f;
+
+		_lastGroundedTime = Time.time;
+		_coyoteDisabledThisAir = false;
+
+		_fallEventFiredThisAir = false;
 	}
 
-	private void OnEnable()
+	protected override void OnEnable()
 	{
+		base.OnEnable();
 		_context?.EventBus?.Register<IWaterVolumeListener>(this);
 	}
 
-	private void OnDisable()
+	protected override void OnDisable()
 	{
+		base.OnDisable();
 		_context?.EventBus?.Unregister<IWaterVolumeListener>(this);
-	}
-
-	private void InitializeComponents()
-	{
-		// Get context if not assigned
-		if (_context == null) _context = GetComponent<CharacterContext>();
-
-		// Get controller from context or direct reference
-		if (_controller == null)
-		{
-			if (_context != null)
-				_controller = _context.Controller;
-			else
-				_controller = GetComponent<CharacterController>();
-		}
-
-		// Validate controller
-		if (_controller == null)
-		{
-			Debug.LogError(
-				$"[{name}] JumpGravitySystem: CharacterController is required! " +
-				"Either add CharacterController component or assign CharacterContext with controller reference.",
-				this
-			);
-			enabled = false;
-		}
-	}
-
-	private void OnDrawGizmosSelected()
-	{
-		if (!_showGizmos)
-			return;
-
-		// Ground check visualization
-		var transparentGreen = new Color(0.0f, 1.0f, 0.0f, 0.35f);
-		var transparentRed = new Color(1.0f, 0.0f, 0.0f, 0.35f);
-
-		if (IsGrounded)
-			Gizmos.color = transparentGreen;
-		else
-			Gizmos.color = transparentRed;
-
-		// Draw sphere at ground check position
-		var spherePos = new Vector3(transform.position.x, transform.position.y - _groundedOffset, transform.position.z);
-		Gizmos.DrawSphere(spherePos, _groundedRadius);
-
-		// Draw line from character center to sphere center
-		Gizmos.color = Color.white;
-		Gizmos.DrawLine(transform.position, spherePos);
-
-		// Vertical velocity indicator
-		if (Mathf.Abs(VerticalVelocity) > 0.01f)
-		{
-			Gizmos.color = VerticalVelocity > 0f ? Color.blue : Color.red;
-			var velStart = transform.position;
-			var velEnd = velStart + Vector3.up * VerticalVelocity * 0.5f;
-			Gizmos.DrawLine(velStart, velEnd);
-			Gizmos.DrawWireSphere(velEnd, 0.1f);
-		}
-
-		// Terminal velocity limit
-		Gizmos.color = Color.gray;
-		var terminalY = transform.position.y + _terminalVelocity * 0.5f;
-		Gizmos.DrawLine(
-			transform.position + Vector3.left * 0.5f,
-			transform.position + Vector3.right * 0.5f);
 	}
 
 	private void OnValidate()
 	{
-		// Clamp values to valid ranges
 		_jumpHeight = Mathf.Max(0f, _jumpHeight);
 		_jumpTimeout = Mathf.Max(0f, _jumpTimeout);
 		_fallTimeout = Mathf.Max(0f, _fallTimeout);
+
+		_coyoteTime = Mathf.Max(0f, _coyoteTime);
+		_jumpBufferTime = Mathf.Max(0f, _jumpBufferTime);
+
+		_gravityRampTime = Mathf.Max(0f, _gravityRampTime);
+		_minAirGravityScale = Mathf.Clamp(_minAirGravityScale, 0.05f, 1f);
+
+		_earlyFallTime = Mathf.Max(0f, _earlyFallTime);
+		_earlyFallMaxDownSpeed = Mathf.Max(0f, _earlyFallMaxDownSpeed);
+
+		_groundSnapDistance = Mathf.Max(0f, _groundSnapDistance);
+		_groundSnapWindow = Mathf.Max(0f, _groundSnapWindow);
+
 		_groundedRadius = Mathf.Max(0f, _groundedRadius);
 	}
 
 	/// <summary>
-	///     Updates vertical movement including ground check, jump, and gravity.
-	///     Should be called once per frame by command brain.
+	///     Brain semantics: OnJump(true) is a one-frame press pulse.
 	/// </summary>
-	/// <param name="jumpRequested">Whether jump input is active.</param>
 	void IJumpListener.OnJump(bool jumpRequested)
 	{
-		TickVertical(jumpRequested);
-	}
-
-	protected override void PausableUpdate()
-	{
-		// Check game state
-		if (GameMgr.Instance == null)
-		{
-			Debug.LogWarning($"[{name}] JumpGravitySystem: GameMgr.Instance is null. Skipping update.", this);
-			return;
-		}
-
-		if (!GameMgr.Instance.IsGameRunning)
-			return;
-
-		// Vertical movement is updated via TickVertical() called by command brain
-		// This update loop can be used for continuous updates if needed
-	}
-
-	private void TickVertical(bool jumpRequested)
-	{
-		// Validate controller
-		if (_controller == null)
-		{
-			Debug.LogError(
-				$"[{name}] JumpGravitySystem: CharacterController reference is null! Assign in inspector.", this);
-			return;
-		}
-
-		// Perform ground check
-		GroundedCheck();
-
-		if (IsGrounded)
-		{
-			// Reset the fall timeout timer
-			_fallTimeoutDelta = _fallTimeout;
-
-			// Stop our velocity dropping infinitely when grounded
-			if (VerticalVelocity < 0.0f) VerticalVelocity = -2f;
-
-			// Jump
-			if (jumpRequested && _jumpTimeoutDelta <= 0.0f)
-			{
-				// The square root of H * -2 * G = how much velocity needed to reach desired height
-				VerticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
-				_context?.EventBus?.Raise<IJumpListener>(l => l.OnJumpPerformed());
-			}
-
-			// Jump timeout
-			if (_jumpTimeoutDelta >= 0.0f) _jumpTimeoutDelta -= Time.deltaTime;
-		}
-		else
-		{
-			// Reset the jump timeout timer
-			_jumpTimeoutDelta = _jumpTimeout;
-
-			// Fall timeout
-			if (_fallTimeoutDelta >= 0.0f)
-				_fallTimeoutDelta -= Time.deltaTime;
-			else
-				_context?.EventBus?.Raise<IGroundListener>(l => l.OnFall());
-		}
-
-		// Simplified gravity/drag for water
-		if (_isInWater)
-		{
-			// If moving down faster than water terminal, apply drag
-			if (VerticalVelocity < _waterTerminalVelocity)
-			{
-				VerticalVelocity = Mathf.MoveTowards(VerticalVelocity, _waterTerminalVelocity, _waterDrag * Time.deltaTime);
-			}
-			else
-			{
-				// Apply gravity up to water terminal
-				VerticalVelocity += _gravity * Time.deltaTime;
-				if (VerticalVelocity < _waterTerminalVelocity) VerticalVelocity = _waterTerminalVelocity;
-			}
-		}
-		else
-		{
-			// Standard gravity
-			if (VerticalVelocity < _terminalVelocity) VerticalVelocity += _gravity * Time.deltaTime;
-		}
-	}
-
-	/// <summary>
-	///     Performs ground detection using sphere cast.
-	/// </summary>
-	private void GroundedCheck()
-	{
-		// Set sphere position, with offset
-		var spherePosition = new Vector3(
-			transform.position.x, transform.position.y - _groundedOffset,
-			transform.position.z);
-
-		var wasGrounded = IsGrounded;
-		IsGrounded = Physics.CheckSphere(
-			spherePosition, _groundedRadius, _groundLayers,
-			QueryTriggerInteraction.Ignore);
-
-		if (wasGrounded != IsGrounded) _context?.EventBus?.Raise<IGroundListener>(l => l.OnGroundedChanged(IsGrounded));
-	}
-
-	protected override void OnPaused()
-	{
-		// Freeze vertical velocity when paused
-		VerticalVelocity = 0f;
+		if (jumpRequested)
+			_jumpPressedThisFrame = true;
 	}
 
 	void IWaterVolumeListener.OnEnteredWater(float surfaceHeight)
 	{
 		_isInWater = true;
+
+		// Water cancels jump forgiveness.
+		_jumpBufferRemaining = 0f;
+		_coyoteDisabledThisAir = true;
 	}
 
 	void IWaterVolumeListener.OnExitedWater()
 	{
 		_isInWater = false;
+		// Next time we touch ground, coyote resets naturally.
+	}
+
+	protected override void PausableUpdate()
+	{
+		if (GameMgr.Instance == null || !GameMgr.Instance.IsGameRunning)
+			return;
+
+		SimulateVertical();
+		_jumpPressedThisFrame = false; // consume pulse
+	}
+
+	private void SimulateVertical()
+	{
+		if (_controller == null)
+			return;
+
+		var dt = Time.deltaTime;
+
+		var wasGrounded = IsGrounded;
+		GroundedCheckAndSnap(); // updates IsGrounded
+
+		if (wasGrounded != IsGrounded)
+			_context?.EventBus?.Raise<IGroundListener>(l => l.OnGroundedChanged(IsGrounded));
+
+		if (IsGrounded)
+		{
+			_lastGroundedTime = Time.time;
+			_timeSinceLeftGround = 0f;
+
+			_fallTimeoutRemaining = _fallTimeout;
+			_fallEventFiredThisAir = false;
+
+			_coyoteDisabledThisAir = false; // re-arm for next ledge
+		}
+		else
+		{
+			_timeSinceLeftGround += dt;
+
+			// Once we're clearly falling, treat as committed drop for THIS air episode.
+			if (!_coyoteDisabledThisAir && VerticalVelocity <= _coyoteMaxFallSpeed)
+				_coyoteDisabledThisAir = true;
+
+			if (!_fallEventFiredThisAir)
+			{
+				_fallTimeoutRemaining -= dt;
+				if (_fallTimeoutRemaining <= 0f)
+				{
+					_fallEventFiredThisAir = true;
+					_context?.EventBus?.Raise<IGroundListener>(l => l.OnFall());
+				}
+			}
+		}
+
+		UpdateJumpTimers(dt);
+		TryConsumeBufferedJump();
+		ApplyVerticalPhysics(dt);
+	}
+
+	private void UpdateJumpTimers(float dt)
+	{
+		if (_jumpPressedThisFrame)
+			_jumpBufferRemaining = _jumpBufferTime;
+		else if (_jumpBufferRemaining > 0f)
+			_jumpBufferRemaining -= dt;
+
+		if (_jumpCooldownRemaining > 0f)
+			_jumpCooldownRemaining -= dt;
+	}
+
+	private bool HasCoyoteTime()
+	{
+		if (_coyoteTime <= 0f)
+			return false;
+
+		if (_coyoteDisabledThisAir)
+			return false;
+
+		return Time.time - _lastGroundedTime <= _coyoteTime;
+	}
+
+	private void TryConsumeBufferedJump()
+	{
+		if (_jumpBufferRemaining <= 0f)
+			return;
+
+		if (_jumpCooldownRemaining > 0f)
+			return;
+
+		if (_isInWater)
+			return;
+
+		var canJump = IsGrounded || HasCoyoteTime();
+		if (!canJump)
+			return;
+
+		PerformJump();
+	}
+
+	private void PerformJump()
+	{
+		VerticalVelocity = Mathf.Sqrt(_jumpHeight * -2f * _gravity);
+
+		_jumpBufferRemaining = 0f;
+		_jumpCooldownRemaining = _jumpTimeout;
+
+		// After jumping, coyote should not apply until you touch ground again.
+		_coyoteDisabledThisAir = true;
+
+		_context?.EventBus?.Raise<IJumpListener>(l => l.OnJumpPerformed());
+	}
+
+	private void ApplyVerticalPhysics(float dt)
+	{
+		if (_isInWater)
+		{
+			ApplyWater(dt);
+			return;
+		}
+
+		if (IsGrounded)
+		{
+			if (VerticalVelocity < 0f)
+				VerticalVelocity = StickToGroundVelocity;
+			return;
+		}
+
+		var gravityScale = ComputeAirGravityScale();
+		VerticalVelocity += _gravity * gravityScale * dt;
+
+		// Smooth early-fall limiter to avoid "invisible ledge" clunk.
+		if (_timeSinceLeftGround < _earlyFallTime)
+		{
+			var t = Mathf.Clamp01(_timeSinceLeftGround / Mathf.Max(0.0001f, _earlyFallTime));
+
+			// Fade out the limiter over the window: at t=0 strong, at t=1 none.
+			// maxDown starts near -_earlyFallMaxDownSpeed and moves toward a large negative (effectively no cap).
+			var startCap = -_earlyFallMaxDownSpeed;
+			var endCap = -TerminalVelocity;
+
+			// SmoothStep fade so it doesn't "release" suddenly.
+			var smooth = t * t * (3f - 2f * t);
+			var cap = Mathf.Lerp(startCap, endCap, smooth);
+
+			// If we're falling faster than the current cap, ease toward it instead of snapping.
+			if (VerticalVelocity < cap)
+			{
+				// How quickly we enforce the cap (bigger = tighter, smaller = smoother).
+				const float capTightness = 40f;
+				VerticalVelocity = Mathf.MoveTowards(VerticalVelocity, cap, capTightness * Time.deltaTime);
+			}
+		}
+
+		if (VerticalVelocity < -TerminalVelocity)
+			VerticalVelocity = -TerminalVelocity;
+	}
+
+	private float ComputeAirGravityScale()
+	{
+		if (_gravityRampTime <= 0f)
+			return 1f;
+
+		var t = Mathf.Clamp01(_timeSinceLeftGround / _gravityRampTime);
+		var smooth = t * t * (3f - 2f * t); // SmoothStep
+		return Mathf.Lerp(_minAirGravityScale, 1f, smooth);
+	}
+
+	private void ApplyWater(float dt)
+	{
+		if (VerticalVelocity < _waterTerminalVelocity)
+		{
+			VerticalVelocity = Mathf.MoveTowards(
+				VerticalVelocity, _waterTerminalVelocity, _waterDrag * dt);
+			return;
+		}
+
+		VerticalVelocity += _gravity * dt;
+		if (VerticalVelocity < _waterTerminalVelocity)
+			VerticalVelocity = _waterTerminalVelocity;
+	}
+
+	private void GroundedCheckAndSnap()
+	{
+		var spherePos = new Vector3(
+			transform.position.x,
+			transform.position.y - _groundedOffset,
+			transform.position.z);
+
+		var grounded = Physics.CheckSphere(
+			spherePos, _groundedRadius, _groundLayers, QueryTriggerInteraction.Ignore);
+
+		// Water overrides grounded for jump purposes.
+		IsGrounded = grounded && !_isInWater;
+
+		if (!IsGrounded && !_isInWater)
+		{
+			var allowSnap =
+				_timeSinceLeftGround <= _groundSnapWindow &&
+				VerticalVelocity <= JumpingUpThreshold;
+
+			if (allowSnap && TrySnapToGround(spherePos))
+				IsGrounded = true;
+		}
+	}
+
+	private bool TrySnapToGround(Vector3 spherePos)
+	{
+		if (_groundSnapDistance <= 0f)
+			return false;
+
+		var origin = spherePos + Vector3.up * 0.05f;
+
+		if (!Physics.SphereCast(
+				origin,
+				_groundedRadius,
+				Vector3.down,
+				out var hit,
+				_groundSnapDistance + 0.05f,
+				_groundLayers,
+				QueryTriggerInteraction.Ignore))
+			return false;
+
+		return hit.normal.y >= _groundMinNormalY;
+	}
+
+	private void InitializeComponents()
+	{
+		if (_context == null)
+			_context = GetComponent<CharacterContext>();
+
+		_controller = _context != null ? _context.Controller : GetComponent<CharacterController>();
+
+		if (_controller == null)
+		{
+			Debug.LogError($"[{name}] JumpGravitySystem: CharacterController is required.", this);
+			enabled = false;
+		}
+	}
+
+	protected override void OnPaused()
+	{
+		VerticalVelocity = 0f;
+		_jumpPressedThisFrame = false;
+		_fallEventFiredThisAir = false;
+		_coyoteDisabledThisAir = false;
 	}
 }

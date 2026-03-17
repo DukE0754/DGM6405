@@ -280,6 +280,16 @@ MonoBehaviour:
   _gravity: -15
   _jumpTimeout: 0
   _fallTimeout: 0.15
+  _coyoteTime: 0.1
+  _jumpBufferTime: 0.15
+  _coyoteMaxFallSpeed: -4
+  _gravityRampTime: 0.05
+  _minAirGravityScale: 0.3
+  _earlyFallTime: 0.12
+  _earlyFallMaxDownSpeed: 0.5
+  _groundSnapDistance: 0.2
+  _groundSnapWindow: 0.08
+  _groundMinNormalY: 0.9
   _waterDrag: 50
   _waterTerminalVelocity: -2
   _groundedOffset: -0.14
@@ -287,7 +297,6 @@ MonoBehaviour:
   _groundLayers:
     serializedVersion: 2
     m_Bits: 1
-  _showGizmos: 1
   _context: {fileID: 2085210499851947648}
 --- !u!114 &1024303042373319563
 MonoBehaviour:
@@ -469,10 +478,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a06062540d8b4ccaacc31250d60b4db2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDeathHandler
+  Data: {fileID: 11400000, guid: c7105e5f3aa174cf1a0cf5923b88175e, type: 2}
   _gameOverDelay: 3
-  _waterHeight: 0
-  _floatOffset: -0.1
-  _floatSpeed: 2
   _context: {fileID: 2085210499851947648}
 --- !u!114 &370838149222387582
 MonoBehaviour:
