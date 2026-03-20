@@ -119,7 +119,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	///     Updates grounded state animation parameter.
 	/// </summary>
 	/// <param name="grounded">Whether the character is grounded.</param>
-	public void OnGroundedChanged(bool grounded)
+	void IGroundListener.OnGroundedChanged(bool grounded)
 	{
 		SetGrounded(grounded);
 		if (grounded)
@@ -132,7 +132,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <summary>
 	///     Sets free fall animation state.
 	/// </summary>
-	public void OnFall()
+	void IGroundListener.OnFall()
 	{
 		SetFreeFall(true);
 	}
@@ -154,7 +154,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <summary>
 	///     Sets jump animation state.
 	/// </summary>
-	public void OnJumpPerformed()
+	void IJumpListener.OnJumpPerformed()
 	{
 		SetJumping(true);
 	}
@@ -177,7 +177,7 @@ public class CharacterAnimationSystem : PausableBehaviour,
 	/// <param name="speed"></param>
 	/// <param name="velocityX"></param>
 	/// <param name="velocityZ"></param>
-	public void OnSpeedChanged(
+	void IMovementSpeedListener.OnSpeedChanged(
 		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX,
 		float velocityZ)
 	{

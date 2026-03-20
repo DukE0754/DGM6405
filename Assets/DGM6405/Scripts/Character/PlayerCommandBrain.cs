@@ -160,8 +160,14 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 			return;
 		}
 
-		if (!GameMgr.Instance.IsGameRunning || _isDead)
+		if (!GameMgr.Instance.IsGameRunning)
 			return;
+
+		if (_isDead)
+		{
+			ProcessDeathSkipInputs();
+			return;
+		}
 
 		// Update control scheme check
 		UpdateControlScheme();
@@ -181,6 +187,25 @@ public class PlayerCommandBrain : PausableBehaviour, ILevelListener, IHealthList
 
 		// Process camera rotation in LateUpdate
 		ProcessCameraCommands();
+	}
+
+	/// <summary>
+	///     Processes minimal inputs during death to support skipping the death sequence.
+	/// </summary>
+	private void ProcessDeathSkipInputs()
+	{
+		if (_inputHandler == null || _context?.EventBus == null)
+			return;
+
+		// Raise skip death event if any of the skip triggers are pressed
+		if (_inputHandler.jump || _inputHandler.shoot || _inputHandler.sprint || _inputHandler.block)
+		{
+			_context.EventBus.Raise<ISkipDeathListener>(l => l.OnSkipDeathAnimation());
+
+			// Consume jump input specifically if it was pressed to prevent it sticking when restarting (if applicable)
+			if (_inputHandler.jump)
+				_inputHandler.jump = false;
+		}
 	}
 
 	/// <summary>

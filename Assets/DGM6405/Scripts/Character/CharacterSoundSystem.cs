@@ -80,12 +80,12 @@ public class CharacterSoundSystem : PausableBehaviour,
 		//if (blockInput) PlayBlock();
 	}
 
-	public void OnGroundedChanged(bool isGrounded)
+	void IGroundListener.OnGroundedChanged(bool isGrounded)
 	{
 		if (isGrounded) PlayLanding();
 	}
 
-	public void OnJumpPerformed()
+	void IJumpListener.OnJumpPerformed()
 	{
 		// We could play a jump sound here if we had one.
 	}

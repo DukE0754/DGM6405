@@ -33,6 +33,14 @@ public class PlayerMgr : Singleton<PlayerMgr>
 	/// </summary>
 	public void PauseInput()
 	{
+		// Don't allow pausing if the player is dead/dying
+		if (PlayerObject != null)
+		{
+			var deathHandler = PlayerObject.GetComponent<PlayerDeathHandler>();
+			if (deathHandler != null && deathHandler.IsDead)
+				return;
+		}
+
 		// Run pause from game manager
 		GlobalContext.Instance.GameMgr.PauseGameToggle();
 	}

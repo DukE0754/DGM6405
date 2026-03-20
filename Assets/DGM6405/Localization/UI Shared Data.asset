@@ -251,6 +251,10 @@ MonoBehaviour:
     m_Key: loc_unbound
     m_Metadata:
       m_Items: []
+  - m_Id: 6207468416638976
+    m_Key: loc_settings_sensitivity
+    m_Metadata:
+      m_Items: []
   m_Metadata:
     m_Items: []
   m_KeyGenerator:

@@ -28,7 +28,10 @@ public class GameUI : MenuBase, IUnsupportedInputListener
 	[SerializeField] private LocalizeStringEvent _localizeStringEvent;
 	[SerializeField] private string _controlNameVariableName = "controlName";
 	[SerializeField] private float _messageDuration = 1.5f;
+	[SerializeField] private AudioSource _unboundAudioSource;
 	[SerializeField] private bool _debug;
+	
+	
 	private GameLoopManager _gameLoop;
 
 	private Coroutine _unsupportedRoutine;
@@ -153,7 +156,8 @@ public class GameUI : MenuBase, IUnsupportedInputListener
 		}
 
 		_unsupportedInputText.gameObject.SetActive(true);
-
+		_unboundAudioSource.Play();
+		
 		// Fade in
 		yield return FadeText(_unsupportedInputText, 0f, 1f, 0.2f);
 

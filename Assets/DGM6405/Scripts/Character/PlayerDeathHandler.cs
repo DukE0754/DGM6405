@@ -6,7 +6,7 @@ using UnityEngine.Serialization;
 ///     Handles the player's death sequence, including disabling components,
 ///     handling water floating, and triggering game over.
 /// </summary>
-public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeListener
+public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeListener, ISkipDeathListener
 {
 	[FormerlySerializedAs("_settings")]
 	[Header("Settings")]
@@ -21,6 +21,9 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 
 	private bool _isDead;
 	private bool _isFloating;
+	private bool _skipRequested;
+
+	public bool IsDead => _isDead;
 
 	private void Awake()
 	{
@@ -31,12 +34,14 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 	{
 		_context?.EventBus?.Register<IHealthListener>(this);
 		_context?.EventBus?.Register<IWaterVolumeListener>(this);
+		_context?.EventBus?.Register<ISkipDeathListener>(this);
 	}
 
 	private void OnDisable()
 	{
 		_context?.EventBus?.Unregister<IHealthListener>(this);
 		_context?.EventBus?.Unregister<IWaterVolumeListener>(this);
+		_context?.EventBus?.Unregister<ISkipDeathListener>(this);
 	}
 
 	public void OnHealthChanged(float current, float max)
@@ -64,6 +69,11 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 	{
 	}
 
+	public void OnSkipDeathAnimation()
+	{
+		if (_isDead) _skipRequested = true;
+	}
+
 	private IEnumerator DeathSequence()
 	{
 		// Disable character controller to stop movement and gravity
@@ -78,6 +88,8 @@ public class PlayerDeathHandler : MonoBehaviour, IHealthListener, IWaterVolumeLi
 
 		while (timer < _gameOverDelay)
 		{
+			if (_skipRequested) break;
+
 			// If we are below the floating target, move up smoothly
 			var targetY = _currentWaterHeight + floatOffset;
 			if (transform.position.y < targetY)

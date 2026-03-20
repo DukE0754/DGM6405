@@ -261,6 +261,10 @@ MonoBehaviour:
     m_Metadata:
       m_Items:
       - rid: 4859673349192679677
+  - m_Id: 6207468416638976
+    m_Localized: Sensitivity
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:

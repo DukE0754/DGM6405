@@ -12,6 +12,7 @@ public class Settings : MenuBase
 	[SerializeField] private Slider _masterSlider;
 	[SerializeField] private Slider _sfxSlider;
 	[SerializeField] private Slider _musicSlider;
+	[SerializeField] private Slider _sensitivitySlider;
 	[SerializeField] private Toggle _muteAllToggle;
 
 	private bool _ignoreEvents;
@@ -22,6 +23,7 @@ public class Settings : MenuBase
 		if (_masterSlider) _masterSlider.onValueChanged.AddListener(OnMasterChanged);
 		if (_sfxSlider) _sfxSlider.onValueChanged.AddListener(OnSfxChanged);
 		if (_musicSlider) _musicSlider.onValueChanged.AddListener(OnMusicChanged);
+		if (_sensitivitySlider) _sensitivitySlider.onValueChanged.AddListener(OnSensitivityChanged);
 		if (_muteAllToggle) _muteAllToggle.onValueChanged.AddListener(OnMuteAllChanged);
 	}
 
@@ -38,6 +40,7 @@ public class Settings : MenuBase
 		if (_masterSlider) _masterSlider.onValueChanged.RemoveListener(OnMasterChanged);
 		if (_sfxSlider) _sfxSlider.onValueChanged.RemoveListener(OnSfxChanged);
 		if (_musicSlider) _musicSlider.onValueChanged.RemoveListener(OnMusicChanged);
+		if (_sensitivitySlider) _sensitivitySlider.onValueChanged.RemoveListener(OnSensitivityChanged);
 		if (_muteAllToggle) _muteAllToggle.onValueChanged.RemoveListener(OnMuteAllChanged);
 	}
 
@@ -53,6 +56,7 @@ public class Settings : MenuBase
 		if (_masterSlider) _masterSlider.value = SaveUtil.SavedValues.GlobalVolume;
 		if (_sfxSlider) _sfxSlider.value = SaveUtil.SavedValues.SfxVolume;
 		if (_musicSlider) _musicSlider.value = SaveUtil.SavedValues.MusicVolume;
+		if (_sensitivitySlider) _sensitivitySlider.value = SaveUtil.SavedValues.LookSensitivity;
 		_ignoreEvents = false;
 	}
 
@@ -81,6 +85,12 @@ public class Settings : MenuBase
 			GlobalContext.Instance.AudioMgr.MusicVolume = value;
 		else
 			GlobalEventBus.Instance.Raise<IAudioEventListener>(l => l.OnSetMusicVolume(value));
+	}
+
+	private void OnSensitivityChanged(float value)
+	{
+		if (_ignoreEvents) return;
+		SaveUtil.SavedValues.LookSensitivity = value;
 	}
 
 	private void OnMuteAllChanged(bool isMuted)

@@ -103,6 +103,13 @@ public interface IUnsupportedInputListener
 	}
 }
 
+public interface ISkipDeathListener : IEntityListener
+{
+	void OnSkipDeathAnimation()
+	{
+	}
+}
+
 #endregion
 
 #region Local Entity Listeners

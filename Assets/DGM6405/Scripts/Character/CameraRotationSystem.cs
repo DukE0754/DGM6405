@@ -113,9 +113,10 @@ public class CameraRotationSystem : PausableBehaviour, ILookListener
 		{
 			// Don't multiply mouse input by Time.deltaTime
 			var deltaTimeMultiplier = isMouse ? 1.0f : Time.deltaTime;
+			var sensitivity = SaveUtil.SavedValues?.LookSensitivity ?? 1.0f;
 
-			_cinemachineTargetYaw += lookInput.x * deltaTimeMultiplier;
-			_cinemachineTargetPitch += lookInput.y * deltaTimeMultiplier;
+			_cinemachineTargetYaw += lookInput.x * deltaTimeMultiplier * sensitivity;
+			_cinemachineTargetPitch += lookInput.y * deltaTimeMultiplier * sensitivity;
 		}
 
 		// Clamp our rotations so our values are limited 360 degrees
