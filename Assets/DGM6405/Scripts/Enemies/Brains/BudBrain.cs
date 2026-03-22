@@ -98,8 +98,9 @@ public class BudBrain : PausableBehaviour, IHealthListener
 		if (_targetProvider == null || !_targetProvider.HasTarget) return;
 
 		var target = _targetProvider.GetTarget();
-		var targetPos = _targetProvider.GetTargetPosition();
-		if (_detection.IsTargetInDetectionRange(target) && _detection.HasLineOfSight(target))
+		var targetOffset = _targetProvider.GetTargetOffset();
+		var targetPos = GetResolvedTargetPosition(target);
+		if (_detection.IsTargetInDetectionRange(target, targetOffset) && _detection.HasLineOfSight(target, targetOffset))
 		{
 			_bus?.Raise<IAimTargetListener>(l => l.OnSetAimTarget(targetPos));
 			if (_weapon != null) _weapon.SetUseArc(false);
@@ -112,12 +113,19 @@ public class BudBrain : PausableBehaviour, IHealthListener
 		if (_targetProvider == null || !_targetProvider.HasTarget) return;
 
 		var target = _targetProvider.GetTarget();
-		var targetPos = _targetProvider.GetTargetPosition();
-		if (_detection.IsTargetInDetectionRange(target) && _detection.HasLineOfSight(target))
+		var targetOffset = _targetProvider.GetTargetOffset();
+		var targetPos = GetResolvedTargetPosition(target);
+		if (_detection.IsTargetInDetectionRange(target, targetOffset) && _detection.HasLineOfSight(target, targetOffset))
 		{
 			_bus?.Raise<IAimTargetListener>(l => l.OnSetAimTarget(targetPos));
 			if (_weapon != null) _weapon.SetUseArc(true);
 			_bus?.Raise<IShootListener>(l => l.OnShoot(true));
 		}
+	}
+
+	private Vector3 GetResolvedTargetPosition(Transform target)
+	{
+		if (target == null) return _targetProvider.GetTargetPosition();
+		return target.position + _targetProvider.GetTargetOffset();
 	}
 }

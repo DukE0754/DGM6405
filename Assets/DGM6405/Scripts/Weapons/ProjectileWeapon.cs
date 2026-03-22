@@ -89,6 +89,15 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 		_useArc = useArc;
 	}
 
+	private void OnDrawGizmosSelected()
+	{
+		if (_muzzle == null) return;
+
+		Gizmos.color = _useArc ? Color.cyan : Color.red;
+		Gizmos.DrawLine(_muzzle.position, _lastAimTarget);
+		Gizmos.DrawSphere(_lastAimTarget, GetProjectileGizmoRadius());
+	}
+
 	private void SpawnProjectile(Vector3 direction)
 	{
 		if (_projectilePrefab == null)
@@ -122,5 +131,43 @@ public class ProjectileWeapon : MonoBehaviour, IWeapon, IAimTargetListener, IFir
 		var velocityXZ = displacementXZ / time;
 
 		return velocityXZ + velocityY * -Mathf.Sign(gravity);
+	}
+
+	private float GetProjectileGizmoRadius()
+	{
+		// if (_projectilePrefab == null) return 0.1f;
+		//
+		// var sphere = _projectilePrefab.GetComponentInChildren<SphereCollider>();
+		// if (sphere != null)
+		// {
+		// 	var scale = sphere.transform.lossyScale;
+		// 	var maxAxisScale = Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y), Mathf.Abs(scale.z));
+		// 	return sphere.radius * maxAxisScale;
+		// }
+		//
+		// var capsule = _projectilePrefab.GetComponentInChildren<CapsuleCollider>();
+		// if (capsule != null)
+		// {
+		// 	var scale = capsule.transform.lossyScale;
+		// 	float axisScale = capsule.direction switch
+		// 	{
+		// 		0 => Mathf.Max(Mathf.Abs(scale.y), Mathf.Abs(scale.z)),
+		// 		1 => Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.z)),
+		// 		_ => Mathf.Max(Mathf.Abs(scale.x), Mathf.Abs(scale.y))
+		// 	};
+		// 	return capsule.radius * axisScale;
+		// }
+		//
+		// var box = _projectilePrefab.GetComponentInChildren<BoxCollider>();
+		// if (box != null)
+		// {
+		// 	var size = Vector3.Scale(box.size, box.transform.lossyScale);
+		// 	return Mathf.Max(Mathf.Abs(size.x), Mathf.Abs(size.y), Mathf.Abs(size.z)) * 0.5f;
+		// }
+		//
+		// var collider = _projectilePrefab.GetComponentInChildren<Collider>();
+		// if (collider != null) return collider.bounds.extents.magnitude;
+
+		return 0.1f;
 	}
 }

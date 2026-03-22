@@ -7,5 +7,6 @@ public interface ITargetProvider
 {
 	bool HasTarget { get; }
 	Transform GetTarget();
+	Vector3 GetTargetOffset();
 	Vector3 GetTargetPosition();
 }

@@ -59,7 +59,7 @@ public class DetectionSystem : MonoBehaviour
 			var target = _hitColliders[i].transform;
 			if (IsTargetInDetectionRange(target) && HasLineOfSight(target))
 			{
-				var directionToTarget = (target.position - _eyePosition.position).normalized;
+				var directionToTarget = (GetTargetPoint(target, Vector3.zero) - _eyePosition.position).normalized;
 				float angle = Vector3.Angle(transform.forward, directionToTarget);
 				if (angle < minAngle)
 				{
@@ -74,25 +74,25 @@ public class DetectionSystem : MonoBehaviour
 
 	public bool IsTargetInDetectionRange(Transform target)
 	{
+		return IsTargetInDetectionRange(target, Vector3.zero);
+	}
+
+	public bool IsTargetInDetectionRange(Transform target, Vector3 targetOffset)
+	{
 		if (target == null) return false;
-		return Vector3.Distance(transform.position, target.position) <= _detectionRange;
+		return Vector3.Distance(transform.position, GetTargetPoint(target, targetOffset)) <= _detectionRange;
 	}
 
 	public bool HasLineOfSight(Transform target)
 	{
+		return HasLineOfSight(target, Vector3.zero);
+	}
+
+	public bool HasLineOfSight(Transform target, Vector3 targetOffset)
+	{
 		if (target == null) return false;
 
-		// Aim at target center for LOS check
-		Vector3 targetCenter = target.position + Vector3.up * 1f;
-		var colliders = target.GetComponentsInChildren<Collider>();
-		foreach (var col in colliders)
-		{
-			if (ColliderMgr.Instance != null && ColliderMgr.Instance.TryGetDamageReceiver(col, out _))
-			{
-				targetCenter = col.bounds.center;
-				break;
-			}
-		}
+		Vector3 targetCenter = GetTargetPoint(target, targetOffset);
 
 		var directionToTarget = (targetCenter - _eyePosition.position).normalized;
 		var distanceToTarget = Vector3.Distance(_eyePosition.position, targetCenter);
@@ -110,5 +110,10 @@ public class DetectionSystem : MonoBehaviour
 				return false;
 
 		return true;
+	}
+
+	private static Vector3 GetTargetPoint(Transform target, Vector3 targetOffset)
+	{
+		return target.position + targetOffset;
 	}
 }
