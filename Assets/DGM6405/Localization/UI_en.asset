@@ -265,6 +265,10 @@ MonoBehaviour:
     m_Localized: Sensitivity
     m_Metadata:
       m_Items: []
+  - m_Id: 6219830116851712
+    m_Localized: Adjust sensitivity in Settings
+    m_Metadata:
+      m_Items: []
   references:
     version: 2
     RefIds:
