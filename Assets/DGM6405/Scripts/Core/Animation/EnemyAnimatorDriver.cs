@@ -4,7 +4,7 @@
 ///     Centralizes animation calls for enemies.
 ///     Listens to LocalEventBus to react to gameplay events.
 /// </summary>
-public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListener, IMovementSpeedListener
+public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IFireProjectileListener, IHealthListener, IMovementSpeedListener
 {
 	// Cached hashes for performance
 	private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -13,11 +13,16 @@ public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListene
 	private static readonly int HitTriggerHash = Animator.StringToHash("Hit");
 	private static readonly int DieTriggerHash = Animator.StringToHash("Die");
 	[SerializeField] private Animator _animator;
+	[SerializeField] private ProjectileWeapon _projectileWeapon;
+	[SerializeField] private AudioClip[] _attackAudioClips;
+	[SerializeField] [Range(0f, 1f)] private float _attackAudioVolume = 0.75f;
 
 	private void Awake()
 	{
 		if (_animator == null)
 			_animator = GetComponentInChildren<Animator>();
+		if (_projectileWeapon == null)
+			_projectileWeapon = GetComponent<ProjectileWeapon>();
 	}
 
 	void IHealthListener.OnHealthChanged(float current, float max)
@@ -34,6 +39,11 @@ public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListene
 		float speed, float animationBlend, float walkSpeed, float sprintSpeed, float velocityX, float velocityZ)
 	{
 		SetSpeed(speed);
+	}
+
+	void IFireProjectileListener.OnFireProjectile()
+	{
+		PlayAttackSound();
 	}
 
 	// Event listeners
@@ -65,5 +75,24 @@ public class EnemyAnimatorDriver : MonoBehaviour, IShootListener, IHealthListene
 	{
 		if (_animator == null) return;
 		_animator.SetTrigger(DieTriggerHash);
+	}
+
+	private void PlayAttackSound()
+	{
+		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
+			return;
+
+		if (_attackAudioClips == null || _attackAudioClips.Length == 0)
+			return;
+
+		var clip = _attackAudioClips[Random.Range(0, _attackAudioClips.Length)];
+		if (clip == null)
+			return;
+
+		var position = _projectileWeapon != null && _projectileWeapon.Muzzle != null
+			? _projectileWeapon.Muzzle.position
+			: transform.position;
+
+		AudioSource.PlayClipAtPoint(clip, position, _attackAudioVolume);
 	}
 }

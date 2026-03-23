@@ -22,6 +22,7 @@ GameObject:
   - component: {fileID: 1024303042373319563}
   - component: {fileID: 807198463761630702}
   - component: {fileID: 8063276742084749067}
+  - component: {fileID: 5555555555555555555}
   - component: {fileID: 2978502145741744390}
   - component: {fileID: 1716728005899580312}
   - component: {fileID: 4663922526638254312}
@@ -150,6 +151,7 @@ MonoBehaviour:
   - {fileID: 1024303042373319563}
   - {fileID: 807198463761630702}
   - {fileID: 8063276742084749067}
+  - {fileID: 5555555555555555555}
   - {fileID: 2978502145741744390}
   - {fileID: 1716728005899580312}
   - {fileID: 4663922526638254312}
@@ -353,6 +355,60 @@ MonoBehaviour:
   _animationRunSpeed: 5.335
   _context: {fileID: 2085210499851947648}
   _animator: {fileID: 4695532779714616022}
+--- !u!114 &5555555555555555555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 69784992780246951}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 985beaaae1376416db117f090c3a352a, type: 3}
+  m_Name:
+  m_EditorClassIdentifier: Assembly-CSharp::CharacterSoundSystem
+  _footstepAudioClips:
+  - {fileID: 8300000, guid: 72f526a6a9890f643a88e85a61c86c8a, type: 3}
+  - {fileID: 8300000, guid: 85016e0f2b01da248b9663dd49a161b0, type: 3}
+  - {fileID: 8300000, guid: 186de84b3207156479abe98f4958fed0, type: 3}
+  - {fileID: 8300000, guid: 1a91fcd19acf1e54bba0945d9f390849, type: 3}
+  - {fileID: 8300000, guid: 14e8a8d2158bec840b56c54f5266e692, type: 3}
+  - {fileID: 8300000, guid: 29841e7d5bbfb5b419c9ad16ca8bc4c1, type: 3}
+  - {fileID: 8300000, guid: dd1af302b8902684d9381de1f2d3a5af, type: 3}
+  - {fileID: 8300000, guid: 67c8b33e424ccdc4486edf538ab91c5a, type: 3}
+  - {fileID: 8300000, guid: 274649b0e221539409070ebf6c18918b, type: 3}
+  - {fileID: 8300000, guid: a3194b8bbc96ef84fab1f98f4b7dae3e, type: 3}
+  _landingAudioClip: {fileID: 8300000, guid: ff697d3070687ce4583faa0561a145a2, type: 3}
+  _blockAudioClip: {fileID: 0}
+  _shootAudioClip: {fileID: 0}
+  _meleeAudioClip: {fileID: 0}
+  _dodgeAudioClip: {fileID: 0}
+  _blockStartAudioClips:
+  - {fileID: 8300000, guid: f54e8da0781443dd86e9e469ca29d3d1, type: 3}
+  _blockEndAudioClips:
+  - {fileID: 8300000, guid: fc4d1c38f8064d57a864c301a402e358, type: 3}
+  _blockHitAudioClips:
+  - {fileID: 8300000, guid: 6e74b3d722823a440a36165124e0e8d0, type: 3}
+  - {fileID: 8300000, guid: 3a9155de5a4a70b4fa7662c0a86d1ca1, type: 3}
+  - {fileID: 8300000, guid: ad165a230f94a53478fc6a5da3b08d56, type: 3}
+  - {fileID: 8300000, guid: 296d177656f3fde49b5a668c72b2396f, type: 3}
+  - {fileID: 8300000, guid: 3f77d4f73dfc5cc46a43680756edcd34, type: 3}
+  - {fileID: 8300000, guid: 1f839a32494a1274da43048b35310aec, type: 3}
+  - {fileID: 8300000, guid: e07b0a035e409c24396ee3138d4d71ee, type: 3}
+  - {fileID: 8300000, guid: a04d18b46d51cc7468e29012ff05521e, type: 3}
+  - {fileID: 8300000, guid: 366648dd32df03848a8803fe87b136a0, type: 3}
+  - {fileID: 8300000, guid: 4b8b714c676533140a84c2ccc43a055a, type: 3}
+  _deathAudioClips:
+  - {fileID: 8300000, guid: 73ab88f7c699437983eb598b8347d6c8, type: 3}
+  - {fileID: 8300000, guid: 94952583499b430394caffb0db5c471c, type: 3}
+  - {fileID: 8300000, guid: aa8cae5e255b4ba59583666da25e46c3, type: 3}
+  - {fileID: 8300000, guid: 2c167b9467d94f74a0723735460a1c57, type: 3}
+  - {fileID: 8300000, guid: 3b73135f58d84624becec9be57d7662d, type: 3}
+  _footstepAudioVolume: 0.5
+  _combatAudioVolume: 0.7
+  _deathAudioVolume: 0.85
+  _context: {fileID: 2085210499851947648}
+  _controller: {fileID: 4251330539324106305}
 --- !u!114 &2978502145741744390
 MonoBehaviour:
   m_ObjectHideFlags: 0

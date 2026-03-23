@@ -95,6 +95,7 @@ public class GameMgr : Singleton<GameMgr>
 			Time.timeScale = 0f;
 			Cursor.lockState = CursorLockMode.None;
 			_gameState = GameStates.Paused;
+			AudioMgr.Instance?.PauseMusic();
 			Debug.Log("Pause state enabled");
 			GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(GameMenus.PauseMenu));
 			GlobalEventBus.Instance.Raise<IGameStateListener>(l => l.OnPauseStateChanged(true));
@@ -107,6 +108,7 @@ public class GameMgr : Singleton<GameMgr>
 		Time.timeScale = 1f;
 		Cursor.lockState = CursorLockMode.Locked;
 		_gameState = GameStates.InGame;
+		AudioMgr.Instance?.ResumeMusic();
 		Debug.Log("Pause state disabled");
 		GlobalEventBus.Instance?.Raise<IUIEventListener>(l => l?.OnCloseAllMenus());
 		GlobalEventBus.Instance?.Raise<IUIEventListener>(l => l?.OnShowMenu(GameMenus.InGameUI, null, false));

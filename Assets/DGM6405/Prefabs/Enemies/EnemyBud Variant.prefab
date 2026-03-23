@@ -201,6 +201,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _animator: {fileID: 9208243168057220280}
+  _projectileWeapon: {fileID: 2353016442290283243}
+  _attackAudioClips:
+  - {fileID: 8300000, guid: 6448c688b58a41bfa7217df66283b8c3, type: 3}
+  _attackAudioVolume: 0.75
 --- !u!114 &520818099312481037
 MonoBehaviour:
   m_ObjectHideFlags: 0

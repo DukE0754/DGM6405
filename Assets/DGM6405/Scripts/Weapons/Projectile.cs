@@ -7,6 +7,8 @@
 public class Projectile : PausableBehaviour
 {
 	[SerializeField] private ProjectileData _data;
+	[SerializeField] private AudioClip[] _impactAudioClips;
+	[SerializeField] [Range(0f, 1f)] private float _impactVolume = 0.8f;
 
 	private Rigidbody _rb;
 	private GameObject _source;
@@ -55,6 +57,12 @@ public class Projectile : PausableBehaviour
 				damageReceiver.ApplyDamage(info);
 			}
 
+		if (!IsShieldCollision(collision))
+		{
+			var hitPoint = collision.contactCount > 0 ? collision.contacts[0].point : transform.position;
+			PlayImpact(hitPoint);
+		}
+
 		// Destroy on impact
 		Destroy(gameObject);
 	}
@@ -93,5 +101,25 @@ public class Projectile : PausableBehaviour
 		}
 
 		Destroy(gameObject);
+	}
+
+	private bool IsShieldCollision(Collision collision)
+	{
+		if (collision.gameObject.TryGetComponent(out ShieldProjectileBlocker _))
+			return true;
+
+		return collision.transform.GetComponentInParent<ShieldProjectileBlocker>() != null;
+	}
+
+	private void PlayImpact(Vector3 position)
+	{
+		if (_impactAudioClips == null || _impactAudioClips.Length == 0)
+			return;
+
+		var clip = _impactAudioClips[Random.Range(0, _impactAudioClips.Length)];
+		if (clip == null)
+			return;
+
+		AudioSource.PlayClipAtPoint(clip, position, _impactVolume);
 	}
 }

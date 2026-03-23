@@ -41,8 +41,27 @@ public class SceneMgr : Singleton<SceneMgr>
 
 		while (!asyncOperation.isDone) yield return null;
 
+		UpdateMusicForScene(sceneToLoad);
+
 		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnHideMenu(GameMenus.Fader));
 
 		GlobalEventBus.Instance.Raise<IUIEventListener>(l => l.OnShowMenu(menuToOpen, () => onComplete?.Invoke()));
+	}
+
+	private void UpdateMusicForScene(string sceneToLoad)
+	{
+		if (AudioMgr.Instance == null)
+			return;
+
+		switch (sceneToLoad)
+		{
+			case nameof(GameScenes.Gameplay):
+				AudioMgr.Instance.PlayMusic(AudioMgr.MusicTypes.Gameplay, 1f);
+				break;
+			case nameof(GameScenes.MainMenu):
+			case nameof(GameScenes.GameOver):
+				AudioMgr.Instance.PlayMusic(AudioMgr.MusicTypes.MainMenu, 1f);
+				break;
+		}
 	}
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 ///     Called via animation events or directly from other systems.
 /// </summary>
 public class CharacterSoundSystem : PausableBehaviour,
-	IShootListener, IMeleeListener, IBlockListener, IGroundListener, IJumpListener
+	IShootListener, IMeleeListener, IBlockListener, IBlockHitListener, IGroundListener, IJumpListener, IHealthListener
 {
 	[Header("Audio Clips")]
 	[Tooltip("Audio clips for footstep sounds. Randomly selected when playing footstep.")]
@@ -26,6 +26,18 @@ public class CharacterSoundSystem : PausableBehaviour,
 	[Tooltip("Audio clip for dodge sound.")]
 	[SerializeField] private AudioClip _dodgeAudioClip;
 
+	[Tooltip("Audio clips for block-start sounds.")]
+	[SerializeField] private AudioClip[] _blockStartAudioClips;
+
+	[Tooltip("Audio clips for block-end sounds.")]
+	[SerializeField] private AudioClip[] _blockEndAudioClips;
+
+	[Tooltip("Audio clips for shield impact sounds.")]
+	[SerializeField] private AudioClip[] _blockHitAudioClips;
+
+	[Tooltip("Audio clips for player death sounds.")]
+	[SerializeField] private AudioClip[] _deathAudioClips;
+
 	[Header("Audio Settings")]
 	[Tooltip("Volume for footstep and landing sounds.")]
 	[Range(0f, 1f)]
@@ -34,6 +46,10 @@ public class CharacterSoundSystem : PausableBehaviour,
 	[Tooltip("Volume for combat sounds (block, shoot, melee, dodge).")]
 	[Range(0f, 1f)]
 	[SerializeField] private float _combatAudioVolume = 0.7f;
+
+	[Tooltip("Volume for death sounds.")]
+	[Range(0f, 1f)]
+	[SerializeField] private float _deathAudioVolume = 0.85f;
 
 	[Header("References")]
 	[Tooltip("CharacterContext component. If null, will try to find on same GameObject.")]
@@ -77,7 +93,15 @@ public class CharacterSoundSystem : PausableBehaviour,
 
 	void IBlockListener.OnBlock(bool blockInput)
 	{
-		//if (blockInput) PlayBlock();
+		if (blockInput)
+			PlayBlockStart();
+		else
+			PlayBlockEnd();
+	}
+
+	void IBlockHitListener.OnBlockHit(Vector3 hitPoint, Vector3 hitNormal, GameObject source)
+	{
+		PlayBlockHit(hitPoint);
 	}
 
 	void IGroundListener.OnGroundedChanged(bool isGrounded)
@@ -88,6 +112,19 @@ public class CharacterSoundSystem : PausableBehaviour,
 	void IJumpListener.OnJumpPerformed()
 	{
 		// We could play a jump sound here if we had one.
+	}
+
+	void IHealthListener.OnHealthChanged(float current, float max)
+	{
+	}
+
+	void IHealthListener.OnDamageTaken(int amount, Vector3 direction)
+	{
+	}
+
+	void IHealthListener.OnDied()
+	{
+		PlayDeath();
 	}
 
 	void IMeleeListener.OnMelee(bool meleeInput)
@@ -158,21 +195,40 @@ public class CharacterSoundSystem : PausableBehaviour,
 	}
 
 	/// <summary>
-	///     Plays a block sound.
+	///     Plays a block-start sound.
 	/// </summary>
-	public void PlayBlock()
+	public void PlayBlockStart()
 	{
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 			return;
 
-		if (_blockAudioClip == null)
-		{
-			Debug.LogWarning($"[{name}] CharacterSoundSystem: Block audio clip not assigned.", this);
-			return;
-		}
+		if (!PlayRandomClipAt(_blockStartAudioClips, GetSoundPosition(), _combatAudioVolume))
+			PlayClipAtPoint(_blockAudioClip, GetSoundPosition(), _combatAudioVolume, "Block audio clip not assigned.");
+	}
 
-		var position = GetSoundPosition();
-		AudioSource.PlayClipAtPoint(_blockAudioClip, position, _combatAudioVolume);
+	/// <summary>
+	///     Plays a block-end sound.
+	/// </summary>
+	public void PlayBlockEnd()
+	{
+		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
+			return;
+
+		if (!PlayRandomClipAt(_blockEndAudioClips, GetSoundPosition(), _combatAudioVolume))
+			PlayClipAtPoint(_blockAudioClip, GetSoundPosition(), _combatAudioVolume, "Block audio clip not assigned.");
+	}
+
+	/// <summary>
+	///     Plays a shield impact sound.
+	/// </summary>
+	public void PlayBlockHit(Vector3 hitPoint)
+	{
+		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
+			return;
+
+		var position = hitPoint == Vector3.zero ? GetSoundPosition() : hitPoint;
+		if (!PlayRandomClipAt(_blockHitAudioClips, position, _combatAudioVolume))
+			PlayClipAtPoint(_blockAudioClip, position, _combatAudioVolume, "Block-hit audio clip not assigned.");
 	}
 
 	/// <summary>
@@ -183,14 +239,7 @@ public class CharacterSoundSystem : PausableBehaviour,
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 			return;
 
-		if (_shootAudioClip == null)
-		{
-			Debug.LogWarning($"[{name}] CharacterSoundSystem: Shoot audio clip not assigned.", this);
-			return;
-		}
-
-		var position = GetSoundPosition();
-		AudioSource.PlayClipAtPoint(_shootAudioClip, position, _combatAudioVolume);
+		PlayClipAtPoint(_shootAudioClip, GetSoundPosition(), _combatAudioVolume, "Shoot audio clip not assigned.");
 	}
 
 	/// <summary>
@@ -201,14 +250,7 @@ public class CharacterSoundSystem : PausableBehaviour,
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 			return;
 
-		if (_meleeAudioClip == null)
-		{
-			Debug.LogWarning($"[{name}] CharacterSoundSystem: Melee audio clip not assigned.", this);
-			return;
-		}
-
-		var position = GetSoundPosition();
-		AudioSource.PlayClipAtPoint(_meleeAudioClip, position, _combatAudioVolume);
+		PlayClipAtPoint(_meleeAudioClip, GetSoundPosition(), _combatAudioVolume, "Melee audio clip not assigned.");
 	}
 
 	/// <summary>
@@ -219,14 +261,15 @@ public class CharacterSoundSystem : PausableBehaviour,
 		if (GameMgr.Instance != null && !GameMgr.Instance.IsGameRunning)
 			return;
 
-		if (_dodgeAudioClip == null)
-		{
-			Debug.LogWarning($"[{name}] CharacterSoundSystem: Dodge audio clip not assigned.", this);
-			return;
-		}
+		PlayClipAtPoint(_dodgeAudioClip, GetSoundPosition(), _combatAudioVolume, "Dodge audio clip not assigned.");
+	}
 
-		var position = GetSoundPosition();
-		AudioSource.PlayClipAtPoint(_dodgeAudioClip, position, _combatAudioVolume);
+	/// <summary>
+	///     Plays a death sound.
+	/// </summary>
+	public void PlayDeath()
+	{
+		PlayRandomClipAt(_deathAudioClips, GetSoundPosition(), _deathAudioVolume);
 	}
 
 	/// <summary>
@@ -236,6 +279,30 @@ public class CharacterSoundSystem : PausableBehaviour,
 	{
 		if (_controller != null) return transform.TransformPoint(_controller.center);
 		return transform.position;
+	}
+
+	private bool PlayRandomClipAt(AudioClip[] clips, Vector3 position, float volume)
+	{
+		if (clips == null || clips.Length == 0)
+			return false;
+
+		var clip = clips[Random.Range(0, clips.Length)];
+		if (clip == null)
+			return false;
+
+		AudioSource.PlayClipAtPoint(clip, position, volume);
+		return true;
+	}
+
+	private void PlayClipAtPoint(AudioClip clip, Vector3 position, float volume, string warning)
+	{
+		if (clip == null)
+		{
+			Debug.LogWarning($"[{name}] CharacterSoundSystem: {warning}", this);
+			return;
+		}
+
+		AudioSource.PlayClipAtPoint(clip, position, volume);
 	}
 
 	protected override void OnPaused()
